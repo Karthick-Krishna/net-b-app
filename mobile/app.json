@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "Premier Mobile Banking",
+    "slug": "premier-mobile-banking",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#DB0011"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.premierbanking.mobile",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Premier Banking uses Face ID for fast and secure authentication to your bank accounts and payment authorizations.",
+        "NSCameraUsageDescription": "Allow camera access to scan payment QR codes and upload KYC identification documents.",
+        "NSLocationWhenInUseUsageDescription": "Premier Banking uses your location to discover nearby branches, smart ATMs, and Premier wealth suites.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#DB0011"
+      },
+      "package": "com.premierbanking.mobile",
+      "versionCode": 1,
+      "permissions": [
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "INTERNET",
+        "VIBRATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "premier-banking-id-2026"
+      }
+    }
+  }
+}
