@@ -26,7 +26,7 @@ export interface BankAccountRecord {
   currency: 'INR' | 'GBP' | 'USD' | 'EUR';
   managedBalance: number;
   ledgerBalance: number;
-  accountStatus: 'ACTIVE' | 'DORMANT' | 'FROZEN' | 'CLOSED';
+  accountStatus: 'ACTIVE' | 'DORMANT' | 'INOPERATIVE' | 'FROZEN' | 'CLOSED';
   branchName: string;
   ifscCode: string;
   sortCode?: string;

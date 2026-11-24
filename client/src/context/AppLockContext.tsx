@@ -8,9 +8,15 @@ interface AppLockContextType {
   failedAttempts: number;
   remainingAttempts: number;
   lockedUntil: string | null;
+  autoLockTimeout: number; // in minutes
+  biometricsEnabled: boolean;
   verifyPin: (pin: string) => { success: boolean; message?: string };
   enableAppLock: (pin: string) => void;
   disableAppLock: () => void;
+  changeMpin: (currentPin: string, newPin: string) => { success: boolean; message?: string };
+  resetMpin: (newPin: string) => { success: boolean; message?: string };
+  setAutoLockTimeout: (mins: number) => void;
+  setBiometricsEnabled: (enabled: boolean) => void;
   lockApp: () => void;
   unlockApp: () => void;
 }
@@ -24,6 +30,22 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [failedAttempts, setFailedAttempts] = useState<number>(0);
   const [remainingAttempts, setRemainingAttempts] = useState<number>(5);
   const [lockedUntil, setLockedUntil] = useState<string | null>(null);
+  const [autoLockTimeout, setAutoLockTimeoutState] = useState<number>(() => {
+    return parseInt(localStorage.getItem('hsbc_autolock_timeout') || '3', 10);
+  });
+  const [biometricsEnabled, setBiometricsEnabledState] = useState<boolean>(() => {
+    return localStorage.getItem('hsbc_biometrics_enabled') !== 'false';
+  });
+
+  const setAutoLockTimeout = (mins: number) => {
+    setAutoLockTimeoutState(mins);
+    localStorage.setItem('hsbc_autolock_timeout', mins.toString());
+  };
+
+  const setBiometricsEnabled = (enabled: boolean) => {
+    setBiometricsEnabledState(enabled);
+    localStorage.setItem('hsbc_biometrics_enabled', enabled ? 'true' : 'false');
+  };
 
   const loadLockState = () => {
     if (!currentUser) return;
@@ -33,7 +55,6 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setRemainingAttempts(Math.max(0, 5 - sec.failedAttempts));
     setLockedUntil(sec.lockedUntil || null);
 
-    // If app lock is enabled and session was marked as locked or starting fresh
     if (sec.appLockEnabled && !sessionStorage.getItem('hsbc_session_unlocked')) {
       setIsLocked(true);
     }
@@ -51,7 +72,7 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return () => unsub();
   }, [currentUser]);
 
-  // Inactivity auto-lock (locks after 3 minutes of no interaction)
+  // Inactivity auto-lock based on configured timeout
   useEffect(() => {
     if (!appLockEnabled || isLocked) return;
 
@@ -61,7 +82,7 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
       timeoutId = setTimeout(() => {
         sessionStorage.removeItem('hsbc_session_unlocked');
         setIsLocked(true);
-      }, 3 * 60 * 1000); // 3 minutes
+      }, autoLockTimeout * 60 * 1000);
     };
 
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
@@ -72,7 +93,7 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
       clearTimeout(timeoutId);
       events.forEach(e => window.removeEventListener(e, resetTimer));
     };
-  }, [appLockEnabled, isLocked]);
+  }, [appLockEnabled, isLocked, autoLockTimeout]);
 
   const verifyPin = (pin: string) => {
     if (!currentUser) return { success: false, message: 'Not logged in' };
@@ -107,6 +128,22 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
     sessionStorage.removeItem('hsbc_session_unlocked');
   };
 
+  const changeMpin = (currentPin: string, newPin: string) => {
+    if (!currentUser) return { success: false, message: 'Not logged in' };
+    const check = verifyPin(currentPin);
+    if (!check.success) {
+      return { success: false, message: 'Current MPIN is incorrect' };
+    }
+    enableAppLock(newPin);
+    return { success: true };
+  };
+
+  const resetMpin = (newPin: string) => {
+    if (!currentUser) return { success: false, message: 'Not logged in' };
+    enableAppLock(newPin);
+    return { success: true };
+  };
+
   const lockApp = () => {
     sessionStorage.removeItem('hsbc_session_unlocked');
     setIsLocked(true);
@@ -125,9 +162,15 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
         failedAttempts,
         remainingAttempts,
         lockedUntil,
+        autoLockTimeout,
+        biometricsEnabled,
         verifyPin,
         enableAppLock,
         disableAppLock,
+        changeMpin,
+        resetMpin,
+        setAutoLockTimeout,
+        setBiometricsEnabled,
         lockApp,
         unlockApp,
       }}

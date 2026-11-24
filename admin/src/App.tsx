@@ -15,6 +15,10 @@ import { CardsAdminPage } from './pages/Cards/CardsAdminPage';
 import { AppLockAdminPage } from './pages/Security/AppLockAdminPage';
 import { AuditLogsPage } from './pages/AuditLogs/AuditLogsPage';
 import { SupportTicketsAdminPage } from './pages/Support/SupportTicketsAdminPage';
+import { ServiceRequestsPage } from './pages/Requests/ServiceRequestsPage';
+import { WealthAdminPage } from './pages/Wealth/WealthAdminPage';
+import { RewardsAdminPage } from './pages/Rewards/RewardsAdminPage';
+import { AdminSettingsPage } from './pages/Settings/AdminSettingsPage';
 
 const ProtectedAdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAdminAuth();
@@ -46,9 +50,13 @@ export const App: React.FC = () => {
               <Route path="customers" element={<CustomersPage />} />
               <Route path="accounts" element={<AccountsManagementPage />} />
               <Route path="cards" element={<CardsAdminPage />} />
+              <Route path="requests" element={<ServiceRequestsPage />} />
+              <Route path="wealth" element={<WealthAdminPage />} />
+              <Route path="rewards" element={<RewardsAdminPage />} />
               <Route path="security" element={<AppLockAdminPage />} />
               <Route path="audit-logs" element={<AuditLogsPage />} />
               <Route path="support" element={<SupportTicketsAdminPage />} />
+              <Route path="settings" element={<AdminSettingsPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>

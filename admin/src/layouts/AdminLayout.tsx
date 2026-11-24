@@ -17,6 +17,11 @@ import {
   Menu,
   X,
   Radio,
+  Sliders,
+  Settings,
+  Gift,
+  ChartNoAxesCombined,
+  ClipboardCheck,
 } from 'lucide-react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
@@ -32,9 +37,13 @@ export const AdminLayout: React.FC = () => {
     { to: '/customers', label: 'Customer Registry', icon: Users },
     { to: '/accounts', label: 'Account Portfolios', icon: Wallet },
     { to: '/cards', label: 'Card Management', icon: CreditCard },
-    { to: '/security', label: 'App-Lock Security', icon: Lock, highlight: true },
+    { to: '/requests', label: 'Service & KYC Requests', icon: ClipboardCheck, highlight: true },
+    { to: '/wealth', label: 'Wealth Portfolios', icon: ChartNoAxesCombined },
+    { to: '/rewards', label: 'Rewards Program', icon: Gift },
+    { to: '/security', label: 'App-Lock & MPIN Security', icon: Lock, highlight: true },
     { to: '/audit-logs', label: 'Immutable Audit Trail', icon: FileCheck2 },
     { to: '/support', label: 'Concierge Support', icon: Headphones },
+    { to: '/settings', label: 'System Settings', icon: Settings },
   ];
 
   return (

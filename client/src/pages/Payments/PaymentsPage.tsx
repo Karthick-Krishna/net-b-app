@@ -27,8 +27,16 @@ import toast from 'react-hot-toast';
 export const PaymentsPage: React.FC = () => {
   const { accounts, submitTransfer, formatCurrency } = useBanking();
 
-  // Mode: Transfers vs Bill Payment
-  const [activeTab, setActiveTab] = useState<'TRANSFER' | 'BILL_PAY'>('TRANSFER');
+  // Mode: Transfers vs Global Transfer vs Bill Payment
+  const [activeTab, setActiveTab] = useState<'TRANSFER' | 'GLOBAL' | 'BILL_PAY'>('TRANSFER');
+
+  // Global Transfer State
+  const [globalCountry, setGlobalCountry] = useState({ code: 'GB', name: 'United Kingdom', currency: 'GBP', rate: 106.40, flag: '🇬🇧' });
+  const [globalInrAmount, setGlobalInrAmount] = useState('100000');
+  const [globalBeneficiaryName, setGlobalBeneficiaryName] = useState('Alexander Wright');
+  const [globalIban, setGlobalIban] = useState('GB29MIDL40051512345678');
+  const [globalSwift, setGlobalSwift] = useState('HBUKGB41400');
+  const [globalPurpose, setGlobalPurpose] = useState('Education & University Fees');
 
   // Transfer Step-by-Step State
   const [transferStep, setTransferStep] = useState<number>(1);
@@ -44,7 +52,40 @@ export const PaymentsPage: React.FC = () => {
   const [description, setDescription] = useState('Consulting & Retainer Payment');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Bill Pay State
+  const handleExecuteGlobalTransfer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const numAmount = parseFloat(globalInrAmount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      toast.error('Please enter a valid INR transfer amount');
+      return;
+    }
+    if (selectedAccount && selectedAccount.managedBalance < numAmount) {
+      toast.error('Insufficient available balance in selected account');
+      return;
+    }
+
+    const fxVal = (numAmount / globalCountry.rate).toFixed(2);
+    setIsSubmitting(true);
+    const res = await submitTransfer(sourceAccountId, {
+      recipientName: globalBeneficiaryName,
+      recipientAccount: globalIban,
+      recipientBank: `HSBC ${globalCountry.name} Core Switch`,
+      ifscCode: globalSwift,
+      amount: numAmount,
+      reference: 'HSBC/GLB/' + Date.now().toString().slice(-6),
+      category: 'TRANSFER',
+      note: `Global Money Transfer - ${globalPurpose} (${fxVal} ${globalCountry.currency})`,
+    });
+    setIsSubmitting(false);
+
+    if (res.success) {
+      toast.success(
+        `HSBC Global Transfer of ${globalCountry.currency} ${fxVal} (₹${numAmount.toLocaleString('en-IN')}) dispatched to ${globalBeneficiaryName}! Same-day delivery tracking active.`
+      );
+    } else {
+      toast.error(res.error || 'Global transfer failed');
+    }
+  };
   const [selectedBillCategory, setSelectedBillCategory] = useState<string>('ELECTRICITY');
   const [billerProvider, setBillerProvider] = useState('Tata Power - Mumbai Distribution');
   const [consumerNumber, setConsumerNumber] = useState('90001249821');
@@ -127,17 +168,27 @@ export const PaymentsPage: React.FC = () => {
         <div className="flex p-1 bg-white border border-[#E8E8E8] rounded-2xl shadow-xs">
           <button
             onClick={() => setActiveTab('TRANSFER')}
-            className={`px-5 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'TRANSFER'
                 ? 'bg-[#DB0011] text-white shadow-xs'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Money Transfers
+            Domestic Transfers
+          </button>
+          <button
+            onClick={() => setActiveTab('GLOBAL')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === 'GLOBAL'
+                ? 'bg-[#DB0011] text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Global Money Transfer
           </button>
           <button
             onClick={() => setActiveTab('BILL_PAY')}
-            className={`px-5 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'BILL_PAY'
                 ? 'bg-[#DB0011] text-white shadow-xs'
                 : 'text-gray-600 hover:text-gray-900'
@@ -148,7 +199,7 @@ export const PaymentsPage: React.FC = () => {
         </div>
       </div>
 
-      {activeTab === 'TRANSFER' ? (
+      {activeTab === 'TRANSFER' && (
         /* STEP-BY-STEP TRANSFER EXPERIENCE */
         <div className="max-w-3xl mx-auto bg-white rounded-3xl border border-[#E8E8E8] shadow-card p-6 sm:p-10 space-y-6">
           {/* Progress Tracker */}
@@ -483,7 +534,177 @@ export const PaymentsPage: React.FC = () => {
             </div>
           )}
         </div>
-      ) : (
+      )}
+
+      {activeTab === 'GLOBAL' && (
+        <div className="max-w-3xl mx-auto bg-white rounded-3xl border border-[#E8E8E8] shadow-card p-6 sm:p-10 space-y-6">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#DB0011] text-white uppercase">
+                HSBC Global Money Transfers
+              </span>
+              <span className="text-[10px] font-bold text-[#16864A] bg-emerald-50 px-2 py-0.5 rounded">
+                Zero FX Markup for Premier
+              </span>
+            </div>
+            <h3 className="text-lg font-black text-[#252525] mt-2">
+              Instant International Remittance to 50+ Countries
+            </h3>
+            <p className="text-xs text-[#777777] mt-0.5">
+              Real-time foreign exchange conversion with same-day settlement across global HSBC network
+            </p>
+          </div>
+
+          <form onSubmit={handleExecuteGlobalTransfer} className="space-y-5 text-xs">
+            {/* Country Destination Selector */}
+            <div>
+              <label className="font-bold text-[#777777] uppercase text-[10px] block mb-2">
+                1. Select Destination Country & Currency
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {[
+                  { code: 'GB', name: 'United Kingdom', currency: 'GBP', rate: 106.40, flag: '🇬🇧' },
+                  { code: 'US', name: 'United States', currency: 'USD', rate: 84.50, flag: '🇺🇸' },
+                  { code: 'AE', name: 'United Arab Emirates', currency: 'AED', rate: 23.00, flag: '🇦🇪' },
+                  { code: 'SG', name: 'Singapore', currency: 'SGD', rate: 63.10, flag: '🇸🇬' },
+                  { code: 'EU', name: 'Eurozone (SEPA)', currency: 'EUR', rate: 91.20, flag: '🇪🇺' },
+                  { code: 'CA', name: 'Canada', currency: 'CAD', rate: 61.80, flag: '🇨🇦' },
+                ].map(c => {
+                  const isSelected = globalCountry.code === c.code;
+                  return (
+                    <div
+                      key={c.code}
+                      onClick={() => setGlobalCountry(c)}
+                      className={`p-3 rounded-2xl cursor-pointer border transition-all ${
+                        isSelected
+                          ? 'border-[#DB0011] bg-red-50/50 shadow-xs ring-1 ring-red-200'
+                          : 'border-[#E8E8E8] hover:border-gray-300 bg-white'
+                      }`}
+                    >
+                      <div className="text-base">{c.flag}</div>
+                      <div className="font-bold text-[#252525] mt-1">{c.name}</div>
+                      <div className="text-[10px] text-gray-500 font-mono mt-0.5">
+                        1 {c.currency} = ₹{c.rate.toFixed(2)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Currency Calculator */}
+            <div className="p-4 bg-gray-50 rounded-2xl border border-[#E8E8E8] space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">You Send (INR ₹)</label>
+                  <input
+                    type="number"
+                    required
+                    min="1000"
+                    value={globalInrAmount}
+                    onChange={e => setGlobalInrAmount(e.target.value)}
+                    className="w-full p-2.5 bg-white border border-[#E8E8E8] rounded-xl font-black text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">
+                    Beneficiary Receives (Est. {globalCountry.currency})
+                  </label>
+                  <div className="p-2.5 bg-white border border-[#E8E8E8] rounded-xl font-black text-sm font-mono text-[#16864A]">
+                    {globalCountry.currency} {(parseFloat(globalInrAmount || '0') / globalCountry.rate).toFixed(2)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center text-[11px] text-gray-500 pt-1">
+                <span>Indicative Live Rate: 1 {globalCountry.currency} = ₹{globalCountry.rate}</span>
+                <span className="font-bold text-[#16864A]">Transfer Fee: ₹0.00</span>
+              </div>
+            </div>
+
+            {/* Source Account */}
+            <div>
+              <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">2. Source Debit Account</label>
+              <select
+                value={sourceAccountId}
+                onChange={e => setSourceAccountId(e.target.value)}
+                className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-bold"
+              >
+                {accounts.map(acc => (
+                  <option key={acc.accountId} value={acc.accountId}>
+                    {acc.accountType} ({acc.maskedAccountNumber}) — {formatCurrency(acc.managedBalance, acc.currency)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Beneficiary Details */}
+            <div className="space-y-3">
+              <label className="font-bold text-[#777777] uppercase text-[10px] block">
+                3. International Beneficiary Information
+              </label>
+
+              <div>
+                <label className="text-[11px] text-gray-600 block mb-1">Beneficiary Full Legal Name</label>
+                <input
+                  type="text"
+                  required
+                  value={globalBeneficiaryName}
+                  onChange={e => setGlobalBeneficiaryName(e.target.value)}
+                  className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-semibold"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] text-gray-600 block mb-1">IBAN / Account Number</label>
+                  <input
+                    type="text"
+                    required
+                    value={globalIban}
+                    onChange={e => setGlobalIban(e.target.value)}
+                    className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-mono text-xs uppercase"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] text-gray-600 block mb-1">SWIFT / BIC Code</label>
+                  <input
+                    type="text"
+                    required
+                    value={globalSwift}
+                    onChange={e => setGlobalSwift(e.target.value)}
+                    className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-mono text-xs uppercase"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] text-gray-600 block mb-1">Purpose of Remittance (RBI LRS Code)</label>
+                <select
+                  value={globalPurpose}
+                  onChange={e => setGlobalPurpose(e.target.value)}
+                  className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-semibold"
+                >
+                  <option>Education & University Fees</option>
+                  <option>Family Maintenance & Living Expenses</option>
+                  <option>Medical Treatment Abroad</option>
+                  <option>Overseas Travel & Tourism</option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-xl font-bold transition-colors shadow-xs"
+            >
+              {isSubmitting ? 'Transmitting Remittance Order...' : 'Authorize Global Wire Remittance'}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {activeTab === 'BILL_PAY' && (
         /* BILL PAYMENT GRID */
         <div className="space-y-6">
           <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-3">

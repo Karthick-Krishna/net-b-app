@@ -20,6 +20,7 @@ import { InsurancePage } from './pages/Insurance/InsurancePage';
 import { StatementsPage } from './pages/Statements/StatementsPage';
 import { SecurityPage } from './pages/Security/SecurityPage';
 import { SupportPage } from './pages/Support/SupportPage';
+import { SettingsPage } from './pages/Settings/SettingsPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -73,6 +74,7 @@ export const AppContent: React.FC = () => {
             <Route path="insurance" element={<InsurancePage />} />
             <Route path="statements" element={<StatementsPage />} />
             <Route path="security" element={<SecurityPage />} />
+            <Route path="settings" element={<SettingsPage />} />
             <Route path="support" element={<SupportPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
