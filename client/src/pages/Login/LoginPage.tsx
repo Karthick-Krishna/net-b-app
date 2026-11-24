@@ -12,15 +12,17 @@ import {
   Sparkles,
   Globe2,
   CheckCircle2,
-  HelpCircle,
+  KeyRound,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { PinLoginScreen } from '../../components/PinLoginScreen';
 import toast from 'react-hot-toast';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { currentUser, login } = useAuth();
 
+  const [loginMode, setLoginMode] = useState<'PIN' | 'PASSWORD'>('PIN');
   const [identifier, setIdentifier] = useState('HSBC-882941');
   const [password, setPassword] = useState('Password@123');
   const [showPassword, setShowPassword] = useState(false);
@@ -55,8 +57,24 @@ export const LoginPage: React.FC = () => {
     }
   };
 
+  // If in PIN mode, show the HSBC India Mobile PIN Screen matching the reference design
+  if (loginMode === 'PIN') {
+    return (
+      <PinLoginScreen
+        onSuccess={() => {
+          if (!currentUser) {
+            handleQuickLogin('HSBC-882941');
+          } else {
+            navigate('/');
+          }
+        }}
+        onSwitchToPasswordLogin={() => setLoginMode('PASSWORD')}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#F5F5F5] flex flex-col justify-between">
+    <div className="min-h-screen bg-[#F5F5F5] flex flex-col justify-between font-sans">
       {/* Top Compliance Bar */}
       <div className="bg-[#B0000D] text-white text-[11px] font-medium py-1.5 px-4 text-center tracking-wide flex items-center justify-center gap-2">
         <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
@@ -131,6 +149,18 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Switch to PIN mode banner */}
+            <div className="mb-4">
+              <button
+                type="button"
+                onClick={() => setLoginMode('PIN')}
+                className="inline-flex items-center gap-2 text-xs font-semibold text-[#DB0011] hover:text-[#B0000D] transition-colors"
+              >
+                <KeyRound className="w-4 h-4" />
+                <span>Switch to 6-Digit PIN Mobile Logon</span>
+              </button>
+            </div>
+
             <div className="mb-6">
               <h2 className="text-2xl font-extrabold text-[#252525] tracking-tight">
                 Log On to Online Banking
@@ -196,9 +226,13 @@ export const LoginPage: React.FC = () => {
                   />
                   <span className="text-gray-600 font-medium">Remember Customer ID</span>
                 </label>
-                <a href="#" className="font-bold text-[#DB0011] hover:underline">
+                <button
+                  type="button"
+                  onClick={() => setLoginMode('PIN')}
+                  className="font-bold text-[#DB0011] hover:underline"
+                >
                   Forgot Password?
-                </a>
+                </button>
               </div>
 
               {/* Primary Signature Red Button */}
@@ -258,16 +292,6 @@ export const LoginPage: React.FC = () => {
                   <span className="text-[11px] font-bold text-[#DB0011]">&rarr;</span>
                 </button>
               </div>
-
-              {/* Biometric simulation button */}
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('HSBC-882941')}
-                className="w-full mt-3 flex items-center justify-center gap-2 py-2.5 px-4 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 transition-colors"
-              >
-                <Fingerprint className="w-4 h-4 text-[#DB0011]" />
-                <span>Log On with Touch ID / Face ID</span>
-              </button>
             </div>
           </div>
         </div>
