@@ -102,7 +102,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       } else if (msg.type === 'CARD_UPDATED') {
         toast.success('Card settings updated.');
       } else if (msg.type === 'DATA_RESET') {
-        toast('Demonstration data refreshed.', { icon: '🔄' });
+        toast('Data refreshed successfully.', { icon: '🔄' });
       }
     });
 

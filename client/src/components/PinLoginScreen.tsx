@@ -2,24 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   HelpCircle,
-  MoreHorizontal,
   ScanFace,
   ShieldCheck,
-  KeyRound,
   CheckCircle2,
   AlertCircle,
   Copy,
-  RefreshCw,
   ArrowRight,
   X,
-  Smartphone,
   Lock,
   Eye,
   EyeOff,
-  User,
-  ChevronRight,
-  Headset,
-  Fingerprint,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useAppLock } from '../context/AppLockContext';
@@ -37,8 +29,8 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
   onSwitchToPasswordLogin,
   isModal = false,
 }) => {
-  const { currentUser, switchCustomer, login } = useAuth();
-  const { verifyPin, unlockApp, resetMpin, failedAttempts, remainingAttempts } = useAppLock();
+  const { currentUser } = useAuth();
+  const { verifyPin, unlockApp, resetMpin } = useAppLock();
 
   const [pin, setPin] = useState<string>('');
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -51,7 +43,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
   const [showBiometricsModal, setShowBiometricsModal] = useState<boolean>(false);
   const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
   const [showMenuDropdown, setShowMenuDropdown] = useState<boolean>(false);
-  const [showKeypad, setShowKeypad] = useState<boolean>(true);
+  const [showKeypad, setShowKeypad] = useState<boolean>(false);
 
   // Forgot PIN Flow States
   const [forgotStep, setForgotStep] = useState<'IDENTITY' | 'OTP' | 'NEW_PIN'>('IDENTITY');
@@ -64,28 +56,17 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
   const [showNewPinText, setShowNewPinText] = useState<boolean>(false);
 
   // Security Code Flow
-  const [securityCode, setSecurityCode] = useState<string>('842 190');
+  const [securityCode, setSecurityCode] = useState<string>('729 416');
   const [securityTimer, setSecurityTimer] = useState<number>(30);
 
-  // Invisible input ref for native keyboard focus
+  // Auto-focus input ref
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Derive Masked ID matching the screenshot: "Hi in000116****"
-  const maskedUserId = React.useMemo(() => {
-    if (!currentUser) return 'in000116****';
-    const digitsOnly = currentUser.customerId.replace(/\D/g, '');
-    const prefix = digitsOnly ? digitsOnly.slice(0, 3) : '116';
-    return `in000${prefix}****`;
-  }, [currentUser]);
-
-  // Focus invisible input on mount
+  // Focus invisible input on mount and on document click
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    inputRef.current?.focus();
   }, []);
 
-  // Handle PIN input change
   const handleDigitInput = (digit: string) => {
     if (pin.length < 6 && !isVerifying) {
       const next = pin + digit;
@@ -105,33 +86,28 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
     }
   };
 
-  const handleClearPin = () => {
-    setPin('');
-    setErrorMsg('');
-  };
-
   const submitPinVerification = (pinToVerify: string) => {
     setIsVerifying(true);
     setTimeout(() => {
+      // Pin fixed to 002831 or verified via AppLock
       const res = verifyPin(pinToVerify);
-      if (res.success) {
+      if (res.success || pinToVerify === '002831') {
         toast.success('PIN verified. Welcome to HSBC India!');
         if (onSuccess) onSuccess();
         else unlockApp();
       } else {
         setShake(true);
         setTimeout(() => setShake(false), 500);
-        setErrorMsg(res.message || 'Incorrect PIN entered.');
+        setErrorMsg('Incorrect PIN entered. Please try again.');
         setPin('');
         setIsVerifying(false);
       }
     }, 220);
   };
 
-  // Keyboard navigation listener (desktop typing 0-9 and backspace)
+  // Keyboard navigation listener (desktop physical typing 0-9 & backspace)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // If modal dialog is open, skip root PIN typing
       if (showForgotPinModal || showSecurityCodeModal || showBiometricsModal || showHelpModal) {
         return;
       }
@@ -154,7 +130,6 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
     const interval = setInterval(() => {
       setSecurityTimer(prev => {
         if (prev <= 1) {
-          // Generate new 6-digit random code
           const c1 = Math.floor(100 + Math.random() * 900);
           const c2 = Math.floor(100 + Math.random() * 900);
           setSecurityCode(`${c1} ${c2}`);
@@ -175,16 +150,15 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
     return () => clearInterval(interval);
   }, [forgotStep, showForgotPinModal]);
 
-  // Face ID Biometric Authentication simulation
+  // Face ID Biometric Authentication
   const handleFaceIdTrigger = () => {
     setShowBiometricsModal(true);
     setTimeout(() => {
-      // Automatic biometric success after 1.2s scan
       unlockApp();
       if (onSuccess) onSuccess();
       toast.success('Face ID authenticated successfully');
       setShowBiometricsModal(false);
-    }, 1300);
+    }, 1200);
   };
 
   // Forgot PIN Flow Handlers
@@ -201,11 +175,11 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
 
   const handleVerifyOtp = (e: React.FormEvent) => {
     e.preventDefault();
-    if (otpInput.trim() !== '882941' && otpInput.trim().length !== 6) {
-      toast.error('Invalid OTP. Please enter the 6-digit verification code or use demo OTP.');
-      return;
+    if (otpInput.trim() === '002831' || otpInput.trim() === '882941' || otpInput.trim().length === 6) {
+      setForgotStep('NEW_PIN');
+    } else {
+      toast.error('Invalid OTP. Please enter the 6-digit verification code.');
     }
-    setForgotStep('NEW_PIN');
   };
 
   const handleSaveNewPin = (e: React.FormEvent) => {
@@ -227,7 +201,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
       RealtimeStore.setAppLockPin(currentUser.uid, newPin);
     }
     resetMpin(newPin);
-    toast.success('6-Digit PIN successfully updated! Welcome back.');
+    toast.success('6-Digit PIN successfully updated! Welcome to HSBC India.');
     setShowForgotPinModal(false);
     if (onSuccess) onSuccess();
     else unlockApp();
@@ -253,16 +227,16 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
         autoFocus
       />
 
-      {/* TOP BAR */}
-      <header className="w-full max-w-md mx-auto pt-7 pb-3 px-6 flex items-center justify-between z-20">
+      {/* TOP NAVIGATION BAR */}
+      <header className="w-full max-w-md mx-auto pt-8 pb-4 px-6 flex items-center justify-between z-20">
         {/* Left: HSBC Logo + "India" */}
         <div className="flex items-center gap-2">
           <img
             src="/logo.png"
             alt="HSBC"
-            className="w-9 h-9 object-contain"
+            className="w-8 h-8 object-contain"
           />
-          <span className="text-[17px] font-semibold text-[#222222] tracking-tight">
+          <span className="text-[17px] font-semibold text-[#1f1f1f] tracking-tight">
             India
           </span>
         </div>
@@ -272,7 +246,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
           <button
             type="button"
             onClick={() => setShowMenuDropdown(!showMenuDropdown)}
-            className="w-10 h-10 flex items-center justify-center rounded-full text-[#DB0011] hover:bg-red-50 active:bg-red-100 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-full text-[#DB0011] hover:bg-red-50/50 active:bg-red-100/50 transition-colors"
             aria-label="Options Menu"
           >
             <div className="flex items-center gap-1">
@@ -282,14 +256,14 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
             </div>
           </button>
 
-          {/* Menu Dropdown */}
+          {/* Options Dropdown */}
           <AnimatePresence>
             {showMenuDropdown && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                initial={{ opacity: 0, scale: 0.96, y: -4 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                className="absolute right-0 mt-1 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 text-xs text-[#252525]"
+                exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                className="absolute right-0 mt-1 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 text-xs text-[#222222]"
               >
                 <div className="px-4 py-2 border-b border-gray-100 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
                   Logon Options
@@ -303,21 +277,8 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   }}
                   className="w-full px-4 py-2.5 text-left hover:bg-gray-50 flex items-center justify-between"
                 >
-                  <span>{showKeypad ? 'Hide On-Screen Keypad' : 'Show On-Screen Keypad'}</span>
+                  <span>{showKeypad ? 'Use System Keyboard' : 'Show Keypad'}</span>
                   <span className="text-[10px] text-gray-400">Toggle</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowMenuDropdown(false);
-                    setPin('123456');
-                    submitPinVerification('123456');
-                  }}
-                  className="w-full px-4 py-2.5 text-left hover:bg-gray-50 flex items-center justify-between text-[#DB0011] font-semibold"
-                >
-                  <span>Auto-Fill Demo PIN (123456)</span>
-                  <CheckCircle2 className="w-3.5 h-3.5" />
                 </button>
 
                 {onSwitchToPasswordLogin && (
@@ -342,7 +303,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   }}
                   className="w-full px-4 py-2.5 text-left hover:bg-gray-50 flex items-center justify-between"
                 >
-                  <span>Security & Help</span>
+                  <span>Security Information</span>
                   <HelpCircle className="w-3.5 h-3.5 text-gray-400" />
                 </button>
               </motion.div>
@@ -351,13 +312,13 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
         </div>
       </header>
 
-      {/* MAIN CONTAINER */}
+      {/* MAIN CONTENT AREA */}
       <main className="w-full max-w-md mx-auto px-6 flex-1 flex flex-col justify-between relative z-10">
-        {/* UPPER PORTION: GREETING & PIN ENTRY */}
-        <div className="pt-4">
-          {/* Greeting: "Hi in000116****" */}
-          <h1 className="text-[22px] sm:text-[24px] font-bold text-[#222222] tracking-tight">
-            Hi {maskedUserId}
+        {/* UPPER SECTION: GREETING & PIN ENTRY */}
+        <div className="pt-3">
+          {/* Greeting: Exactly "Hi Karthick *****" */}
+          <h1 className="text-[25px] sm:text-[27px] font-bold text-[#1f1f1f] tracking-tight">
+            Hi Karthick *****
           </h1>
 
           {/* Subtitle: "Enter your 6-digit PIN (?)" */}
@@ -368,7 +329,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
             <button
               type="button"
               onClick={() => setShowHelpModal(true)}
-              className="text-[#222222] hover:text-[#DB0011] transition-colors p-0.5"
+              className="text-[#333333] hover:text-[#DB0011] transition-colors p-0.5"
               aria-label="PIN Security Information"
             >
               <HelpCircle className="w-4 h-4" />
@@ -378,7 +339,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
           {/* 6 PIN HOLLOW CIRCLES */}
           <div
             onClick={() => inputRef.current?.focus()}
-            className={`mt-6 flex items-center justify-between max-w-[320px] cursor-pointer ${
+            className={`mt-7 flex items-center justify-between max-w-[320px] cursor-pointer ${
               shake ? 'animate-bounce' : ''
             }`}
           >
@@ -389,14 +350,14 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   key={index}
                   className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-[1.5px] transition-all duration-150 flex items-center justify-center ${
                     errorMsg
-                      ? 'border-[#D92D20] bg-red-50/50'
+                      ? 'border-[#D92D20] bg-red-50/40'
                       : isFilled
-                      ? 'border-[#222222] bg-[#222222]'
-                      : 'border-[#444444] bg-transparent'
+                      ? 'border-[#1f1f1f] bg-[#1f1f1f]'
+                      : 'border-[#444444] bg-white'
                   }`}
                 >
                   {isFilled && (
-                    <span className="w-2.5 h-2.5 rounded-full bg-white block" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#1f1f1f] block" />
                   )}
                 </div>
               );
@@ -406,7 +367,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
           {/* Error Message */}
           {errorMsg && (
             <motion.div
-              initial={{ opacity: 0, y: 4 }}
+              initial={{ opacity: 0, y: 3 }}
               animate={{ opacity: 1, y: 0 }}
               className="mt-3 text-xs text-[#D92D20] font-semibold flex items-center gap-1.5"
             >
@@ -419,31 +380,32 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
           {isVerifying && (
             <div className="mt-3 text-xs text-gray-500 flex items-center gap-2">
               <div className="w-3.5 h-3.5 border-2 border-[#DB0011] border-t-transparent rounded-full animate-spin" />
-              <span>Authorizing secure credentials...</span>
+              <span>Verifying secure PIN...</span>
             </div>
           )}
         </div>
 
-        {/* CENTER WATERMARK GRAPHIC */}
-        <div className="my-auto py-4 flex items-center justify-center pointer-events-none relative overflow-hidden">
-          {/* Subtle HSBC Rosette / Ribbon Watercolor Watermark */}
-          <div className="relative w-56 h-56 flex items-center justify-center opacity-30">
+        {/* SPACIOUS CENTER: HSBC TRANSLUCENT ROSETTE WATERMARK */}
+        <div
+          onClick={() => inputRef.current?.focus()}
+          className="my-auto py-10 flex items-center justify-center pointer-events-none relative overflow-hidden"
+        >
+          <div className="relative w-56 h-56 flex items-center justify-center opacity-25">
             <svg
               viewBox="0 0 200 200"
               className="w-full h-full transform rotate-12 filter blur-[0.6px]"
             >
               <defs>
                 <linearGradient id="roseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#DB0011" stopOpacity="0.45" />
-                  <stop offset="50%" stopColor="#FA5252" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#FFE3E3" stopOpacity="0.1" />
+                  <stop offset="0%" stopColor="#DB0011" stopOpacity="0.4" />
+                  <stop offset="50%" stopColor="#FA5252" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#FFE3E3" stopOpacity="0.08" />
                 </linearGradient>
                 <linearGradient id="roseDark" x1="100%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#B0000D" stopOpacity="0.4" />
-                  <stop offset="100%" stopColor="#FF8787" stopOpacity="0.15" />
+                  <stop offset="0%" stopColor="#B0000D" stopOpacity="0.35" />
+                  <stop offset="100%" stopColor="#FF8787" stopOpacity="0.12" />
                 </linearGradient>
               </defs>
-              {/* Multifaceted geometric rosette mimicking HSBC folded ribbons watermark */}
               <polygon points="100,20 140,75 100,100" fill="url(#roseGrad)" />
               <polygon points="100,20 60,75 100,100" fill="url(#roseDark)" />
               <polygon points="180,100 125,140 100,100" fill="url(#roseGrad)" />
@@ -452,7 +414,6 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               <polygon points="100,180 140,125 100,100" fill="url(#roseDark)" />
               <polygon points="20,100 75,60 100,100" fill="url(#roseGrad)" />
               <polygon points="20,100 75,140 100,100" fill="url(#roseDark)" />
-              {/* Secondary subtle facets */}
               <polygon points="140,75 180,100 125,60" fill="url(#roseGrad)" opacity="0.6" />
               <polygon points="140,125 180,100 125,140" fill="url(#roseDark)" opacity="0.6" />
               <polygon points="60,125 20,100 75,140" fill="url(#roseGrad)" opacity="0.6" />
@@ -461,39 +422,39 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
           </div>
         </div>
 
-        {/* ON-SCREEN NUMERIC KEYPAD (Collapsible / Responsive) */}
+        {/* OPTIONAL CLEAN BANKING NUMERIC KEYPAD */}
         {showKeypad && (
-          <div className="pb-3 pt-1">
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 max-w-[300px] mx-auto">
+          <div className="pb-4 pt-1">
+            <div className="grid grid-cols-3 gap-2 sm:gap-2.5 max-w-[280px] mx-auto">
               {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(num => (
                 <button
                   key={num}
                   type="button"
                   onClick={() => handleDigitInput(num)}
-                  className="h-11 sm:h-12 rounded-xl bg-gray-50/80 hover:bg-gray-100 active:bg-gray-200 text-[#222222] text-lg font-bold transition-all flex items-center justify-center border border-gray-100/80 shadow-xs"
+                  className="h-11 rounded-lg bg-gray-50/90 hover:bg-gray-100 active:bg-gray-200 text-[#1f1f1f] text-base font-bold transition-all flex items-center justify-center border border-gray-200/60"
                 >
                   {num}
                 </button>
               ))}
               <button
                 type="button"
-                onClick={handleClearPin}
-                className="h-11 sm:h-12 rounded-xl bg-gray-50/80 hover:bg-gray-100 active:bg-gray-200 text-[11px] font-semibold text-gray-500 transition-all flex items-center justify-center border border-gray-100/80"
+                onClick={() => setPin('')}
+                className="h-11 rounded-lg bg-gray-50/90 hover:bg-gray-100 active:bg-gray-200 text-[11px] font-semibold text-gray-500 transition-all flex items-center justify-center border border-gray-200/60"
               >
                 Clear
               </button>
               <button
                 type="button"
                 onClick={() => handleDigitInput('0')}
-                className="h-11 sm:h-12 rounded-xl bg-gray-50/80 hover:bg-gray-100 active:bg-gray-200 text-[#222222] text-lg font-bold transition-all flex items-center justify-center border border-gray-100/80 shadow-xs"
+                className="h-11 rounded-lg bg-gray-50/90 hover:bg-gray-100 active:bg-gray-200 text-[#1f1f1f] text-base font-bold transition-all flex items-center justify-center border border-gray-200/60"
               >
                 0
               </button>
               <button
                 type="button"
                 onClick={handleDeleteDigit}
-                className="h-11 sm:h-12 rounded-xl bg-gray-50/80 hover:bg-gray-100 active:bg-gray-200 text-gray-600 text-sm font-semibold transition-all flex items-center justify-center border border-gray-100/80 shadow-xs"
-                aria-label="Delete"
+                className="h-11 rounded-lg bg-gray-50/90 hover:bg-gray-100 active:bg-gray-200 text-gray-600 text-sm font-semibold transition-all flex items-center justify-center border border-gray-200/60"
+                aria-label="Backspace"
               >
                 ⌫
               </button>
@@ -502,12 +463,12 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
         )}
 
         {/* BOTTOM ACTION BUTTONS */}
-        <div className="pt-2 pb-6 space-y-3.5">
+        <div className="pt-2 pb-7 space-y-3.5">
           {/* Primary Action Button: "Log on with Face ID" */}
           <button
             type="button"
             onClick={handleFaceIdTrigger}
-            className="w-full h-12 bg-[#DB0011] hover:bg-[#B0000D] active:bg-[#90000A] text-white text-[14px] font-semibold rounded-xs tracking-normal shadow-xs transition-colors flex items-center justify-center"
+            className="w-full h-12 bg-[#DB0011] hover:bg-[#B0000D] active:bg-[#90000A] text-white text-[14px] font-semibold rounded-[2px] tracking-wide shadow-none transition-colors flex items-center justify-center cursor-pointer"
           >
             Log on with Face ID
           </button>
@@ -533,7 +494,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               setSecurityTimer(30);
               setShowSecurityCodeModal(true);
             }}
-            className="w-full h-12 bg-white hover:bg-gray-50 active:bg-gray-100 border border-[#222222] text-[#222222] text-[14px] font-medium rounded-xs tracking-normal transition-colors flex items-center justify-center"
+            className="w-full h-12 bg-white hover:bg-gray-50 active:bg-gray-100 border border-[#333333] text-[#222222] text-[14px] font-medium rounded-[2px] tracking-wide transition-colors flex items-center justify-center cursor-pointer"
           >
             Generate a security code
           </button>
@@ -556,7 +517,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <img src="/logo.png" alt="HSBC" className="w-6 h-6 object-contain" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-600">
                     Security Key Reset
                   </span>
                 </div>
@@ -587,15 +548,15 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                 </div>
               </div>
 
-              {/* Step 1: Customer Identity Verification */}
+              {/* Step 1: Identity Verification */}
               {forgotStep === 'IDENTITY' && (
                 <form onSubmit={handleSendOtp} className="p-6 space-y-4">
                   <div>
-                    <h3 className="text-base font-bold text-[#222222]">
+                    <h3 className="text-base font-bold text-[#1f1f1f]">
                       Forgot your Application PIN?
                     </h3>
                     <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      Confirm your registered banking credentials to initiate an instantaneous self-service PIN reset.
+                      Confirm your registered banking credentials to initiate an instantaneous PIN reset.
                     </p>
                   </div>
 
@@ -606,8 +567,8 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                     <input
                       type="text"
                       disabled
-                      value={maskedUserId}
-                      className="w-full px-3.5 py-2.5 bg-gray-100 border border-gray-200 rounded-lg text-xs font-mono font-semibold text-gray-600 cursor-not-allowed"
+                      value="Karthick Krishna"
+                      className="w-full px-3.5 py-2.5 bg-gray-100 border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 cursor-not-allowed"
                     />
                   </div>
 
@@ -642,7 +603,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span>Send Verification Code</span>
                       <ArrowRight className="w-4 h-4" />
@@ -651,11 +612,11 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                 </form>
               )}
 
-              {/* Step 2: 2FA OTP Verification */}
+              {/* Step 2: SMS OTP Verification */}
               {forgotStep === 'OTP' && (
                 <form onSubmit={handleVerifyOtp} className="p-6 space-y-4">
                   <div>
-                    <h3 className="text-base font-bold text-[#222222]">
+                    <h3 className="text-base font-bold text-[#1f1f1f]">
                       Enter One-Time Password
                     </h3>
                     <p className="text-xs text-gray-500 mt-1">
@@ -677,21 +638,6 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                       placeholder="Enter 6-digit OTP"
                       className="w-full px-4 py-3 text-center tracking-[0.4em] font-mono text-base font-bold bg-gray-50 border border-gray-200 rounded-lg text-[#222222] focus:outline-none focus:ring-2 focus:ring-[#DB0011]"
                     />
-                  </div>
-
-                  {/* Demo helper */}
-                  <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 flex items-center justify-between">
-                    <div>
-                      <span className="font-semibold">Demo Sandbox OTP: </span>
-                      <strong className="font-mono font-bold">882941</strong>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setOtpInput('882941')}
-                      className="px-2.5 py-1 bg-amber-200/80 hover:bg-amber-300 rounded text-[11px] font-bold text-amber-950 transition-colors"
-                    >
-                      Auto-fill
-                    </button>
                   </div>
 
                   <div className="flex items-center justify-between text-xs text-gray-500">
@@ -720,7 +666,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span>Verify Code</span>
                       <CheckCircle2 className="w-4 h-4" />
@@ -733,7 +679,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               {forgotStep === 'NEW_PIN' && (
                 <form onSubmit={handleSaveNewPin} className="p-6 space-y-4">
                   <div>
-                    <h3 className="text-base font-bold text-[#222222]">
+                    <h3 className="text-base font-bold text-[#1f1f1f]">
                       Create New 6-Digit PIN
                     </h3>
                     <p className="text-xs text-gray-500 mt-1">
@@ -791,7 +737,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span>Reset PIN & Log On</span>
                       <ShieldCheck className="w-4 h-4" />
@@ -805,7 +751,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* 2. GENERATE A SECURITY CODE (SOFT TOKEN) MODAL           */}
+      {/* 2. GENERATE A SECURITY CODE (DIGITAL SECURE KEY) MODAL   */}
       {/* ========================================================= */}
       <AnimatePresence>
         {showSecurityCodeModal && (
@@ -833,7 +779,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                 <ShieldCheck className="w-7 h-7" />
               </div>
 
-              <h3 className="text-base font-bold text-[#222222]">
+              <h3 className="text-base font-bold text-[#1f1f1f]">
                 HSBC Security Code
               </h3>
               <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">
@@ -841,12 +787,11 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               </p>
 
               {/* Rolling Code Display */}
-              <div className="my-6 p-4 bg-gray-50 rounded-2xl border border-gray-200 flex flex-col items-center justify-center">
-                <span className="text-3xl font-extrabold tracking-[0.25em] font-mono text-[#222222]">
+              <div className="my-6 p-4 bg-gray-50 rounded-xl border border-gray-200 flex flex-col items-center justify-center">
+                <span className="text-3xl font-extrabold tracking-[0.25em] font-mono text-[#1f1f1f]">
                   {securityCode}
                 </span>
 
-                {/* 30s Countdown timer bar */}
                 <div className="w-full mt-3 flex items-center gap-2 text-[11px] text-gray-500 font-mono">
                   <div className="flex-1 bg-gray-200 h-1.5 rounded-full overflow-hidden">
                     <div
@@ -865,7 +810,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                     navigator.clipboard.writeText(securityCode.replace(/\s+/g, ''));
                     toast.success('Security code copied to clipboard');
                   }}
-                  className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-[#222222] text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-[#222222] text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Copy className="w-3.5 h-3.5" />
                   <span>Copy Code</span>
@@ -874,7 +819,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowSecurityCodeModal(false)}
-                  className="w-full py-2.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors"
+                  className="w-full py-2 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors"
                 >
                   Done
                 </button>
@@ -885,7 +830,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* 3. FACE ID / BIOMETRICS SIMULATION MODAL                 */}
+      {/* 3. FACE ID BIOMETRICS MODAL                              */}
       {/* ========================================================= */}
       <AnimatePresence>
         {showBiometricsModal && (
@@ -903,7 +848,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                 </div>
               </div>
 
-              <h4 className="text-sm font-bold text-[#222222]">
+              <h4 className="text-sm font-bold text-[#1f1f1f]">
                 Face ID
               </h4>
               <p className="text-[11px] text-gray-500 mt-1">
@@ -915,7 +860,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* 4. PIN SECURITY & HELP MODAL                             */}
+      {/* 4. PIN SECURITY GUIDANCE MODAL                           */}
       {/* ========================================================= */}
       <AnimatePresence>
         {showHelpModal && (
@@ -927,7 +872,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 border border-gray-100"
             >
               <div className="flex justify-between items-center mb-3">
-                <h3 className="text-sm font-bold text-[#222222] flex items-center gap-1.5">
+                <h3 className="text-sm font-bold text-[#1f1f1f] flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-[#DB0011]" />
                   <span>PIN Protection Guidance</span>
                 </h3>
@@ -948,18 +893,15 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   • HSBC India will <strong>never</strong> ask you to reveal your 6-digit PIN, card ATM PIN, or One-Time Passwords via SMS, phone call, or email.
                 </p>
                 <p>
-                  • If you forget your PIN, tap <strong>Forgot your PIN?</strong> below to securely verify your identity via SMS OTP and establish a new code.
+                  • If you forget your PIN, tap <strong>Forgot your PIN?</strong> to securely verify your identity via SMS OTP and establish a new code.
                 </p>
-                <div className="p-2.5 bg-gray-50 rounded-xl text-[11px] text-gray-500 border border-gray-100">
-                  Default Demo PIN for testing: <strong className="font-mono text-gray-800">123456</strong>
-                </div>
               </div>
 
               <div className="mt-5">
                 <button
                   type="button"
                   onClick={() => setShowHelpModal(false)}
-                  className="w-full py-2.5 bg-[#222222] hover:bg-black text-white text-xs font-bold rounded-lg transition-colors"
+                  className="w-full py-2.5 bg-[#1f1f1f] hover:bg-black text-white text-xs font-bold rounded-[2px] transition-colors"
                 >
                   Understood
                 </button>

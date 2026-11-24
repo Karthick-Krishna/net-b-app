@@ -390,7 +390,7 @@ export const INITIAL_SUPPORT_TICKETS: SupportTicketRecord[] = [
 export const INITIAL_APPLOCK: AppLockSecurityRecord = {
   ownerUid: 'cust-karthick-8829',
   appLockEnabled: true,
-  pinHash: '123456', // Test PIN: 123456
+  pinHash: '002831', // Fixed password / PIN: 002831
   failedAttempts: 0,
   lockedUntil: null,
   resetRequestedByAdmin: false,

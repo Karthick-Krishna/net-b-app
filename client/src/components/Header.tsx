@@ -29,14 +29,6 @@ export const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-[#E8E8E8] shadow-xs">
-      {/* Top Security & Regulatory Bar */}
-      <div className="bg-[#B0000D] text-white text-[11px] font-medium py-1 px-4 text-center tracking-wide flex items-center justify-center gap-2">
-        <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
-        <span className="truncate">
-          HSBC India Personal Internet Banking — Demonstration Application
-        </span>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand identity on Mobile */}
         <div className="flex items-center gap-3 md:hidden">

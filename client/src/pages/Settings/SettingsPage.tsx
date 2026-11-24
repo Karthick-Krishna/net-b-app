@@ -823,7 +823,7 @@ export const SettingsPage: React.FC = () => {
               <img src="/logo.png" alt="HSBC India" className="w-9 h-9 object-contain" />
               <div>
                 <div className="font-black text-[#252525]">HSBC India Personal Internet Banking</div>
-                <div className="text-[11px] text-[#777777]">Version 3.4.0 (Build 2026.11) • Demonstration Platform</div>
+                <div className="text-[11px] text-[#777777]">Version 3.4.0 (Build 2026.11) • Official Mobile Banking</div>
               </div>
             </div>
             <button
@@ -1071,7 +1071,7 @@ export const SettingsPage: React.FC = () => {
                 By accessing HSBC India Personal Internet Banking, you agree to maintain the confidentiality of your 6-digit MPIN, password, and security tokens.
               </p>
               <p>
-                Demonstration platform notice: All account records, transaction histories, and balances within this demonstration environment are managed for demonstration and evaluation purposes.
+                Security notice: All electronic fund transfers, account statements, and financial services are subject to Reserve Bank of India (RBI) guidelines and HSBC India terms & conditions.
               </p>
             </div>
             <div className="pt-2 text-right">
