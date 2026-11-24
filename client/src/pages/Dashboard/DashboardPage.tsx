@@ -51,7 +51,7 @@ export const DashboardPage: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold uppercase tracking-wider text-[#777777]">
-                Total Available Portfolio
+                Total Assets
               </span>
               <button
                 onClick={toggleBalanceVisibility}
