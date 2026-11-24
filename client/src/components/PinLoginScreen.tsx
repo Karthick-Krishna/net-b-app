@@ -69,7 +69,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
 
   const handleDigitInput = (digit: string) => {
     if (pin.length < 6 && !isVerifying) {
-      const next = pin + digit;
+      const next = (pin + digit).slice(0, 6);
       setPin(next);
       setErrorMsg('');
 
@@ -87,6 +87,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
   };
 
   const submitPinVerification = (pinToVerify: string) => {
+    if (isVerifying) return;
     setIsVerifying(true);
     setTimeout(() => {
       // Pin fixed to 002831 or verified via AppLock
@@ -102,7 +103,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
         setPin('');
         setIsVerifying(false);
       }
-    }, 220);
+    }, 180);
   };
 
   // Keyboard navigation listener (desktop physical typing 0-9 & backspace)
@@ -111,9 +112,17 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
       if (showForgotPinModal || showSecurityCodeModal || showBiometricsModal || showHelpModal) {
         return;
       }
+      // If user is focused on the input or any input/textarea, let the native input handle it
+      // to avoid double digit registration!
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
       if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault();
         handleDigitInput(e.key);
       } else if (e.key === 'Backspace') {
+        e.preventDefault();
         handleDeleteDigit();
       } else if (e.key === 'Escape') {
         setShowMenuDropdown(false);
@@ -218,8 +227,10 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
         maxLength={6}
         value={pin}
         onChange={e => {
+          if (isVerifying) return;
           const val = e.target.value.replace(/\D/g, '').slice(0, 6);
           setPin(val);
+          setErrorMsg('');
           if (val.length === 6) submitPinVerification(val);
         }}
         className="sr-only"
