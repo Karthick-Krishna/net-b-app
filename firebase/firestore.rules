@@ -1,0 +1,547 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users/{userId}
+// Document ID: Firebase Auth UID
+// Fields:
+//   - uid: string (required, immutable) - Auth UID matching document ID
+//   - displayName: string (required, 2-100 chars) - Legal customer full name
+//   - email: string (required, email format, max 100 chars) - Verified email
+//   - phone: string (optional, max 30 chars) - Contact mobile number
+//   - role: string (required, 'customer' | 'admin' | 'superadmin', protected from self-elevation)
+//   - customerId: string (optional, max 50 chars, immutable by non-admin) - Banking identifier
+//   - accountStatus: string (optional, 'active' | 'suspended' | 'pending', immutable by non-admin)
+//   - kycStatus: string (optional, 'VERIFIED' | 'PENDING' | 'REJECTED')
+//   - address: string (optional, max 200 chars)
+//   - city: string (optional, max 100 chars)
+//   - country: string (optional, max 100 chars)
+//   - createdAt: timestamp / ISO date (optional)
+//   - updatedAt: timestamp / ISO date (optional)
+//
+// Collection: accounts/{accountId}
+// Document ID: Account UUID
+// Fields:
+//   - accountId: string (required) - Account identifier
+//   - ownerUid: string (required) - Customer UID owner
+//   - accountNumber: string (required, max 50 chars)
+//   - maskedAccountNumber: string (optional, max 50 chars)
+//   - accountType: string ('SAVINGS' | 'CURRENT' | 'SALARY' | 'FIXED_DEPOSIT' | 'RECURRING_DEPOSIT' | 'FOREIGN_CURRENCY')
+//   - currency: string ('INR' | 'GBP' | 'USD' | 'EUR')
+//   - managedBalance: number (protected, modified exclusively by server/admin)
+//   - ledgerBalance: number (protected, modified exclusively by server/admin)
+//   - accountStatus: string ('ACTIVE' | 'DORMANT' | 'FROZEN' | 'CLOSED')
+//   - branchName: string (optional, max 100 chars)
+//   - ifscCode: string (optional, max 30 chars)
+//   - sortCode: string (optional, max 20 chars)
+//
+// Collection: transactions/{transactionId}
+// Document ID: Transaction UUID
+// Fields:
+//   - transactionId: string (required)
+//   - ownerUid: string (required, immutable) - Customer UID owner
+//   - accountId: string (required, max 100 chars) - Originating/target account
+//   - category: string ('TRANSFER' | 'SALARY' | 'UTILITIES' | 'DINING' | 'SHOPPING' | 'INVESTMENT' | 'CHARGES' | 'CASH_WITHDRAWAL' | 'OTHER')
+//   - description: string (required, max 500 chars)
+//   - amount: number (required, > 0)
+//   - currency: string (required, max 10 chars)
+//   - transactionType: string ('CREDIT' | 'DEBIT')
+//   - status: string ('COMPLETED' | 'PENDING' | 'FAILED' | 'REVERSED')
+//   - reference: string (required, max 100 chars)
+//   - counterpartyName: string (required, max 200 chars)
+//   - counterpartyAccount: string (optional, max 100 chars)
+//   - counterpartyBank: string (optional, max 100 chars)
+//   - transactionDate: string (optional, max 50 chars)
+//
+// Collection: beneficiaries/{beneficiaryId}
+// Document ID: Beneficiary UUID
+// Fields:
+//   - beneficiaryId: string (required)
+//   - ownerUid: string (required, immutable) - Customer UID owner
+//   - displayName: string (required, 2-100 chars)
+//   - nickname: string (optional, max 50 chars)
+//   - accountNumber: string (required, 4-50 chars)
+//   - maskedAccountNumber: string (optional, max 50 chars)
+//   - bankName: string (required, max 100 chars)
+//   - ifscCode: string (required, max 30 chars)
+//   - transferLimit: number (optional, >= 0)
+//   - status: string (optional, 'ACTIVE' | 'BLOCKED')
+//   - isFavorite: bool (optional)
+//
+// Collection: cards/{cardId}
+// Document ID: Card UUID
+// Fields:
+//   - cardId: string (required)
+//   - ownerUid: string (required, immutable)
+//   - accountId: string (required)
+//   - cardType: string ('DEBIT' | 'CREDIT')
+//   - cardTier: string (max 50 chars)
+//   - maskedCardNumber: string (max 30 chars)
+//   - cardStatus: string ('ACTIVE' | 'FROZEN' | 'BLOCKED')
+//   - spendingLimit: number (immutable by customer)
+//   - onlineEnabled: bool (customer toggleable)
+//   - internationalEnabled: bool (customer toggleable)
+//   - contactlessEnabled: bool (customer toggleable)
+//
+// Collection: deposits/{depositId}, rewards/{rewardId}, insurance/{policyId}
+// Document ID: Record UUID
+// Fields:
+//   - ownerUid: string (required) - Customer UID owner
+//   - Other financial fields (write restricted exclusively to administrators/server)
+//
+// Collection: notifications/{notificationId}
+// Document ID: Notification UUID
+// Fields:
+//   - notificationId: string (required)
+//   - ownerUid: string (required, immutable)
+//   - title: string (required, max 150 chars)
+//   - message: string (required, max 1000 chars)
+//   - type: string (max 50 chars)
+//   - read: bool (customer toggleable)
+//   - createdAt: timestamp / ISO date (optional)
+//
+// Collection: supportTickets/{ticketId}
+// Document ID: Ticket UUID
+// Fields:
+//   - ticketId: string (required)
+//   - ownerUid: string (required, immutable)
+//   - subject: string (required, 3-200 chars)
+//   - description: string (required, 5-2000 chars)
+//   - category: string ('TRANSACTION_DISPUTE' | 'CARD_LOST' | 'FRAUD' | 'ACCOUNT_INQUIRY' | 'GENERAL')
+//   - priority: string ('LOW' | 'MEDIUM' | 'HIGH' | 'URGENT')
+//   - status: string ('OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED')
+// Subcollection: supportTickets/{ticketId}/messages/{messageId}
+// Fields:
+//   - id: string (optional)
+//   - senderUid: string (required, matches auth UID or admin)
+//   - message: string (required, 1-2000 chars)
+//   - senderRole: string ('customer' | 'admin')
+//
+// Collection: security/{userId}
+// Document ID: Firebase Auth UID
+// Fields:
+//   - ownerUid: string (required, matches userId)
+//   - appLockEnabled: bool (required/optional)
+//   - failedAttempts: int (>= 0)
+//   - pinHash: string | null (max 128 chars)
+//   - lockedUntil: string | null (max 64 chars)
+//   - resetRequestedByAdmin: bool (optional)
+//
+// Collection: auditLogs/{logId}
+// Document ID: Audit UUID
+// Fields:
+//   - logId: string (required)
+//   - adminUid: string (required)
+//   - adminEmail: string (required)
+//   - action: string (required, max 100 chars)
+//   - targetUid: string (required)
+//   - targetRecord: string (optional, max 200 chars)
+//   - reason: string (required, max 1000 chars)
+//   - createdAt: timestamp / ISO date (required)
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Core Helper Functions
+    // ===============================================================
+
+    // Check if the user is authenticated with Firebase Auth
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if user is the designated owner by matching UID
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // Check if the authenticated user has verified administrator privileges
+    // Authority source: custom auth claim `token.admin == true` OR verified role in users collection
+    function isAdmin() {
+      return isAuthenticated() && (
+        (request.auth.token.get('admin', false) == true) ||
+        (
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'superadmin']
+        )
+      );
+    }
+
+    // Validate email format
+    function isValidEmail(email) {
+      return email is string &&
+        email.size() <= 100 &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    // Validate user profile schema
+    function isValidUser(data) {
+      return (!('uid' in data) || (data.uid is string && data.uid.size() > 0 && data.uid.size() <= 128)) &&
+        (!('displayName' in data) || (data.displayName is string && data.displayName.size() >= 2 && data.displayName.size() <= 100)) &&
+        (!('email' in data) || isValidEmail(data.email)) &&
+        (!('phone' in data) || (data.phone is string && data.phone.size() <= 30)) &&
+        (!('role' in data) || (data.role is string && data.role in ['customer', 'admin', 'superadmin'])) &&
+        (!('customerId' in data) || (data.customerId is string && data.customerId.size() <= 50)) &&
+        (!('accountStatus' in data) || (data.accountStatus is string && data.accountStatus in ['active', 'suspended', 'pending'])) &&
+        (!('kycStatus' in data) || (data.kycStatus is string && data.kycStatus in ['VERIFIED', 'PENDING', 'REJECTED'])) &&
+        (!('address' in data) || (data.address is string && data.address.size() <= 200)) &&
+        (!('city' in data) || (data.city is string && data.city.size() <= 100)) &&
+        (!('country' in data) || (data.country is string && data.country.size() <= 100));
+    }
+
+    // Validate transaction schema
+    function isValidTransaction(data) {
+      return data.ownerUid is string && data.ownerUid.size() <= 128 &&
+        data.amount is number && data.amount > 0 &&
+        data.status is string && data.status in ['COMPLETED', 'PENDING', 'FAILED', 'REVERSED'] &&
+        (!('category' in data) || (data.category is string && data.category in [
+          'TRANSFER', 'SALARY', 'UTILITIES', 'DINING', 'SHOPPING', 'INVESTMENT', 'CHARGES', 'CASH_WITHDRAWAL', 'OTHER'
+        ])) &&
+        (!('transactionType' in data) || (data.transactionType is string && data.transactionType in ['CREDIT', 'DEBIT'])) &&
+        (!('description' in data) || (data.description is string && data.description.size() <= 500)) &&
+        (!('reference' in data) || (data.reference is string && data.reference.size() <= 100)) &&
+        (!('counterpartyName' in data) || (data.counterpartyName is string && data.counterpartyName.size() <= 200)) &&
+        (!('counterpartyAccount' in data) || (data.counterpartyAccount is string && data.counterpartyAccount.size() <= 100)) &&
+        (!('counterpartyBank' in data) || (data.counterpartyBank is string && data.counterpartyBank.size() <= 100)) &&
+        (!('currency' in data) || (data.currency is string && data.currency.size() <= 10));
+    }
+
+    // Validate beneficiary schema
+    function isValidBeneficiary(data) {
+      return data.ownerUid is string && data.ownerUid.size() <= 128 &&
+        data.displayName is string && data.displayName.size() >= 2 && data.displayName.size() <= 100 &&
+        data.accountNumber is string && data.accountNumber.size() >= 4 && data.accountNumber.size() <= 50 &&
+        data.bankName is string && data.bankName.size() <= 100 &&
+        (!('nickname' in data) || (data.nickname is string && data.nickname.size() <= 50)) &&
+        (!('ifscCode' in data) || (data.ifscCode is string && data.ifscCode.size() <= 30)) &&
+        (!('transferLimit' in data) || (data.transferLimit is number && data.transferLimit >= 0)) &&
+        (!('status' in data) || (data.status is string && data.status in ['ACTIVE', 'BLOCKED'])) &&
+        (!('isFavorite' in data) || data.isFavorite is bool);
+    }
+
+    // Validate card update toggles
+    function isValidCardUpdate(data) {
+      return (!('cardStatus' in data) || (data.cardStatus is string && data.cardStatus in ['ACTIVE', 'FROZEN', 'BLOCKED'])) &&
+        (!('onlineEnabled' in data) || data.onlineEnabled is bool) &&
+        (!('internationalEnabled' in data) || data.internationalEnabled is bool) &&
+        (!('contactlessEnabled' in data) || data.contactlessEnabled is bool);
+    }
+
+    // Validate support ticket schema
+    function isValidSupportTicket(data) {
+      return data.ownerUid is string && data.ownerUid.size() <= 128 &&
+        data.subject is string && data.subject.size() >= 3 && data.subject.size() <= 200 &&
+        data.description is string && data.description.size() >= 5 && data.description.size() <= 2000 &&
+        (!('category' in data) || (data.category is string && data.category in [
+          'TRANSACTION_DISPUTE', 'CARD_LOST', 'FRAUD', 'ACCOUNT_INQUIRY', 'GENERAL'
+        ])) &&
+        (!('priority' in data) || (data.priority is string && data.priority in ['LOW', 'MEDIUM', 'HIGH', 'URGENT'])) &&
+        (!('status' in data) || (data.status is string && data.status in ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']));
+    }
+
+    // Validate support ticket message schema
+    function isValidTicketMessage(data) {
+      return data.senderUid is string && data.senderUid.size() <= 128 &&
+        data.message is string && data.message.size() >= 1 && data.message.size() <= 2000 &&
+        (!('senderRole' in data) || (data.senderRole is string && data.senderRole in ['customer', 'admin']));
+    }
+
+    // Validate app lock security schema
+    function isValidAppLockSecurity(data) {
+      return (!('appLockEnabled' in data) || data.appLockEnabled is bool) &&
+        (!('failedAttempts' in data) || (data.failedAttempts is int && data.failedAttempts >= 0)) &&
+        (!('pinHash' in data) || data.pinHash == null || (data.pinHash is string && data.pinHash.size() <= 128)) &&
+        (!('lockedUntil' in data) || data.lockedUntil == null || (data.lockedUntil is string && data.lockedUntil.size() <= 64)) &&
+        (!('resetRequestedByAdmin' in data) || data.resetRequestedByAdmin is bool);
+    }
+
+    // Validate audit log schema
+    function isValidAuditLog(data) {
+      return data.adminUid is string && data.adminUid.size() <= 128 &&
+        data.action is string && data.action.size() <= 100 &&
+        data.targetUid is string && data.targetUid.size() <= 128 &&
+        data.reason is string && data.reason.size() <= 1000;
+    }
+
+    // ===============================================================
+    // Root Rule: Default Deny All
+    // ===============================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ===============================================================
+    // 1. Users Collection
+    // ===============================================================
+    // Protects user PII and isolates customer profiles.
+    // Self-elevation is strictly prohibited: customers cannot grant themselves admin roles or alter account status.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+
+      allow create: if (
+        (
+          isAuthenticated() &&
+          request.auth.uid == userId &&
+          (!('role' in request.resource.data) || request.resource.data.role == 'customer') &&
+          isValidUser(request.resource.data)
+        ) ||
+        (
+          isAdmin() &&
+          isValidUser(request.resource.data)
+        )
+      );
+
+      allow update: if (
+        (
+          isOwner(userId) &&
+          request.resource.data.uid == resource.data.uid &&
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'accountStatus', 'customerId']) &&
+          isValidUser(request.resource.data)
+        ) ||
+        (
+          isAdmin() &&
+          isValidUser(request.resource.data)
+        )
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // 2. Accounts Collection
+    // ===============================================================
+    // Strict financial integrity: Customers CANNOT modify accounts or managedBalance directly.
+    // Balances and ledger entries are strictly administered by server/admin workflows.
+    match /accounts/{accountId} {
+      allow read: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ===============================================================
+    // 3. Transactions Collection
+    // ===============================================================
+    // Customers can view their transactions and create pending/completed payment records.
+    // Customers cannot edit, alter amounts, or delete past financial transactions.
+    match /transactions/{transactionId} {
+      allow read: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+
+      allow create: if (
+        (
+          isAuthenticated() &&
+          request.resource.data.ownerUid == request.auth.uid &&
+          request.resource.data.status in ['PENDING', 'COMPLETED'] &&
+          isValidTransaction(request.resource.data)
+        ) ||
+        (
+          isAdmin() &&
+          isValidTransaction(request.resource.data)
+        )
+      );
+
+      allow update, delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // 4. Beneficiaries Collection
+    // ===============================================================
+    // Customers manage their personal transfer recipients and favorites.
+    // Ownership cannot be tampered with or assigned to another customer.
+    match /beneficiaries/{beneficiaryId} {
+      allow read: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+
+      allow create: if (
+        (
+          isAuthenticated() &&
+          request.resource.data.ownerUid == request.auth.uid &&
+          isValidBeneficiary(request.resource.data)
+        ) ||
+        (
+          isAdmin() &&
+          isValidBeneficiary(request.resource.data)
+        )
+      );
+
+      allow update: if (
+        (
+          isAuthenticated() &&
+          resource.data.ownerUid == request.auth.uid &&
+          request.resource.data.ownerUid == request.auth.uid &&
+          isValidBeneficiary(request.resource.data)
+        ) ||
+        (
+          isAdmin() &&
+          isValidBeneficiary(request.resource.data)
+        )
+      );
+
+      allow delete: if (
+        (
+          isAuthenticated() &&
+          resource.data.ownerUid == request.auth.uid
+        ) ||
+        isAdmin()
+      );
+    }
+
+    // ===============================================================
+    // 5. Cards Collection
+    // ===============================================================
+    // Customers can view their cards and toggle operational security switches
+    // (cardStatus, onlineEnabled, internationalEnabled, contactlessEnabled).
+    // Financial limits, account associations, and card issuance are restricted to administrators.
+    match /cards/{cardId} {
+      allow read: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+
+      allow update: if (
+        (
+          isAuthenticated() &&
+          resource.data.ownerUid == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'cardStatus', 'onlineEnabled', 'internationalEnabled', 'contactlessEnabled'
+          ]) &&
+          isValidCardUpdate(request.resource.data)
+        ) ||
+        isAdmin()
+      );
+
+      allow create, delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // 6. Deposits, Rewards, Insurance Collections
+    // ===============================================================
+    // Customer read-only for verified holdings. All lifecycle changes executed by administrators/backend.
+    match /deposits/{depositId} {
+      allow read: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /rewards/{rewardId} {
+      allow read: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /insurance/{policyId} {
+      allow read: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ===============================================================
+    // 7. Notifications Collection
+    // ===============================================================
+    // Customers read, acknowledge (mark as read), and dismiss their notifications.
+    // Creation is reserved for administrative broadcast/alert systems.
+    match /notifications/{notificationId} {
+      allow read: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+
+      allow update: if (
+        (
+          isAuthenticated() &&
+          resource.data.ownerUid == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']) &&
+          request.resource.data.read is bool
+        ) ||
+        isAdmin()
+      );
+
+      allow delete: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+
+      allow create: if isAdmin();
+    }
+
+    // ===============================================================
+    // 8. Support Tickets & Messages
+    // ===============================================================
+    // Customers can create tickets and converse via messages with bank support.
+    match /supportTickets/{ticketId} {
+      allow read: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+
+      allow create: if (
+        (
+          isAuthenticated() &&
+          request.resource.data.ownerUid == request.auth.uid &&
+          isValidSupportTicket(request.resource.data)
+        ) ||
+        (
+          isAdmin() &&
+          isValidSupportTicket(request.resource.data)
+        )
+      );
+
+      allow update: if (
+        (
+          isAuthenticated() &&
+          resource.data.ownerUid == request.auth.uid &&
+          request.resource.data.ownerUid == resource.data.ownerUid &&
+          isValidSupportTicket(request.resource.data)
+        ) ||
+        isAdmin()
+      );
+
+      allow delete: if isAdmin();
+
+      // Subcollection: support ticket messages
+      match /messages/{messageId} {
+        allow read: if isAuthenticated() && (
+          get(/databases/$(database)/documents/supportTickets/$(ticketId)).data.ownerUid == request.auth.uid ||
+          isAdmin()
+        );
+
+        allow create: if isAuthenticated() && (
+          (
+            get(/databases/$(database)/documents/supportTickets/$(ticketId)).data.ownerUid == request.auth.uid &&
+            request.resource.data.senderUid == request.auth.uid &&
+            isValidTicketMessage(request.resource.data)
+          ) ||
+          (
+            isAdmin() &&
+            isValidTicketMessage(request.resource.data)
+          )
+        );
+
+        allow update, delete: if isAdmin();
+      }
+    }
+
+    // ===============================================================
+    // 9. Security Collection
+    // ===============================================================
+    // App-lock PIN configurations and security credentials scoped to the authenticated customer or admin.
+    match /security/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+
+      allow create, update: if (
+        (
+          isOwner(userId) &&
+          isValidAppLockSecurity(request.resource.data)
+        ) ||
+        (
+          isAdmin() &&
+          isValidAppLockSecurity(request.resource.data)
+        )
+      );
+
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    // ===============================================================
+    // 10. Audit Logs Collection
+    // ===============================================================
+    // Immutable regulatory audit trail. Read/create restricted to administrators.
+    // Updates and deletions are strictly rejected to preserve non-repudiation.
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidAuditLog(request.resource.data);
+      allow update, delete: if false;
+    }
+  }
+}

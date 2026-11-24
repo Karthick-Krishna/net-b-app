@@ -1,74 +1,83 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from '../types';
-import { api } from '../services/api';
+import { UserRecord } from '@shared/types';
+import { RealtimeStore } from '@shared/realtimeStore';
 
 interface AuthContextType {
-  user: User | null;
+  currentUser: UserRecord | null;
+  isAuthenticated: boolean;
   isLoading: boolean;
-  login: (identifier: string, password?: string) => Promise<void>;
-  biometricLogin: () => Promise<void>;
-  register: (data: any) => Promise<string>;
+  login: (identifier: string, password?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
-  refreshUser: () => Promise<void>;
+  switchCustomer: (uid: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const refreshUser = async () => {
-    try {
-      const token = localStorage.getItem('premier_access_token');
-      if (token) {
-        const res = await api.getCurrentUser();
-        setUser(res.user);
-      } else {
-        setUser(null);
-      }
-    } catch (err) {
-      console.warn('Session expired or offline:', err);
-      localStorage.removeItem('premier_access_token');
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [currentUser, setCurrentUser] = useState<UserRecord | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    refreshUser();
+    // Check saved session or default to demo customer
+    const savedUid = localStorage.getItem('premier_client_active_uid') || 'cust-karthick-8829';
+    const user = RealtimeStore.getCustomerByUid(savedUid);
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      const customers = RealtimeStore.getCustomers();
+      if (customers.length > 0) {
+        setCurrentUser(customers[0]);
+        localStorage.setItem('premier_client_active_uid', customers[0].uid);
+      }
+    }
+    setIsLoading(false);
   }, []);
 
-  const login = async (identifier: string, password?: string) => {
-    const res = await api.login({ identifier, password });
-    localStorage.setItem('premier_access_token', res.accessToken);
-    localStorage.setItem('premier_refresh_token', res.refreshToken);
-    localStorage.setItem('premier_remembered_id', identifier);
-    setUser(res.user);
-  };
+  const login = async (identifier: string, _password?: string) => {
+    setIsLoading(true);
+    // Find customer by email or customerId
+    const customers = RealtimeStore.getCustomers();
+    const user = customers.find(
+      c =>
+        c.email.toLowerCase() === identifier.toLowerCase().trim() ||
+        c.customerId.toLowerCase() === identifier.toLowerCase().trim()
+    );
 
-  const biometricLogin = async () => {
-    const rememberedId = localStorage.getItem('premier_remembered_id') || 'premier_user';
-    const res = await api.login({ identifier: rememberedId, isBiometric: true });
-    localStorage.setItem('premier_access_token', res.accessToken);
-    localStorage.setItem('premier_refresh_token', res.refreshToken);
-    setUser(res.user);
-  };
+    if (user) {
+      setCurrentUser(user);
+      localStorage.setItem('premier_client_active_uid', user.uid);
+      setIsLoading(false);
+      return { success: true };
+    }
 
-  const register = async (userData: any): Promise<string> => {
-    const res = await api.register(userData);
-    return res.customer_id;
+    setIsLoading(false);
+    return { success: false, error: 'Invalid Customer ID or Password. (Use Demo 1-Click Login below)' };
   };
 
   const logout = () => {
-    localStorage.removeItem('premier_access_token');
-    localStorage.removeItem('premier_refresh_token');
-    setUser(null);
+    setCurrentUser(null);
+    localStorage.removeItem('premier_client_active_uid');
+  };
+
+  const switchCustomer = (uid: string) => {
+    const user = RealtimeStore.getCustomerByUid(uid);
+    if (user) {
+      setCurrentUser(user);
+      localStorage.setItem('premier_client_active_uid', user.uid);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, biometricLogin, register, logout, refreshUser }}>
+    <AuthContext.Provider
+      value={{
+        currentUser,
+        isAuthenticated: !!currentUser,
+        isLoading,
+        login,
+        logout,
+        switchCustomer,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -76,8 +85,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };

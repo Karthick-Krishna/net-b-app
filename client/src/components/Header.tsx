@@ -1,96 +1,215 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Bell,
+  Eye,
+  EyeOff,
+  Lock,
+  LogOut,
+  ShieldCheck,
+  User,
+  CheckCircle2,
+  AlertTriangle,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBanking } from '../context/BankingContext';
-import { Bell, Eye, EyeOff, HelpCircle } from 'lucide-react';
+import { useAppLock } from '../context/AppLockContext';
 
 export const Header: React.FC = () => {
-  const { user } = useAuth();
-  const { showBalances, toggleShowBalances, unreadCount, setActiveTab } = useBanking();
+  const navigate = useNavigate();
+  const { currentUser, logout } = useAuth();
+  const { hideBalances, toggleBalanceVisibility, notifications, markNotificationAsRead } = useBanking();
+  const { lockApp, appLockEnabled } = useAppLock();
 
-  // Get appropriate greeting
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <header className="bg-white border-b border-bank-border px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-      <div className="flex items-center gap-2.5">
-        {/* Brand Hexagon Symbol */}
-        <div 
-          onClick={() => setActiveTab('home')}
-          className="cursor-pointer flex items-center gap-2"
-        >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#DB0011] to-[#B0000D] flex items-center justify-center text-white shadow-xs">
-            <svg viewBox="0 0 100 100" className="w-5 h-5 fill-current">
-              <polygon points="50,10 90,32 90,68 50,90 10,68 10,32" />
-              <polygon points="50,28 72,40 72,60 50,72 28,60 28,40" fill="#FFFFFF" />
-              <polygon points="50,38 62,44 62,56 50,62 38,56 38,44" fill="#DB0011" />
-            </svg>
-          </div>
-          <div>
-            <div className="text-[10px] uppercase tracking-widest font-semibold text-bank-muted leading-tight">
-              Premier Banking
+    <header className="sticky top-0 z-30 bg-white border-b border-[#E5E5E5] shadow-xs">
+      {/* Top Banking Compliance Notice */}
+      <div className="bg-[#B0000D] text-white text-[11px] font-medium py-1 px-4 text-center tracking-wide flex items-center justify-center gap-2">
+        <ShieldCheck className="w-3.5 h-3.5" />
+        <span>PREMIER DIGITAL BANKING — Application-Managed Demonstration Platform</span>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Brand identity on Mobile */}
+        <div className="flex items-center gap-3 md:hidden">
+          <div
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <div className="w-8 h-8 bg-[#DB0011] rounded flex items-center justify-center shadow-xs">
+              <span className="text-white font-bold text-lg leading-none">P</span>
             </div>
-            <div className="text-sm font-bold text-bank-text leading-none">
-              {getGreeting()}, {user?.full_name?.split(' ')[0] || 'Member'}
+            <div>
+              <span className="font-bold text-[#222222] tracking-tight text-base block leading-none">
+                PREMIER
+              </span>
+              <span className="text-[10px] text-[#777777] uppercase tracking-wider block">
+                Banking
+              </span>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex items-center gap-1.5">
-        {/* Toggle Balance Visibility Button */}
-        <button
-          onClick={toggleShowBalances}
-          className="w-8 h-8 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-600 transition"
-          title={showBalances ? 'Hide financial balances' : 'Reveal financial balances'}
-          aria-label={showBalances ? 'Hide balances' : 'Show balances'}
-        >
-          {showBalances ? <Eye size={18} /> : <EyeOff size={18} className="text-[#DB0011]" />}
-        </button>
-
-        {/* Notifications Icon with Badge */}
-        <button
-          onClick={() => setActiveTab('notifications')}
-          className="w-8 h-8 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-600 relative transition"
-          title="Notifications"
-          aria-label="View notifications"
-        >
-          <Bell size={18} />
-          {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 w-4 h-4 bg-[#DB0011] text-white rounded-full text-[9px] font-bold flex items-center justify-center ring-2 ring-white">
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </span>
-          )}
-        </button>
-
-        {/* Customer Support Icon */}
-        <button
-          onClick={() => setActiveTab('support')}
-          className="w-8 h-8 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-600 transition"
-          title="24/7 Premier Help & Support"
-          aria-label="Customer support"
-        >
-          <HelpCircle size={18} />
-        </button>
-
-        {/* User Avatar */}
-        <button
-          onClick={() => setActiveTab('profile')}
-          className="w-8 h-8 ml-1 rounded-full overflow-hidden border border-zinc-200 ring-1 ring-zinc-300 hover:ring-[#DB0011] transition shrink-0"
-          title="View Profile & Security"
-        >
-          {user?.avatar_url ? (
-            <img src={user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full bg-[#DB0011] text-white flex items-center justify-center text-xs font-bold">
-              {user?.full_name?.slice(0, 2).toUpperCase() || 'AV'}
+        {/* Desktop Welcome info */}
+        <div className="hidden md:flex items-center gap-3">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div>
+            <div className="text-sm font-semibold text-[#222222]">
+              Good Day, {currentUser?.displayName || 'Customer'}
             </div>
+            <div className="text-xs text-[#777777] flex items-center gap-2">
+              <span>Customer ID: <strong className="text-gray-900">{currentUser?.customerId}</strong></span>
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 bg-emerald-50 text-emerald-700 text-[10px] font-medium rounded border border-emerald-200">
+                <CheckCircle2 className="w-2.5 h-2.5" /> KYC Verified
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Controls */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Hide/Show Sensitive Balances */}
+          <button
+            onClick={toggleBalanceVisibility}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-gray-200"
+            title={hideBalances ? 'Show sensitive balances' : 'Hide sensitive balances'}
+          >
+            {hideBalances ? (
+              <>
+                <EyeOff className="w-4 h-4 text-[#DB0011]" />
+                <span className="hidden sm:inline">Show Balances</span>
+              </>
+            ) : (
+              <>
+                <Eye className="w-4 h-4 text-gray-600" />
+                <span className="hidden sm:inline">Hide Balances</span>
+              </>
+            )}
+          </button>
+
+          {/* Quick App-Lock button if enabled */}
+          {appLockEnabled && (
+            <button
+              onClick={lockApp}
+              className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-gray-200"
+              title="Lock Application Now"
+            >
+              <Lock className="w-4 h-4" />
+            </button>
           )}
-        </button>
+
+          {/* Notification Bell */}
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-gray-200 relative"
+              title="Notifications"
+            >
+              <Bell className="w-4 h-4" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#DB0011] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Notification Dropdown */}
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">
+                    Notifications ({unreadCount} new)
+                  </h4>
+                  <span className="text-[11px] text-[#DB0011] font-medium cursor-pointer">
+                    Clear all
+                  </span>
+                </div>
+                <div className="max-h-72 overflow-y-auto divide-y divide-gray-100">
+                  {notifications.length === 0 ? (
+                    <div className="py-6 text-center text-xs text-gray-500">
+                      No notifications
+                    </div>
+                  ) : (
+                    notifications.map(n => (
+                      <div
+                        key={n.notificationId}
+                        onClick={() => markNotificationAsRead(n.notificationId)}
+                        className={`p-3 hover:bg-gray-50 cursor-pointer transition-colors ${
+                          !n.read ? 'bg-red-50/40' : ''
+                        }`}
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <div className="w-2 h-2 rounded-full bg-[#DB0011] mt-1.5 flex-shrink-0" />
+                          <div className="flex-1">
+                            <div className="text-xs font-semibold text-gray-900">{n.title}</div>
+                            <div className="text-xs text-gray-600 mt-0.5 leading-relaxed">{n.message}</div>
+                            <div className="text-[10px] text-gray-400 mt-1">
+                              {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* User Profile Pill / Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors border border-gray-200"
+            >
+              <div className="w-7 h-7 rounded-full bg-[#DB0011] text-white flex items-center justify-center text-xs font-bold">
+                {currentUser?.displayName?.slice(0, 2).toUpperCase() || 'KK'}
+              </div>
+            </button>
+
+            {showProfileMenu && (
+              <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-1.5 z-50">
+                <div className="px-4 py-2 border-b border-gray-100">
+                  <div className="text-xs font-bold text-gray-900">{currentUser?.displayName}</div>
+                  <div className="text-[11px] text-gray-500 truncate">{currentUser?.email}</div>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    navigate('/security');
+                  }}
+                  className="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                >
+                  <Lock className="w-3.5 h-3.5" /> Security & App-Lock
+                </button>
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    navigate('/support');
+                  }}
+                  className="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                >
+                  <User className="w-3.5 h-3.5" /> Customer Support
+                </button>
+                <div className="border-t border-gray-100 my-1" />
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    logout();
+                  }}
+                  className="w-full text-left px-4 py-2 text-xs text-[#DB0011] hover:bg-red-50 flex items-center gap-2 font-medium"
+                >
+                  <LogOut className="w-3.5 h-3.5" /> Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </header>
   );
