@@ -11,6 +11,7 @@ import {
   SupportTicketRecord,
 } from '@shared/types';
 import { RealtimeStore, SyncMessage } from '@shared/realtimeStore';
+import { formatFinancialCurrency, formatINR } from '@shared/utils/formatters';
 import { useAuth } from './AuthContext';
 
 interface BankingContextType {
@@ -57,7 +58,7 @@ const BankingContext = createContext<BankingContextType | undefined>(undefined);
 export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentUser } = useAuth();
   const [hideBalances, setHideBalances] = useState<boolean>(() => {
-    return localStorage.getItem('premier_hide_balances') === 'true';
+    return localStorage.getItem('hsbc_hide_balances') === 'true';
   });
 
   const [accounts, setAccounts] = useState<BankAccountRecord[]>([]);
@@ -89,19 +90,19 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const unsubscribe = RealtimeStore.onSync((msg: SyncMessage) => {
       loadData();
       if (msg.type === 'BALANCE_UPDATED') {
-        toast.success('Account balance synchronized with central banking system.', {
+        toast.success('Account balance synchronized in real-time.', {
           icon: '⚡',
-          style: { borderRadius: '8px', background: '#222', color: '#fff' },
+          style: { borderRadius: '8px', background: '#252525', color: '#fff', fontSize: '12px' },
         });
       } else if (msg.type === 'TRANSACTION_CREATED') {
         toast('New transaction record posted to your account', {
           icon: '💳',
-          style: { borderRadius: '8px', background: '#222', color: '#fff' },
+          style: { borderRadius: '8px', background: '#252525', color: '#fff', fontSize: '12px' },
         });
       } else if (msg.type === 'CARD_UPDATED') {
         toast.success('Card settings updated.');
       } else if (msg.type === 'DATA_RESET') {
-        toast('Banking demonstration data refreshed.', { icon: '🔄' });
+        toast('Demonstration data refreshed.', { icon: '🔄' });
       }
     });
 
@@ -111,7 +112,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const toggleBalanceVisibility = () => {
     setHideBalances(prev => {
       const next = !prev;
-      localStorage.setItem('premier_hide_balances', String(next));
+      localStorage.setItem('hsbc_hide_balances', String(next));
       return next;
     });
   };
@@ -120,16 +121,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const totalLedgerBalance = accounts.reduce((acc, curr) => acc + (curr.ledgerBalance || 0), 0);
 
   const formatCurrency = (amount: number, currency = 'INR') => {
-    if (hideBalances) return '••••••';
-    const symbol = currency === 'INR' ? '₹' : currency === 'GBP' ? '£' : currency === 'USD' ? '$' : '€';
-    return (
-      symbol +
-      ' ' +
-      new Intl.NumberFormat('en-IN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(amount)
-    );
+    return formatFinancialCurrency(amount, currency, hideBalances);
   };
 
   const submitTransfer = async (

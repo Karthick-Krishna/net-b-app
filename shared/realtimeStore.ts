@@ -26,8 +26,8 @@ import {
   INITIAL_AUDIT_LOGS,
 } from './seedData';
 
-const STORE_KEY_PREFIX = 'premier_banking_store_v2_';
-const CHANNEL_NAME = 'premier_banking_sync_bus';
+const STORE_KEY_PREFIX = 'hsbc_india_banking_store_v3_';
+const CHANNEL_NAME = 'hsbc_india_sync_bus';
 
 export type SyncEventType =
   | 'BALANCE_UPDATED'
@@ -92,7 +92,7 @@ function broadcast(type: SyncEventType, payload?: any) {
   }
   // Also trigger local event for current window
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('premier-sync-event', { detail: msg }));
+    window.dispatchEvent(new CustomEvent('hsbc-sync-event', { detail: msg }));
   }
 }
 
@@ -133,7 +133,7 @@ export const RealtimeStore = {
       syncChannel.addEventListener('message', handleBroadcast);
     }
     if (typeof window !== 'undefined') {
-      window.addEventListener('premier-sync-event', handleLocal);
+      window.addEventListener('hsbc-sync-event', handleLocal);
       window.addEventListener('storage', () => {
         listener({ type: 'BALANCE_UPDATED', timestamp: new Date().toISOString() });
       });
@@ -142,7 +142,7 @@ export const RealtimeStore = {
     return () => {
       if (syncChannel) syncChannel.removeEventListener('message', handleBroadcast);
       if (typeof window !== 'undefined') {
-        window.removeEventListener('premier-sync-event', handleLocal);
+        window.removeEventListener('hsbc-sync-event', handleLocal);
       }
     };
   },
@@ -183,7 +183,7 @@ export const RealtimeStore = {
       managedBalance: customer.initialBalance ?? 50000,
       ledgerBalance: customer.initialBalance ?? 50000,
       accountStatus: 'ACTIVE',
-      branchName: 'Mumbai Fort Heritage Branch',
+      branchName: 'Mumbai Main Branch, Fort',
       ifscCode: 'HSBC0400002',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -204,7 +204,7 @@ export const RealtimeStore = {
       expiryMonth: '12',
       expiryYear: '29',
       cardStatus: 'ACTIVE',
-      spendingLimit: 150000,
+      spendingLimit: 200000,
       currentMonthSpent: 0,
       onlineEnabled: true,
       internationalEnabled: false,
@@ -217,12 +217,12 @@ export const RealtimeStore = {
     // Log audit
     this.addAuditLog({
       adminUid: 'admin-console',
-      adminEmail: 'admin@premierbanking.com',
+      adminEmail: 'admin@hsbc.in',
       action: 'CUSTOMER_CREATED',
       targetUid: newUid,
       targetCustomerName: newCustomer.displayName,
       targetRecord: `users/${newUid}`,
-      reason: 'Onboarded customer through Central Admin Console',
+      reason: 'Onboarded customer through HSBC India Operations Console',
     });
 
     broadcast('CUSTOMER_CREATED', { customer: newCustomer, account: initialAcc });
@@ -245,7 +245,6 @@ export const RealtimeStore = {
 
   /**
    * ATOMIC ADMIN BALANCE ADJUSTMENT
-   * Directly updates managed balance, writes an immutable audit log, and notifies all connected clients in real time.
    */
   adjustAccountBalance(
     adminUid: string,
@@ -308,7 +307,6 @@ export const RealtimeStore = {
 
   /**
    * ATOMIC TRANSACTION CREATION
-   * Inserts transaction and optionally adjusts account balance atomically.
    */
   createTransaction(
     adminUid: string,
@@ -348,7 +346,7 @@ export const RealtimeStore = {
       targetUid: txData.ownerUid,
       targetRecord: `transactions/${newTx.transactionId}`,
       newValue: { amount: txData.amount, type: txData.transactionType, description: txData.description },
-      reason: `Manual transaction injected via Admin Management Console: ${txData.description}`,
+      reason: `Manual transaction injected via HSBC India Operations Console: ${txData.description}`,
     });
 
     broadcast('TRANSACTION_CREATED', { transaction: newTx });
@@ -392,6 +390,16 @@ export const RealtimeStore = {
 
     // Record transaction
     const transactions = this.getTransactions();
+    const now = new Date();
+    const formattedDate = new Intl.DateTimeFormat('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }).format(now);
+
     const newTx: TransactionRecord = {
       transactionId: 'tx-trf-' + Date.now(),
       ownerUid,
@@ -406,9 +414,9 @@ export const RealtimeStore = {
       counterpartyName: transferDetails.recipientName,
       counterpartyAccount: transferDetails.recipientAccount,
       counterpartyBank: transferDetails.recipientBank,
-      transactionDate: new Date().toISOString().replace('T', ' ').slice(0, 16),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      transactionDate: formattedDate,
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
     };
 
     transactions.unshift(newTx);
@@ -465,7 +473,7 @@ export const RealtimeStore = {
     const record: AppLockSecurityRecord = {
       ownerUid,
       appLockEnabled: true,
-      pinHash: pin, // In production, salted hash
+      pinHash: pin,
       failedAttempts: 0,
       lockedUntil: null,
       resetRequestedByAdmin: false,
@@ -492,7 +500,6 @@ export const RealtimeStore = {
       let lockedOut = false;
       if (record.failedAttempts >= 5) {
         lockedOut = true;
-        // Lock out for 15 minutes
         record.lockedUntil = new Date(Date.now() + 15 * 60 * 1000).toISOString();
       }
       setItem('applock', record);
@@ -521,7 +528,7 @@ export const RealtimeStore = {
       action: 'APP_LOCK_RESET',
       targetUid,
       targetRecord: `security/${targetUid}`,
-      reason: reason || 'Customer PIN reset initiated by banking administrator',
+      reason: reason || 'Customer PIN reset initiated by HSBC India operations',
     });
 
     broadcast('APPLOCK_UPDATED', { ownerUid: targetUid });

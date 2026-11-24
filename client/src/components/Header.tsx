@@ -9,7 +9,8 @@ import {
   ShieldCheck,
   User,
   CheckCircle2,
-  AlertTriangle,
+  HelpCircle,
+  ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBanking } from '../context/BankingContext';
@@ -27,11 +28,13 @@ export const Header: React.FC = () => {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-[#E5E5E5] shadow-xs">
-      {/* Top Banking Compliance Notice */}
+    <header className="sticky top-0 z-30 bg-white border-b border-[#E8E8E8] shadow-xs">
+      {/* Top Security & Regulatory Bar */}
       <div className="bg-[#B0000D] text-white text-[11px] font-medium py-1 px-4 text-center tracking-wide flex items-center justify-center gap-2">
-        <ShieldCheck className="w-3.5 h-3.5" />
-        <span>PREMIER DIGITAL BANKING — Application-Managed Demonstration Platform</span>
+        <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
+        <span className="truncate">
+          HSBC India Personal Internet Banking — Demonstration Application
+        </span>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -39,17 +42,19 @@ export const Header: React.FC = () => {
         <div className="flex items-center gap-3 md:hidden">
           <div
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center gap-2.5 cursor-pointer"
           >
-            <div className="w-8 h-8 bg-[#DB0011] rounded flex items-center justify-center shadow-xs">
-              <span className="text-white font-bold text-lg leading-none">P</span>
-            </div>
+            <img
+              src="/logo.png"
+              alt="HSBC India"
+              className="w-8 h-8 object-contain"
+            />
             <div>
-              <span className="font-bold text-[#222222] tracking-tight text-base block leading-none">
-                PREMIER
+              <span className="font-extrabold text-[#252525] tracking-tight text-base block leading-none">
+                HSBC
               </span>
-              <span className="text-[10px] text-[#777777] uppercase tracking-wider block">
-                Banking
+              <span className="text-[10px] text-[#777777] font-semibold uppercase tracking-wider block mt-0.5">
+                India
               </span>
             </div>
           </div>
@@ -59,12 +64,13 @@ export const Header: React.FC = () => {
         <div className="hidden md:flex items-center gap-3">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
           <div>
-            <div className="text-sm font-semibold text-[#222222]">
-              Good Day, {currentUser?.displayName || 'Customer'}
+            <div className="text-sm font-bold text-[#252525]">
+              Welcome, {currentUser?.displayName || 'Customer'}
             </div>
             <div className="text-xs text-[#777777] flex items-center gap-2">
-              <span>Customer ID: <strong className="text-gray-900">{currentUser?.customerId}</strong></span>
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 bg-emerald-50 text-emerald-700 text-[10px] font-medium rounded border border-emerald-200">
+              <span>Customer ID: <strong className="text-gray-900 font-mono">{currentUser?.customerId}</strong></span>
+              <span>•</span>
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 bg-emerald-50 text-[#16864A] text-[10px] font-semibold rounded border border-emerald-200">
                 <CheckCircle2 className="w-2.5 h-2.5" /> KYC Verified
               </span>
             </div>
@@ -76,18 +82,18 @@ export const Header: React.FC = () => {
           {/* Hide/Show Sensitive Balances */}
           <button
             onClick={toggleBalanceVisibility}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-gray-200"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-gray-200"
             title={hideBalances ? 'Show sensitive balances' : 'Hide sensitive balances'}
           >
             {hideBalances ? (
               <>
                 <EyeOff className="w-4 h-4 text-[#DB0011]" />
-                <span className="hidden sm:inline">Show Balances</span>
+                <span className="hidden sm:inline">Show Balance</span>
               </>
             ) : (
               <>
                 <Eye className="w-4 h-4 text-gray-600" />
-                <span className="hidden sm:inline">Hide Balances</span>
+                <span className="hidden sm:inline">Hide Balance</span>
               </>
             )}
           </button>
@@ -96,18 +102,27 @@ export const Header: React.FC = () => {
           {appLockEnabled && (
             <button
               onClick={lockApp}
-              className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-gray-200"
-              title="Lock Application Now"
+              className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-gray-200"
+              title="Lock Screen"
             >
               <Lock className="w-4 h-4" />
             </button>
           )}
 
+          {/* Help link */}
+          <button
+            onClick={() => navigate('/support')}
+            className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-gray-200"
+            title="Help & Contact"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </button>
+
           {/* Notification Bell */}
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-gray-200 relative"
+              className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-gray-200 relative"
               title="Notifications"
             >
               <Bell className="w-4 h-4" />
@@ -120,12 +135,12 @@ export const Header: React.FC = () => {
 
             {/* Notification Dropdown */}
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                 <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900">
                     Notifications ({unreadCount} new)
                   </h4>
-                  <span className="text-[11px] text-[#DB0011] font-medium cursor-pointer">
+                  <span className="text-[11px] text-[#DB0011] font-semibold cursor-pointer">
                     Clear all
                   </span>
                 </div>
@@ -165,18 +180,19 @@ export const Header: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors border border-gray-200"
+              className="flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 transition-colors border border-gray-200"
             >
-              <div className="w-7 h-7 rounded-full bg-[#DB0011] text-white flex items-center justify-center text-xs font-bold">
-                {currentUser?.displayName?.slice(0, 2).toUpperCase() || 'KK'}
+              <div className="w-8 h-8 rounded-full bg-[#DB0011] text-white flex items-center justify-center text-xs font-bold">
+                {currentUser?.displayName?.slice(0, 2).toUpperCase() || 'HS'}
               </div>
             </button>
 
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-1.5 z-50">
-                <div className="px-4 py-2 border-b border-gray-100">
+              <div className="absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-xl border border-gray-200 py-1.5 z-50">
+                <div className="px-4 py-3 border-b border-gray-100">
                   <div className="text-xs font-bold text-gray-900">{currentUser?.displayName}</div>
-                  <div className="text-[11px] text-gray-500 truncate">{currentUser?.email}</div>
+                  <div className="text-[11px] text-gray-500 font-mono mt-0.5">{currentUser?.customerId}</div>
+                  <div className="text-[10px] text-gray-400 truncate mt-0.5">{currentUser?.email}</div>
                 </div>
                 <button
                   onClick={() => {
@@ -194,7 +210,7 @@ export const Header: React.FC = () => {
                   }}
                   className="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                 >
-                  <User className="w-3.5 h-3.5" /> Customer Support
+                  <User className="w-3.5 h-3.5" /> Customer Concierge
                 </button>
                 <div className="border-t border-gray-100 my-1" />
                 <button
@@ -202,7 +218,7 @@ export const Header: React.FC = () => {
                     setShowProfileMenu(false);
                     logout();
                   }}
-                  className="w-full text-left px-4 py-2 text-xs text-[#DB0011] hover:bg-red-50 flex items-center gap-2 font-medium"
+                  className="w-full text-left px-4 py-2 text-xs text-[#DB0011] hover:bg-red-50 flex items-center gap-2 font-bold"
                 >
                   <LogOut className="w-3.5 h-3.5" /> Sign Out
                 </button>

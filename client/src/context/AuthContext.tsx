@@ -18,8 +18,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check saved session or default to demo customer
-    const savedUid = localStorage.getItem('premier_client_active_uid') || 'cust-karthick-8829';
+    // Check saved session or default to primary customer
+    const savedUid = localStorage.getItem('hsbc_client_active_uid') || 'cust-karthick-8829';
     const user = RealtimeStore.getCustomerByUid(savedUid);
     if (user) {
       setCurrentUser(user);
@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const customers = RealtimeStore.getCustomers();
       if (customers.length > 0) {
         setCurrentUser(customers[0]);
-        localStorage.setItem('premier_client_active_uid', customers[0].uid);
+        localStorage.setItem('hsbc_client_active_uid', customers[0].uid);
       }
     }
     setIsLoading(false);
@@ -35,7 +35,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (identifier: string, _password?: string) => {
     setIsLoading(true);
-    // Find customer by email or customerId
     const customers = RealtimeStore.getCustomers();
     const user = customers.find(
       c =>
@@ -45,25 +44,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (user) {
       setCurrentUser(user);
-      localStorage.setItem('premier_client_active_uid', user.uid);
+      localStorage.setItem('hsbc_client_active_uid', user.uid);
       setIsLoading(false);
       return { success: true };
     }
 
     setIsLoading(false);
-    return { success: false, error: 'Invalid Customer ID or Password. (Use Demo 1-Click Login below)' };
+    return { success: false, error: 'Invalid Customer ID or Password. (Use Instant Access button below)' };
   };
 
   const logout = () => {
     setCurrentUser(null);
-    localStorage.removeItem('premier_client_active_uid');
+    localStorage.removeItem('hsbc_client_active_uid');
+    sessionStorage.removeItem('hsbc_session_unlocked');
   };
 
   const switchCustomer = (uid: string) => {
     const user = RealtimeStore.getCustomerByUid(uid);
     if (user) {
       setCurrentUser(user);
-      localStorage.setItem('premier_client_active_uid', user.uid);
+      localStorage.setItem('hsbc_client_active_uid', user.uid);
     }
   };
 

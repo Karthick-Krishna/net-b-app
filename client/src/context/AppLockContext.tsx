@@ -34,7 +34,7 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setLockedUntil(sec.lockedUntil || null);
 
     // If app lock is enabled and session was marked as locked or starting fresh
-    if (sec.appLockEnabled && !sessionStorage.getItem('premier_session_unlocked')) {
+    if (sec.appLockEnabled && !sessionStorage.getItem('hsbc_session_unlocked')) {
       setIsLocked(true);
     }
   };
@@ -59,7 +59,7 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const resetTimer = () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        sessionStorage.removeItem('premier_session_unlocked');
+        sessionStorage.removeItem('hsbc_session_unlocked');
         setIsLocked(true);
       }, 3 * 60 * 1000); // 3 minutes
     };
@@ -81,7 +81,7 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setRemainingAttempts(res.remainingAttempts);
 
     if (res.verified) {
-      sessionStorage.setItem('premier_session_unlocked', 'true');
+      sessionStorage.setItem('hsbc_session_unlocked', 'true');
       setIsLocked(false);
       return { success: true };
     } else {
@@ -96,7 +96,7 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (!currentUser) return;
     RealtimeStore.setAppLockPin(currentUser.uid, pin);
     setAppLockEnabled(true);
-    sessionStorage.setItem('premier_session_unlocked', 'true');
+    sessionStorage.setItem('hsbc_session_unlocked', 'true');
   };
 
   const disableAppLock = () => {
@@ -104,16 +104,16 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
     RealtimeStore.adminResetAppLock('self', currentUser.email, currentUser.uid, 'User disabled App-Lock');
     setAppLockEnabled(false);
     setIsLocked(false);
-    sessionStorage.removeItem('premier_session_unlocked');
+    sessionStorage.removeItem('hsbc_session_unlocked');
   };
 
   const lockApp = () => {
-    sessionStorage.removeItem('premier_session_unlocked');
+    sessionStorage.removeItem('hsbc_session_unlocked');
     setIsLocked(true);
   };
 
   const unlockApp = () => {
-    sessionStorage.setItem('premier_session_unlocked', 'true');
+    sessionStorage.setItem('hsbc_session_unlocked', 'true');
     setIsLocked(false);
   };
 
