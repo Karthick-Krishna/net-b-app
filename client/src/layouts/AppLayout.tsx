@@ -1,32 +1,28 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Header } from '../components/Header';
-import { Sidebar } from '../components/Sidebar';
-import { BottomNav } from '../components/BottomNav';
+import { HsbcTopNav } from '../components/Navigation/HsbcTopNav';
+import { HsbcChatBar } from '../components/Navigation/HsbcChatBar';
 import { AppLockModal } from '../components/AppLockModal';
 
 export const AppLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-[#F5F5F5] flex flex-col md:flex-row text-[#252525]">
-      {/* Desktop Navigation Sidebar */}
-      <Sidebar />
+    <div className="min-h-screen bg-[#F0F2F5] flex justify-center text-[#1f1f1f] font-sans">
+      {/* Mobile-First Authentic HSBC India Device Container */}
+      <div className="w-full max-w-md bg-white min-h-screen flex flex-col justify-between shadow-2xl relative">
+        {/* Top Header Navigation: [Home] | Pay | Cards | Invest | [Menu] */}
+        <HsbcTopNav />
 
-      {/* Main Viewport Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <Header />
-
-        <main className="flex-1 pb-24 md:pb-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <Outlet />
-          </div>
+        {/* Main Viewport Content Area */}
+        <main className="flex-1 overflow-x-hidden">
+          <Outlet />
         </main>
 
-        {/* Mobile Fixed Bottom Navigation */}
-        <BottomNav />
-      </div>
+        {/* Bottom Floating Virtual Assistant Chat Bar: [Messages] [Start chat 🎙] [→] */}
+        <HsbcChatBar />
 
-      {/* App Lock Modal (Overlay) */}
-      <AppLockModal />
+        {/* App Lock Overlay (MPIN Security Shield) */}
+        <AppLockModal />
+      </div>
     </div>
   );
 };
