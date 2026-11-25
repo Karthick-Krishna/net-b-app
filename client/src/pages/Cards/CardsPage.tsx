@@ -100,7 +100,7 @@ export const CardsPage: React.FC = () => {
 
   return (
     <div className="w-full max-w-md mx-auto select-none font-sans pb-10">
-      {/* CARD TITLE & MASKED DIGITS (EXACT MATCH TO REFERENCE SCREENSHOT) */}
+      {/* CARD TITLE & MASKED DIGITS (MATCHING REFERENCE DESIGN) */}
       <div className="pt-3 pb-1 text-center">
         <h2 className="text-[17px] font-semibold text-[#1f1f1f]">
           {cardTitle}
@@ -110,7 +110,7 @@ export const CardsPage: React.FC = () => {
         </p>
       </div>
 
-      {/* PEEKING CARD CAROUSEL (METALLIC EMBLEM & PEEKING SIDES) */}
+      {/* PEEKING CARD CAROUSEL */}
       <div className="pt-2 pb-5">
         <HsbcCardCarousel
           cards={cards.length > 0 ? cards : [activeCard]}
@@ -273,7 +273,7 @@ export const CardsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowReportIssueModal(false)}
-                className="text-gray-400 hover:text-gray-700"
+                className="text-gray-400 hover:text-gray-700 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -298,7 +298,7 @@ export const CardsPage: React.FC = () => {
                     updateCardSettings(activeCard.cardId, { cardStatus: 'FROZEN' });
                     toast.success(`Case logged for ${opt.title}. Card temporarily locked for security.`);
                   }}
-                  className="w-full p-3 text-left rounded-xl border border-gray-200 hover:border-[#DB0011] hover:bg-red-50/30 transition-all flex items-center justify-between text-xs"
+                  className="w-full p-3 text-left rounded-xl border border-gray-200 hover:border-[#DB0011] hover:bg-red-50/30 transition-all flex items-center justify-between text-xs cursor-pointer"
                 >
                   <div>
                     <div className="font-bold text-[#1f1f1f]">{opt.title}</div>
@@ -313,7 +313,7 @@ export const CardsPage: React.FC = () => {
       )}
 
       {/* ========================================================= */}
-      {/* 2. VIEW CARD PIN MODAL (ENTER MPIN 002831)              */}
+      {/* 2. VIEW CARD PIN MODAL                                   */}
       {/* ========================================================= */}
       {showPinModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
@@ -323,7 +323,7 @@ export const CardsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowPinModal(false)}
-                className="text-gray-400 hover:text-gray-700"
+                className="text-gray-400 hover:text-gray-700 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -353,7 +353,7 @@ export const CardsPage: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors"
+                  className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
                 >
                   Verify & Reveal PIN
                 </button>
@@ -377,7 +377,7 @@ export const CardsPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPinModal(false)}
-                  className="w-full py-2.5 bg-[#1f1f1f] text-white text-xs font-bold rounded-[2px] transition-colors"
+                  className="w-full py-2.5 bg-[#1f1f1f] text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
                 >
                   Hide PIN
                 </button>
@@ -398,7 +398,7 @@ export const CardsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowGamblingModal(false)}
-                className="text-gray-400 hover:text-gray-700"
+                className="text-gray-400 hover:text-gray-700 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -439,7 +439,7 @@ export const CardsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowGamblingModal(false)}
-              className="w-full mt-4 py-2.5 bg-[#1f1f1f] text-white text-xs font-bold rounded-[2px]"
+              className="w-full mt-4 py-2.5 bg-[#1f1f1f] text-white text-xs font-bold rounded-[2px] cursor-pointer"
             >
               Done
             </button>
@@ -458,7 +458,7 @@ export const CardsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowManageModal(false)}
-                className="text-gray-400 hover:text-gray-700"
+                className="text-gray-400 hover:text-gray-700 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -528,7 +528,7 @@ export const CardsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowManageModal(false)}
-                className="w-full mt-2 py-2.5 bg-[#DB0011] text-white text-xs font-bold rounded-[2px]"
+                className="w-full mt-2 py-2.5 bg-[#DB0011] text-white text-xs font-bold rounded-[2px] cursor-pointer"
               >
                 Save Settings
               </button>
@@ -548,7 +548,7 @@ export const CardsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowExploreModal(false)}
-                className="text-gray-400 hover:text-gray-700"
+                className="text-gray-400 hover:text-gray-700 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -570,7 +570,7 @@ export const CardsPage: React.FC = () => {
                       toast.success(`Application initiated for ${prod.title}. A Premier Executive will connect.`);
                       setShowExploreModal(false);
                     }}
-                    className="mt-2.5 text-xs font-bold text-[#DB0011] hover:underline flex items-center gap-1"
+                    className="mt-2.5 text-xs font-bold text-[#DB0011] hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <span>Apply with 1-Click</span>
                     <ArrowRight className="w-3.5 h-3.5" />
