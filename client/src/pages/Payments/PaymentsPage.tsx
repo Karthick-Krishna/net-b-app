@@ -153,7 +153,7 @@ export const PaymentsPage: React.FC = () => {
   };
 
   return (
-    <AnimatedPageTransition className="space-y-6">
+    <AnimatedPageTransition className="space-y-6 px-4 py-3 pb-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl font-extrabold text-[#252525] tracking-tight">

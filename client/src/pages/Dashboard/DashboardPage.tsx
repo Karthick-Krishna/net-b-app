@@ -41,7 +41,7 @@ export const DashboardPage: React.FC = () => {
   const recentTransactions = transactions.slice(0, 5);
 
   return (
-    <AnimatedPageTransition className="space-y-6">
+    <AnimatedPageTransition className="space-y-6 px-4 py-3 pb-8">
       {/* Total Balance Card */}
       <div className="bg-gradient-to-br from-white via-white to-gray-50 rounded-3xl p-6 sm:p-8 border border-[#E8E8E8] shadow-card relative overflow-hidden">
         {/* Subtle decorative geometry */}
