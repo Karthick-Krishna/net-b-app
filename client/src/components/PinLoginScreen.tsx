@@ -46,7 +46,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
   const [showBiometricsModal, setShowBiometricsModal] = useState<boolean>(false);
   const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
   const [showMenuDropdown, setShowMenuDropdown] = useState<boolean>(false);
-  const [showKeypad, setShowKeypad] = useState<boolean>(false);
+  const [showKeypad, setShowKeypad] = useState<boolean>(true);
 
   // Forgot PIN Flow States
   const [forgotStep, setForgotStep] = useState<'IDENTITY' | 'OTP' | 'NEW_PIN'>('IDENTITY');
@@ -217,26 +217,6 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
   return (
     <div className="relative w-full min-h-dvh bg-white md:bg-[#F6F7F9] flex flex-col md:items-center md:justify-center md:py-8 select-none font-sans">
       <div className="w-full max-w-md mx-auto flex-1 md:flex-initial bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-sm md:min-h-[680px] flex flex-col justify-between overflow-hidden">
-      {/* Invisible auto-focus input for virtual mobile keyboard */}
-      <input
-        ref={inputRef}
-        type="tel"
-        pattern="[0-9]*"
-        inputMode="numeric"
-        maxLength={6}
-        value={pin}
-        onChange={e => {
-          if (isVerifying) return;
-          const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-          setPin(val);
-          setErrorMsg('');
-          if (val.length === 6) submitPinVerification(val);
-        }}
-        className="sr-only"
-        aria-hidden="true"
-        autoFocus
-      />
-
       {/* TOP NAVIGATION BAR */}
       <header className="w-full max-w-md mx-auto pt-8 pb-4 px-6 flex items-center justify-between z-20">
         {/* Left: HSBC Logo + "India" */}
@@ -373,13 +353,32 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
             </button>
           </div>
 
-          {/* 6 PIN HOLLOW CIRCLES */}
+          {/* 6 PIN HOLLOW CIRCLES WITH NATIVE NUMERIC INPUT OVERLAY FOR MOBILE KEYBOARD */}
           <motion.div
             animate={shake ? { x: [-6, 6, -4, 4, 0] } : { x: 0 }}
             transition={{ duration: 0.24, ease: 'easeOut' }}
             onClick={() => inputRef.current?.focus()}
-            className="mt-7 flex items-center justify-between max-w-[320px] cursor-pointer"
+            className="relative mt-5 flex items-center justify-between max-w-[320px] cursor-pointer"
           >
+            <input
+              ref={inputRef}
+              type="tel"
+              pattern="[0-9]*"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              maxLength={6}
+              aria-label="Enter 6-digit PIN"
+              value={pin}
+              onChange={e => {
+                if (isVerifying) return;
+                const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                setPin(val);
+                setErrorMsg('');
+                if (val.length === 6) submitPinVerification(val);
+              }}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              autoFocus
+            />
             {[0, 1, 2, 3, 4, 5].map(index => {
               const isFilled = index < pin.length;
               return (
@@ -433,12 +432,12 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
           </div>
         </div>
 
-        {/* SPACIOUS CENTER: HSBC TRANSLUCENT ROSETTE WATERMARK */}
+        {/* SUBTLE HSBC ROSETTE WATERMARK (Compact when keypad is open so mobile screen fits cleanly) */}
         <div
           onClick={() => inputRef.current?.focus()}
-          className="my-auto py-10 flex items-center justify-center pointer-events-none relative overflow-hidden"
+          className={`${showKeypad ? 'py-2' : 'my-auto py-10'} flex items-center justify-center pointer-events-none relative overflow-hidden`}
         >
-          <div className="relative w-56 h-56 flex items-center justify-center opacity-25">
+          <div className={`relative ${showKeypad ? 'w-24 h-24 opacity-20' : 'w-56 h-56 opacity-25'} flex items-center justify-center`}>
             <svg
               viewBox="0 0 200 200"
               className="w-full h-full transform rotate-12 filter blur-[0.6px]"

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, Snowflake } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Snowflake, Wifi } from 'lucide-react';
 import { CardRecord } from '@shared/types';
 
 export interface HsbcCardCarouselProps {
@@ -20,6 +20,25 @@ const HsbcMiniHexagon: React.FC<{ className?: string }> = ({ className = 'w-6 h-
   </svg>
 );
 
+/**
+ * Faceted geometric HSBC Guardian Lion artwork matching HSBC's Shift Global Card Design System.
+ */
+const FacetedLionArtwork: React.FC<{ accent?: string; stroke?: string }> = ({
+  accent = 'rgba(255,255,255,0.14)',
+  stroke = 'rgba(255,255,255,0.22)',
+}) => (
+  <svg viewBox="0 0 220 150" className="absolute right-0 bottom-0 h-full w-3/4 pointer-events-none" aria-hidden="true">
+    <polygon points="120,10 175,28 145,62" fill={accent} stroke={stroke} strokeWidth="0.7" />
+    <polygon points="175,28 215,52 178,86 145,62" fill={accent} stroke={stroke} strokeWidth="0.7" />
+    <polygon points="120,10 145,62 95,55" fill={accent} stroke={stroke} strokeWidth="0.7" />
+    <polygon points="95,55 145,62 128,108 78,94" fill={accent} stroke={stroke} strokeWidth="0.7" />
+    <polygon points="145,62 178,86 165,134 128,108" fill={accent} stroke={stroke} strokeWidth="0.7" />
+    <polygon points="178,86 218,95 205,146 165,134" fill={accent} stroke={stroke} strokeWidth="0.7" />
+    <polygon points="78,94 128,108 112,148 58,136" fill={accent} stroke={stroke} strokeWidth="0.7" />
+    <polygon points="128,108 165,134 148,150 112,148" fill={accent} stroke={stroke} strokeWidth="0.7" />
+  </svg>
+);
+
 const CardFace: React.FC<{ card: CardRecord; isCenter: boolean; cardholderFallback: string }> = ({
   card,
   isCenter,
@@ -28,38 +47,88 @@ const CardFace: React.FC<{ card: CardRecord; isCenter: boolean; cardholderFallba
   const isFrozen = card.cardStatus === 'FROZEN' || card.cardStatus === 'BLOCKED';
   const tier = card.cardTier;
   const isCredit = card.cardType === 'CREDIT';
+  const isDebit = card.cardType === 'DEBIT';
   const isMastercard = card.network === 'MASTERCARD' || tier === 'PREMIER_WORLD_ELITE' || tier === 'TRAVEL_ONE';
 
-  let bgStyle = 'bg-gradient-to-b from-[#ECEEF2] via-[#DFE3EA] to-[#CBD0DA] border-gray-300/90 text-[#1f1f1f]';
-  let isDarkText = true;
+  // Real HSBC India Global Card Design System colorways
+  let bgStyle = 'bg-gradient-to-br from-[#121418] via-[#1C2027] to-[#0B0D10] border-neutral-800 text-white';
+  let isLightCard = false;
+  let lionAccent = 'rgba(255,255,255,0.08)';
+  let lionStroke = 'rgba(255,255,255,0.16)';
 
-  if (tier === 'PREMIER_WORLD_ELITE') {
-    bgStyle = 'bg-gradient-to-br from-[#DB0011] via-[#B8000E] to-[#8C000A] border-red-900/40 text-white';
-    isDarkText = false;
+  if (tier === 'PREMIER_PLATINUM') {
+    // HSBC India Premier Debit Card: Sleek matte obsidian black with red debit core edge & lion
+    bgStyle = 'bg-gradient-to-br from-[#14161A] via-[#1E2229] to-[#0B0C0F] border-neutral-800 text-white';
+    lionAccent = 'rgba(219,0,17,0.12)';
+    lionStroke = 'rgba(255,255,255,0.14)';
   } else if (tier === 'GLOBAL_TRAVEL') {
+    // HSBC Commercial / Business Debit Card: Deep cosmic navy with blue horizon glow
     bgStyle = 'bg-gradient-to-b from-[#040B1A] via-[#0B2250] to-[#1D54B5] border-blue-900/50 text-white';
-    isDarkText = false;
+    lionAccent = 'rgba(96,165,250,0.14)';
+    lionStroke = 'rgba(147,197,253,0.22)';
+  } else if (tier === 'PREMIER_WORLD_ELITE') {
+    // HSBC Premier Credit Card: Matte black/charcoal crimson luxury with Stephen & Stitt Lion artwork
+    bgStyle = 'bg-gradient-to-br from-[#1A0D10] via-[#2B1218] to-[#0E0709] border-red-900/50 text-white';
+    lionAccent = 'rgba(219,0,17,0.20)';
+    lionStroke = 'rgba(255,255,255,0.18)';
   } else if (tier === 'TRAVEL_ONE') {
-    bgStyle = 'bg-gradient-to-br from-[#0F2A44] via-[#17466E] to-[#0B1E30] border-sky-900/50 text-white';
-    isDarkText = false;
+    // HSBC TravelOne Credit Card: Metallic teal/ocean blue multi-tone global motif
+    bgStyle = 'bg-gradient-to-br from-[#0F2A44] via-[#17517E] to-[#0B1E30] border-sky-800/50 text-white';
+    lionAccent = 'rgba(56,189,248,0.15)';
+    lionStroke = 'rgba(255,255,255,0.20)';
   } else if (tier === 'LIVE_PLUS') {
-    bgStyle = 'bg-gradient-to-br from-[#1C1F26] via-[#2C303A] to-[#14171C] border-neutral-700/70 text-white';
-    isDarkText = false;
+    // HSBC Live+ Credit Card: Signature vibrant HSBC Red
+    bgStyle = 'bg-gradient-to-br from-[#DB0011] via-[#B8000E] to-[#8C000A] border-red-900/40 text-white';
+    lionAccent = 'rgba(255,255,255,0.13)';
+    lionStroke = 'rgba(255,255,255,0.24)';
   } else if (tier === 'VISA_PLATINUM') {
-    bgStyle = 'bg-gradient-to-br from-[#374151] via-[#4B5563] to-[#1F2937] border-slate-600 text-white';
-    isDarkText = false;
+    // HSBC Visa Platinum Credit Card: Bright clean silver-white & brushed platinum
+    bgStyle = 'bg-gradient-to-br from-[#F3F5F8] via-[#E3E7EE] to-[#CDD3DE] border-gray-300 text-[#1f1f1f]';
+    isLightCard = true;
+    lionAccent = 'rgba(31,31,31,0.06)';
+    lionStroke = 'rgba(31,31,31,0.12)';
   }
 
   const holderName = (card.cardholderName || cardholderFallback).toUpperCase();
   const last4 = (card.maskedCardNumber || '4281').slice(-4);
   const displayNumber = `•••• •••• •••• ${last4}`;
 
+  const shortProductTitle =
+    tier === 'PREMIER_PLATINUM'
+      ? 'Premier Debit'
+      : tier === 'GLOBAL_TRAVEL'
+      ? 'Business Debit'
+      : tier === 'PREMIER_WORLD_ELITE'
+      ? 'Premier'
+      : tier === 'TRAVEL_ONE'
+      ? 'TravelOne'
+      : tier === 'LIVE_PLUS'
+      ? 'Live+'
+      : 'Platinum';
+
   return (
     <div className={`relative w-full h-full rounded-2xl p-3.5 sm:p-5 border flex flex-col justify-between overflow-hidden ${bgStyle}`}>
-      {/* Specular Finish */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-black/15 pointer-events-none" />
+      {/* Debit Card Colored Core Edge (Authentic HSBC visual distinction for Debit cards) */}
+      {isDebit && (
+        <div
+          className="absolute inset-y-0 left-0 w-[3.5px] bg-[#DB0011] z-20 pointer-events-none"
+          aria-hidden="true"
+        />
+      )}
 
-      {/* Cosmic Horizon Accent for Business Debit */}
+      {/* Faceted Lion Global Artwork */}
+      <FacetedLionArtwork accent={lionAccent} stroke={lionStroke} />
+
+      {/* Tactile Accessibility Edge Notch */}
+      <div
+        className={`absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-l-full ${isLightCard ? 'bg-gray-400/50' : 'bg-white/25'} pointer-events-none`}
+        aria-hidden="true"
+      />
+
+      {/* Specular Finish */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-black/15 pointer-events-none" />
+
+      {/* Cosmic Earth Horizon Accent for Business Debit */}
       {tier === 'GLOBAL_TRAVEL' && (
         <div
           className="absolute -bottom-16 -left-8 -right-8 h-32 rounded-[100%] bg-gradient-to-t from-[#60A5FA]/50 via-[#3B82F6]/30 to-transparent blur-md pointer-events-none"
@@ -67,14 +136,9 @@ const CardFace: React.FC<{ card: CardRecord; isCenter: boolean; cardholderFallba
         />
       )}
 
-      {/* Crimson Accent Stripe for Live+ Credit */}
-      {tier === 'LIVE_PLUS' && (
-        <div className="absolute top-0 right-0 w-20 h-full bg-gradient-to-b from-[#DB0011]/40 via-[#DB0011]/15 to-transparent -skew-x-12 pointer-events-none" aria-hidden="true" />
-      )}
-
       {/* Frozen Overlay */}
       {isFrozen && isCenter && (
-        <div className="absolute inset-0 z-20 bg-slate-900/50 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 z-30 bg-slate-900/55 backdrop-blur-[2px] flex items-center justify-center pointer-events-none">
           <div className="px-3.5 py-1.5 rounded-full bg-[#DB0011] text-white shadow-md flex items-center gap-1.5 text-[11px] font-bold tracking-wider uppercase border border-white/30">
             <Snowflake className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Card Frozen</span>
@@ -82,54 +146,41 @@ const CardFace: React.FC<{ card: CardRecord; isCenter: boolean; cardholderFallba
         </div>
       )}
 
-      {/* Top Row: HSBC Emblem + Tier Tag */}
+      {/* Top Row: HSBC Hexagon + Product Name | Debit/Credit + Contactless */}
       <div className="flex items-center justify-between relative z-10 gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
           <HsbcMiniHexagon className="w-5 h-3 sm:w-6 sm:h-3.5 shrink-0" />
-          <span className={`text-[11px] sm:text-[12px] font-bold tracking-tight truncate ${isDarkText ? 'text-[#1f1f1f]' : 'text-white'}`}>
-            {card.cardName ? card.cardName.replace('HSBC ', '') : 'HSBC India'}
+          <span className={`text-[12px] sm:text-[13px] font-bold tracking-tight truncate ${isLightCard ? 'text-[#1f1f1f]' : 'text-white'}`}>
+            {shortProductTitle}
           </span>
         </div>
-        <span className={`text-[9px] font-bold tracking-widest uppercase shrink-0 ${isDarkText ? 'text-[#333333]' : 'text-white/90'}`}>
-          {tier === 'GLOBAL_TRAVEL' ? 'BUSINESS DEBIT' : isCredit ? 'CREDIT' : 'DEBIT'}
-        </span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <Wifi className={`w-3.5 h-3.5 rotate-90 opacity-75 ${isLightCard ? 'text-[#1f1f1f]' : 'text-white'}`} aria-hidden="true" />
+          <span className={`text-[9px] font-bold tracking-widest uppercase ${isLightCard ? 'text-[#333333]' : 'text-white/90'}`}>
+            {isCredit ? 'CREDIT' : 'DEBIT'}
+          </span>
+        </div>
       </div>
 
-      {/* Center Section: Faceted Emblem on Personal Debit OR Chip + Hexagon Watermark */}
-      {tier === 'PREMIER_PLATINUM' ? (
-        <div className="my-auto flex items-center justify-center relative z-10">
-          <div className="w-24 h-12 min-[360px]:w-28 min-[360px]:h-14 sm:w-32 sm:h-16 flex items-center justify-center filter drop-shadow-[0_2px_3px_rgba(0,0,0,0.16)]">
-            <svg viewBox="0 0 240 140" className="w-full h-full" aria-hidden="true">
-              <polygon points="50,20 10,70 50,120" fill="#B8000E" />
-              <polygon points="190,20 230,70 190,120" fill="#B8000E" />
-              <polygon points="50,20 120,70 190,20" fill="#DB0011" />
-              <polygon points="50,120 120,70 190,120" fill="#DB0011" />
-              <polygon points="50,20 120,70 50,120" fill="#FFFFFF" />
-              <polygon points="190,20 120,70 190,120" fill="#F1F3F5" />
-            </svg>
-          </div>
+      {/* Middle Row: EMV Metallic Chip */}
+      <div className="my-auto flex items-center justify-between relative z-10">
+        <div className="w-9 h-6 rounded-[4px] bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 border border-amber-700/40 shadow-inner flex items-center justify-center overflow-hidden">
+          <div className="w-4 h-2.5 border border-amber-800/35 rounded-[2px]" />
         </div>
-      ) : (
-        <div className="my-auto flex items-center justify-between relative z-10">
-          <div className="w-8 h-5.5 sm:w-9 sm:h-6 rounded bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 border border-amber-700/40 shadow-inner" />
-          <span className="text-[9px] uppercase tracking-widest opacity-70 font-semibold">
-            {isCredit ? 'HSBC Premier Suite' : 'Commercial Banking'}
-          </span>
-        </div>
-      )}
+      </div>
 
-      {/* Card Number & Cardholder Name + Network Logo */}
+      {/* Bottom Row: Masked Number + Cardholder Name + Network Mark */}
       <div className="relative z-10 space-y-1">
-        <div className={`font-mono text-[12px] min-[360px]:text-[13px] sm:text-[15px] font-bold tracking-[0.12em] ${isDarkText ? 'text-[#1f1f1f]' : 'text-white'}`}>
+        <div className={`font-mono text-[12px] min-[360px]:text-[13px] sm:text-[14px] font-bold tracking-[0.14em] ${isLightCard ? 'text-[#1f1f1f]' : 'text-white'}`}>
           {displayNumber}
         </div>
 
         <div className="flex items-end justify-between gap-2 pt-0.5">
           <div className="min-w-0">
-            <div className={`text-[10px] sm:text-[11px] font-bold tracking-wider uppercase truncate ${isDarkText ? 'text-[#1f1f1f]' : 'text-white'}`}>
+            <div className={`text-[10px] sm:text-[11px] font-bold tracking-wider uppercase truncate ${isLightCard ? 'text-[#1f1f1f]' : 'text-white'}`}>
               {holderName}
             </div>
-            <div className={`text-[8px] sm:text-[9px] font-mono ${isDarkText ? 'text-[#555555]' : 'text-white/75'}`}>
+            <div className={`text-[8px] sm:text-[9px] font-mono ${isLightCard ? 'text-[#555555]' : 'text-white/75'}`}>
               VALID THRU {card.expiryMonth}/{card.expiryYear}
             </div>
           </div>
@@ -141,7 +192,7 @@ const CardFace: React.FC<{ card: CardRecord; isCenter: boolean; cardholderFallba
                 <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#F79E1B] -ml-2.5 inline-block shadow-xs opacity-95" />
               </div>
             ) : (
-              <span className={`font-black italic text-base sm:text-xl tracking-tighter ${isDarkText ? 'text-[#1434CB]' : 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]'}`}>
+              <span className={`font-black italic text-base sm:text-xl tracking-tighter ${isLightCard ? 'text-[#1434CB]' : 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]'}`}>
                 VISA
               </span>
             )}

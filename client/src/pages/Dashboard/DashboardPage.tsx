@@ -250,18 +250,31 @@ export const DashboardPage: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {cards.map(card => {
                   const frozen = card.cardStatus === 'FROZEN' || card.cardStatus === 'BLOCKED';
-                  const isCredit = card.cardType === 'CREDIT';
+                  const tier = card.cardTier;
+                  const isLightCard = tier === 'VISA_PLATINUM';
+                  const cardTheme =
+                    tier === 'GLOBAL_TRAVEL'
+                      ? 'bg-gradient-to-b from-[#040B1A] via-[#0B2250] to-[#1D54B5] text-white border-blue-900/50'
+                      : tier === 'PREMIER_WORLD_ELITE'
+                      ? 'bg-gradient-to-br from-[#1A0D10] via-[#2B1218] to-[#0E0709] text-white border-red-900/50'
+                      : tier === 'TRAVEL_ONE'
+                      ? 'bg-gradient-to-br from-[#0F2A44] via-[#17517E] to-[#0B1E30] text-white border-sky-800/50'
+                      : tier === 'LIVE_PLUS'
+                      ? 'bg-gradient-to-br from-[#DB0011] via-[#B8000E] to-[#8C000A] text-white border-red-900/40'
+                      : tier === 'VISA_PLATINUM'
+                      ? 'bg-gradient-to-br from-[#F3F5F8] via-[#E3E7EE] to-[#CDD3DE] text-[#1f1f1f] border-gray-300'
+                      : 'bg-gradient-to-br from-[#14161A] via-[#1E2229] to-[#0B0C0F] text-white border-neutral-800';
+
                   return (
                     <button
                       key={card.cardId}
                       type="button"
                       onClick={() => navigate('/cards')}
-                      className={`p-5 rounded-2xl text-left shadow-md relative overflow-hidden transition-transform hover:-translate-y-0.5 cursor-pointer border ${
-                        isCredit
-                          ? 'bg-gradient-to-br from-[#1B1F29] via-[#272D3B] to-[#11151E] text-white border-slate-700'
-                          : 'bg-gradient-to-b from-[#EAECEF] via-[#DFE2E8] to-[#CDD1D9] text-[#1f1f1f] border-gray-300'
-                      }`}
+                      className={`p-5 rounded-2xl text-left shadow-md relative overflow-hidden transition-shadow hover:shadow-lg cursor-pointer border ${cardTheme}`}
                     >
+                      {card.cardType === 'DEBIT' && (
+                        <div className="absolute inset-y-0 left-0 w-[3px] bg-[#DB0011]" aria-hidden="true" />
+                      )}
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 min-w-0">
                           <img src="/logo.png" alt="HSBC" className="w-5 h-5 object-contain shrink-0" />
@@ -275,8 +288,8 @@ export const DashboardPage: React.FC = () => {
                             FROZEN
                           </span>
                         ) : (
-                          <span className={`text-[10px] font-bold uppercase tracking-wider shrink-0 ${isCredit ? 'text-gray-300' : 'text-gray-600'}`}>
-                            {card.cardTier === 'GLOBAL_TRAVEL' ? 'BUSINESS DEBIT' : card.cardType}
+                          <span className={`text-[10px] font-bold uppercase tracking-wider shrink-0 ${isLightCard ? 'text-gray-600' : 'text-white/80'}`}>
+                            {tier === 'GLOBAL_TRAVEL' ? 'BUSINESS DEBIT' : card.cardType}
                           </span>
                         )}
                       </div>
@@ -287,14 +300,14 @@ export const DashboardPage: React.FC = () => {
 
                       <div className="mt-3 flex items-end justify-between text-[11px]">
                         <div>
-                          <div className={`font-bold uppercase tracking-wide ${isCredit ? 'text-white' : 'text-[#1f1f1f]'}`}>
+                          <div className={`font-bold uppercase tracking-wide ${isLightCard ? 'text-[#1f1f1f]' : 'text-white'}`}>
                             {card.cardholderName || currentUser?.displayName || 'KARTHICK KRISHNA'}
                           </div>
-                          <span className={`font-mono text-[10px] ${isCredit ? 'text-gray-300' : 'text-gray-600'}`}>
+                          <span className={`font-mono text-[10px] ${isLightCard ? 'text-gray-600' : 'text-white/75'}`}>
                             Exp {card.expiryMonth}/{card.expiryYear}
                           </span>
                         </div>
-                        <span className={`font-black italic text-base ${isCredit ? 'text-white' : 'text-[#1434CB]'}`}>
+                        <span className={`font-black italic text-base ${isLightCard ? 'text-[#1434CB]' : 'text-white'}`}>
                           {card.network === 'MASTERCARD' ? 'MC' : 'VISA'}
                         </span>
                       </div>
