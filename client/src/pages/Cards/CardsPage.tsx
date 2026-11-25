@@ -192,11 +192,10 @@ export const CardsPage: React.FC = () => {
                 className="flex flex-col items-center group cursor-pointer"
               >
                 <div
-                  className={`w-12 h-12 min-[360px]:w-14 min-[360px]:h-14 rounded-full transition-colors flex items-center justify-center ${
-                    isFrozen
-                      ? 'bg-red-100 ring-2 ring-[#DB0011]'
-                      : 'bg-[#F2F4F7] group-hover:bg-[#E5E7EB] active:bg-gray-300'
-                  }`}
+                  className={`w-12 h-12 min-[360px]:w-14 min-[360px]:h-14 rounded-full transition-colors flex items-center justify-center ${isFrozen
+                    ? 'bg-red-100 ring-2 ring-[#DB0011]'
+                    : 'bg-[#F2F4F7] group-hover:bg-[#E5E7EB] active:bg-gray-300'
+                    }`}
                 >
                   <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
                     <rect x="4" y="8" width="24" height="16" rx="2.5" fill={isFrozen ? '#1D4ED8' : '#DB0011'} />
@@ -367,272 +366,272 @@ export const CardsPage: React.FC = () => {
         </div>
       </ModalDialog>
 
-      {/* ========================================================= */}
-      {/* 2. VIEW CARD PIN MODAL                                   */}
-      {/* ========================================================= */}
-      <ModalDialog
-        open={showPinModal}
-        onClose={() => setShowPinModal(false)}
-        title="View card PIN"
-        subtitle={`${cardTitle} •••• ${maskedFourDigits}`}
-        maxWidthClass="max-w-sm"
+  {/* ========================================================= */ }
+{/* 2. VIEW CARD PIN MODAL                                   */ }
+{/* ========================================================= */ }
+<ModalDialog
+  open={showPinModal}
+  onClose={() => setShowPinModal(false)}
+  title="View card PIN"
+  subtitle={`${cardTitle} •••• ${maskedFourDigits}`}
+  maxWidthClass="max-w-sm"
+>
+  {!pinRevealed ? (
+    <form onSubmit={handleVerifyPinForReveal} className="space-y-4">
+      <p className="text-xs text-gray-500 leading-relaxed">
+        Enter your 6-digit App-Lock PIN (<strong className="text-[#1f1f1f]">002831</strong>) to reveal your 4-digit card ATM PIN.
+      </p>
+
+      <div>
+        <label htmlFor="view-card-pin-input" className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1.5">
+          6-Digit App-Lock PIN
+        </label>
+        <input
+          id="view-card-pin-input"
+          type="password"
+          inputMode="numeric"
+          maxLength={6}
+          autoFocus
+          required
+          value={pinVerificationInput}
+          onChange={e => setPinVerificationInput(e.target.value.replace(/\D/g, ''))}
+          placeholder="••••••"
+          className="w-full px-4 py-3 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F6F7F9] border border-gray-200 rounded-[2px] text-[#222222] focus:outline-none focus:border-[#DB0011]"
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="w-full min-h-[44px] py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
       >
-        {!pinRevealed ? (
-          <form onSubmit={handleVerifyPinForReveal} className="space-y-4">
-            <p className="text-xs text-gray-500 leading-relaxed">
-              Enter your 6-digit App-Lock PIN (<strong className="text-[#1f1f1f]">002831</strong>) to reveal your 4-digit card ATM PIN.
-            </p>
+        Verify & Reveal PIN
+      </button>
+    </form>
+  ) : (
+    <div className="space-y-4 text-center">
+      <p className="text-xs text-gray-500">
+        Your 4-digit ATM PIN for card ending in <strong>{maskedFourDigits}</strong>:
+      </p>
 
-            <div>
-              <label htmlFor="view-card-pin-input" className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1.5">
-                6-Digit App-Lock PIN
-              </label>
-              <input
-                id="view-card-pin-input"
-                type="password"
-                inputMode="numeric"
-                maxLength={6}
-                autoFocus
-                required
-                value={pinVerificationInput}
-                onChange={e => setPinVerificationInput(e.target.value.replace(/\D/g, ''))}
-                placeholder="••••••"
-                className="w-full px-4 py-3 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F6F7F9] border border-gray-200 rounded-[2px] text-[#222222] focus:outline-none focus:border-[#DB0011]"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full min-h-[44px] py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
-            >
-              Verify & Reveal PIN
-            </button>
-          </form>
-        ) : (
-          <div className="space-y-4 text-center">
-            <p className="text-xs text-gray-500">
-              Your 4-digit ATM PIN for card ending in <strong>{maskedFourDigits}</strong>:
-            </p>
-
-            <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200 flex items-center justify-center gap-3">
-              <span className="text-3xl font-extrabold font-mono tracking-[0.3em] text-[#1f1f1f]">
-                {revealedCardPin}
-              </span>
-              <button
-                type="button"
-                aria-label="Copy PIN"
-                onClick={() => {
-                  navigator.clipboard?.writeText(revealedCardPin);
-                  toast.success('Card PIN copied temporarily');
-                }}
-                className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg text-gray-500 hover:text-[#DB0011] hover:bg-white cursor-pointer"
-              >
-                <Copy className="w-4 h-4" aria-hidden="true" />
-              </button>
-            </div>
-
-            <p className="text-[11px] text-gray-400">
-              Do not disclose this PIN to anyone. Keep your card protected.
-            </p>
-
-            <button
-              type="button"
-              onClick={() => setShowPinModal(false)}
-              className="w-full min-h-[44px] py-2.5 bg-[#1f1f1f] hover:bg-black text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
-            >
-              Hide PIN
-            </button>
-          </div>
-        )}
-      </ModalDialog>
-
-      {/* ========================================================= */}
-      {/* 3. GAMBLING RESTRICTION MODAL                            */}
-      {/* ========================================================= */}
-      <ModalDialog
-        open={showGamblingModal}
-        onClose={() => setShowGamblingModal(false)}
-        title="Gambling restriction"
-        subtitle={`${cardTitle} •••• ${maskedFourDigits}`}
-        maxWidthClass="max-w-sm"
-      >
-        <p className="text-xs text-gray-500 leading-relaxed">
-          Block transactions categorized as betting, casinos, lottery tickets, and online gambling (Merchant Category Code 7995).
-        </p>
-
-        <div className="my-5 p-4 bg-[#F6F7F9] rounded-xl border border-gray-200 flex items-center justify-between gap-3">
-          <div>
-            <span className="font-bold text-xs text-[#1f1f1f] block">
-              Block Gambling Merchants
-            </span>
-            <span className="text-[11px] text-gray-500">
-              {gamblingBlocked ? 'Currently active & protected' : 'Restriction disabled'}
-            </span>
-          </div>
-          <ToggleSwitch
-            checked={gamblingBlocked}
-            onChange={handleToggleGambling}
-            ariaLabel="Block Gambling Merchants"
-          />
-        </div>
-
-        <div className="text-[11px] text-gray-500 leading-normal flex items-start gap-2 mb-4">
-          <ShieldCheck className="w-4 h-4 text-[#16864A] shrink-0 mt-0.5" aria-hidden="true" />
-          <span>
-            Turning off this restriction is subject to HSBC India responsible spending safeguards.
-          </span>
-        </div>
-
+      <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200 flex items-center justify-center gap-3">
+        <span className="text-3xl font-extrabold font-mono tracking-[0.3em] text-[#1f1f1f]">
+          {revealedCardPin}
+        </span>
         <button
           type="button"
-          onClick={() => setShowGamblingModal(false)}
-          className="w-full min-h-[44px] py-2.5 bg-[#1f1f1f] hover:bg-black text-white text-xs font-bold rounded-[2px] cursor-pointer"
+          aria-label="Copy PIN"
+          onClick={() => {
+            navigator.clipboard?.writeText(revealedCardPin);
+            toast.success('Card PIN copied temporarily');
+          }}
+          className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg text-gray-500 hover:text-[#DB0011] hover:bg-white cursor-pointer"
         >
-          Done
+          <Copy className="w-4 h-4" aria-hidden="true" />
         </button>
-      </ModalDialog>
+      </div>
 
-      {/* ========================================================= */}
-      {/* 4. MANAGE ACCOUNT & CARD LIMITS MODAL                    */}
-      {/* ========================================================= */}
-      <ModalDialog
-        open={showManageModal}
-        onClose={() => setShowManageModal(false)}
-        title="Manage account & limits"
-        subtitle={`${cardTitle} •••• ${maskedFourDigits}`}
-        maxWidthClass="max-w-md"
+      <p className="text-[11px] text-gray-400">
+        Do not disclose this PIN to anyone. Keep your card protected.
+      </p>
+
+      <button
+        type="button"
+        onClick={() => setShowPinModal(false)}
+        className="w-full min-h-[44px] py-2.5 bg-[#1f1f1f] hover:bg-black text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
       >
-        <div className="space-y-4">
-          {/* Freeze Toggle inside Manage Account */}
-          <div className="p-3.5 bg-[#F6F7F9] rounded-xl border border-gray-200 flex items-center justify-between gap-3">
-            <div>
-              <div className="font-bold text-xs text-[#1f1f1f]">Temporary Card Freeze</div>
-              <div className="text-[11px] text-gray-500">
-                {isFrozen ? 'Card is frozen — unblock anytime' : 'Card is active for spending'}
-              </div>
-            </div>
-            <ToggleSwitch
-              checked={isFrozen}
-              onChange={() => handleToggleFreeze()}
-              ariaLabel="Temporary Card Freeze"
-              activeColor="bg-[#DB0011]"
-            />
-          </div>
+        Hide PIN
+      </button>
+    </div>
+  )}
+</ModalDialog>
 
-          {/* Daily Spending Limit Slider */}
-          <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200 space-y-2.5">
-            <div className="flex items-center justify-between text-xs">
-              <label htmlFor="card-limit-slider" className="font-bold text-[#1f1f1f]">
-                Daily Spending Limit
-              </label>
-              <span className="font-mono font-extrabold text-[#DB0011]">
-                {formatINR(activeCard.spendingLimit || 200000)}
-              </span>
-            </div>
-            <input
-              id="card-limit-slider"
-              type="range"
-              min={25000}
-              max={1000000}
-              step={25000}
-              value={activeCard.spendingLimit || 200000}
-              onChange={e => updateCardSettings(activeCard.cardId, { spendingLimit: Number(e.target.value) })}
-              className="w-full accent-[#DB0011] cursor-pointer"
-            />
-            <div className="flex justify-between text-[10px] text-gray-400 font-mono">
-              <span>₹25,000</span>
-              <span>₹5,00,000</span>
-              <span>₹10,00,000</span>
-            </div>
-          </div>
+{/* ========================================================= */ }
+{/* 3. GAMBLING RESTRICTION MODAL                            */ }
+{/* ========================================================= */ }
+<ModalDialog
+  open={showGamblingModal}
+  onClose={() => setShowGamblingModal(false)}
+  title="Gambling restriction"
+  subtitle={`${cardTitle} •••• ${maskedFourDigits}`}
+  maxWidthClass="max-w-sm"
+>
+  <p className="text-xs text-gray-500 leading-relaxed">
+    Block transactions categorized as betting, casinos, lottery tickets, and online gambling (Merchant Category Code 7995).
+  </p>
 
-          {/* Usage Toggles */}
-          <div className="space-y-2">
-            {[
-              {
-                key: 'onlineEnabled' as const,
-                label: 'Online / E-Commerce Usage',
-                desc: 'Required for merchant websites and apps',
-                val: !!activeCard.onlineEnabled,
-              },
-              {
-                key: 'contactlessEnabled' as const,
-                label: 'Contactless Tap to Pay',
-                desc: 'Wave & pay without PIN up to ₹5,000',
-                val: !!activeCard.contactlessEnabled,
-              },
-              {
-                key: 'internationalEnabled' as const,
-                label: 'International Usage',
-                desc: 'Overseas POS and foreign currency websites',
-                val: !!activeCard.internationalEnabled,
-              },
-            ].map(item => (
-              <div key={item.key} className="flex items-center justify-between p-3 bg-[#F6F7F9] rounded-xl border border-gray-200/70">
-                <div className="pr-3">
-                  <div className="font-bold text-xs text-[#1f1f1f]">{item.label}</div>
-                  <div className="text-[11px] text-gray-500">{item.desc}</div>
-                </div>
-                <ToggleSwitch
-                  checked={item.val}
-                  onChange={checked => {
-                    updateCardSettings(activeCard.cardId, { [item.key]: checked });
-                    toast.success(`${item.label} ${checked ? 'enabled' : 'disabled'}`);
-                  }}
-                  ariaLabel={item.label}
-                />
-              </div>
-            ))}
-          </div>
+  <div className="my-5 p-4 bg-[#F6F7F9] rounded-xl border border-gray-200 flex items-center justify-between gap-3">
+    <div>
+      <span className="font-bold text-xs text-[#1f1f1f] block">
+        Block Gambling Merchants
+      </span>
+      <span className="text-[11px] text-gray-500">
+        {gamblingBlocked ? 'Currently active & protected' : 'Restriction disabled'}
+      </span>
+    </div>
+    <ToggleSwitch
+      checked={gamblingBlocked}
+      onChange={handleToggleGambling}
+      ariaLabel="Block Gambling Merchants"
+    />
+  </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              setShowManageModal(false);
-              toast.success('Card limits and preferences saved');
+  <div className="text-[11px] text-gray-500 leading-normal flex items-start gap-2 mb-4">
+    <ShieldCheck className="w-4 h-4 text-[#16864A] shrink-0 mt-0.5" aria-hidden="true" />
+    <span>
+      Turning off this restriction is subject to HSBC India responsible spending safeguards.
+    </span>
+  </div>
+
+  <button
+    type="button"
+    onClick={() => setShowGamblingModal(false)}
+    className="w-full min-h-[44px] py-2.5 bg-[#1f1f1f] hover:bg-black text-white text-xs font-bold rounded-[2px] cursor-pointer"
+  >
+    Done
+  </button>
+</ModalDialog>
+
+{/* ========================================================= */ }
+{/* 4. MANAGE ACCOUNT & CARD LIMITS MODAL                    */ }
+{/* ========================================================= */ }
+<ModalDialog
+  open={showManageModal}
+  onClose={() => setShowManageModal(false)}
+  title="Manage account & limits"
+  subtitle={`${cardTitle} •••• ${maskedFourDigits}`}
+  maxWidthClass="max-w-md"
+>
+  <div className="space-y-4">
+    {/* Freeze Toggle inside Manage Account */}
+    <div className="p-3.5 bg-[#F6F7F9] rounded-xl border border-gray-200 flex items-center justify-between gap-3">
+      <div>
+        <div className="font-bold text-xs text-[#1f1f1f]">Temporary Card Freeze</div>
+        <div className="text-[11px] text-gray-500">
+          {isFrozen ? 'Card is frozen — unblock anytime' : 'Card is active for spending'}
+        </div>
+      </div>
+      <ToggleSwitch
+        checked={isFrozen}
+        onChange={() => handleToggleFreeze()}
+        ariaLabel="Temporary Card Freeze"
+        activeColor="bg-[#DB0011]"
+      />
+    </div>
+
+    {/* Daily Spending Limit Slider */}
+    <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200 space-y-2.5">
+      <div className="flex items-center justify-between text-xs">
+        <label htmlFor="card-limit-slider" className="font-bold text-[#1f1f1f]">
+          Daily Spending Limit
+        </label>
+        <span className="font-mono font-extrabold text-[#DB0011]">
+          {formatINR(activeCard.spendingLimit || 200000)}
+        </span>
+      </div>
+      <input
+        id="card-limit-slider"
+        type="range"
+        min={25000}
+        max={1000000}
+        step={25000}
+        value={activeCard.spendingLimit || 200000}
+        onChange={e => updateCardSettings(activeCard.cardId, { spendingLimit: Number(e.target.value) })}
+        className="w-full accent-[#DB0011] cursor-pointer"
+      />
+      <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+        <span>₹25,000</span>
+        <span>₹5,00,000</span>
+        <span>₹10,00,000</span>
+      </div>
+    </div>
+
+    {/* Usage Toggles */}
+    <div className="space-y-2">
+      {[
+        {
+          key: 'onlineEnabled' as const,
+          label: 'Online / E-Commerce Usage',
+          desc: 'Required for merchant websites and apps',
+          val: !!activeCard.onlineEnabled,
+        },
+        {
+          key: 'contactlessEnabled' as const,
+          label: 'Contactless Tap to Pay',
+          desc: 'Wave & pay without PIN up to ₹5,000',
+          val: !!activeCard.contactlessEnabled,
+        },
+        {
+          key: 'internationalEnabled' as const,
+          label: 'International Usage',
+          desc: 'Overseas POS and foreign currency websites',
+          val: !!activeCard.internationalEnabled,
+        },
+      ].map(item => (
+        <div key={item.key} className="flex items-center justify-between p-3 bg-[#F6F7F9] rounded-xl border border-gray-200/70">
+          <div className="pr-3">
+            <div className="font-bold text-xs text-[#1f1f1f]">{item.label}</div>
+            <div className="text-[11px] text-gray-500">{item.desc}</div>
+          </div>
+          <ToggleSwitch
+            checked={item.val}
+            onChange={checked => {
+              updateCardSettings(activeCard.cardId, { [item.key]: checked });
+              toast.success(`${item.label} ${checked ? 'enabled' : 'disabled'}`);
             }}
-            className="w-full min-h-[44px] py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
-          >
-            Done
-          </button>
+            ariaLabel={item.label}
+          />
         </div>
-      </ModalDialog>
+      ))}
+    </div>
 
-      {/* ========================================================= */}
-      {/* 5. EXPLORE MORE PRODUCTS MODAL                           */}
-      {/* ========================================================= */}
-      <ModalDialog
-        open={showExploreModal}
-        onClose={() => setShowExploreModal(false)}
-        title="Explore more products"
-        subtitle="Exclusive HSBC India Premier offers"
-        maxWidthClass="max-w-md"
-      >
-        <div className="space-y-3">
-          {[
-            { title: 'HSBC Premier Metal Credit Card', desc: 'Unlimited global airport lounge access, 4X reward points & concierge' },
-            { title: 'Global Money Multi-Currency Account', desc: 'Hold, send and spend in 14 foreign currencies with zero markup' },
-            { title: 'HSBC SmartValue Card', desc: '3X cashback on dining, groceries, fuel and streaming subscriptions' },
-            { title: 'Pre-Approved Instant Personal Loan', desc: 'Funds disbursed in 2 hours with preferential Premier rates' },
-          ].map(prod => (
-            <div key={prod.title} className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200">
-              <div className="font-bold text-xs text-[#1f1f1f]">{prod.title}</div>
-              <div className="text-[11px] text-gray-500 mt-1 leading-relaxed">{prod.desc}</div>
-              <button
-                type="button"
-                onClick={() => {
-                  toast.success(`Application initiated for ${prod.title}. A Premier Executive will connect.`);
-                  setShowExploreModal(false);
-                }}
-                className="mt-3 min-h-[36px] text-xs font-bold text-[#DB0011] hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <span>Apply with 1-Click</span>
-                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </ModalDialog>
+    <button
+      type="button"
+      onClick={() => {
+        setShowManageModal(false);
+        toast.success('Card limits and preferences saved');
+      }}
+      className="w-full min-h-[44px] py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
+    >
+      Done
+    </button>
+  </div>
+</ModalDialog>
+
+{/* ========================================================= */ }
+{/* 5. EXPLORE MORE PRODUCTS MODAL                           */ }
+{/* ========================================================= */ }
+<ModalDialog
+  open={showExploreModal}
+  onClose={() => setShowExploreModal(false)}
+  title="Explore more products"
+  subtitle="Exclusive HSBC India Premier offers"
+  maxWidthClass="max-w-md"
+>
+  <div className="space-y-3">
+    {[
+      { title: 'HSBC Premier Metal Credit Card', desc: 'Unlimited global airport lounge access, 4X reward points & concierge' },
+      { title: 'Global Money Multi-Currency Account', desc: 'Hold, send and spend in 14 foreign currencies with zero markup' },
+      { title: 'HSBC SmartValue Card', desc: '3X cashback on dining, groceries, fuel and streaming subscriptions' },
+      { title: 'Pre-Approved Instant Personal Loan', desc: 'Funds disbursed in 2 hours with preferential Premier rates' },
+    ].map(prod => (
+      <div key={prod.title} className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200">
+        <div className="font-bold text-xs text-[#1f1f1f]">{prod.title}</div>
+        <div className="text-[11px] text-gray-500 mt-1 leading-relaxed">{prod.desc}</div>
+        <button
+          type="button"
+          onClick={() => {
+            toast.success(`Application initiated for ${prod.title}. A Premier Executive will connect.`);
+            setShowExploreModal(false);
+          }}
+          className="mt-3 min-h-[36px] text-xs font-bold text-[#DB0011] hover:underline flex items-center gap-1 cursor-pointer"
+        >
+          <span>Apply with 1-Click</span>
+          <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+        </button>
+      </div>
+    ))}
+  </div>
+</ModalDialog>
     </div>
   );
 };
