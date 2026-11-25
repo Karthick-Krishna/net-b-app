@@ -207,9 +207,7 @@ export const DashboardPage: React.FC = () => {
                         <div className="text-[14px] font-semibold text-[#1f1f1f] truncate">
                           {account.accountType === 'SAVINGS'
                             ? 'Premier Savings Account'
-                            : account.accountType === 'CURRENT'
-                            ? 'Business Current Account'
-                            : 'Corporate Salary Account'}
+                            : 'Business Current Account'}
                         </div>
                         <div className="text-[11px] text-[#777777] font-mono mt-0.5 truncate">
                           {account.maskedAccountNumber} • {account.ifscCode}
