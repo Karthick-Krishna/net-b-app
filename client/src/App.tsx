@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { BankingProvider } from './context/BankingContext';
 import { AppLockProvider } from './context/AppLockContext';
+import { ActionFeedbackProvider } from './context/ActionFeedbackContext';
 import { AppLayout } from './layouts/AppLayout';
 import { SplashScreen } from './components/SplashScreen';
 
@@ -90,7 +91,8 @@ export const App: React.FC = () => {
       <AuthProvider>
         <BankingProvider>
           <AppLockProvider>
-            <Toaster
+            <ActionFeedbackProvider>
+              <Toaster
               position="top-right"
               toastOptions={{
                 duration: 3500,
@@ -104,6 +106,7 @@ export const App: React.FC = () => {
               }}
             />
             <AppContent />
+            </ActionFeedbackProvider>
           </AppLockProvider>
         </BankingProvider>
       </AuthProvider>

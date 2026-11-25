@@ -1,33 +1,44 @@
 import React, { useState } from 'react';
 import { PiggyBank, Calculator } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
+import { useActionFeedback } from '../../context/ActionFeedbackContext';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import toast from 'react-hot-toast';
 
 export const DepositsPage: React.FC = () => {
   const { accounts, deposits, formatCurrency, createDeposit } = useBanking();
+  const { requestAction } = useActionFeedback();
   const [calcPrincipal, setCalcPrincipal] = useState(100000);
   const [calcTenure, setCalcTenure] = useState(24);
   const [rate] = useState(7.8);
-  const [isOpening, setIsOpening] = useState(false);
 
   const interestEarned = Math.round((calcPrincipal * rate * (calcTenure / 12)) / 100);
   const totalMaturity = calcPrincipal + interestEarned;
 
-  const handleOpenDeposit = async () => {
+  const handleOpenDeposit = () => {
     const primaryAcc = accounts[0];
     if (!primaryAcc) {
       toast.error('No eligible funding account found');
       return;
     }
-    setIsOpening(true);
-    const res = await createDeposit(primaryAcc.accountId, 'FIXED', calcPrincipal, calcTenure, rate);
-    setIsOpening(false);
-    if (res.success) {
-      toast.success(`Fixed Deposit ${res.deposit?.depositNumber} opened for ${formatCurrency(calcPrincipal, 'INR')}!`);
-    } else {
-      toast.error(res.error || 'Could not open Fixed Deposit');
-    }
+    requestAction({
+      title: 'Open Fixed Deposit?',
+      message: `Create an HSBC High Yield Fixed Deposit of ${formatCurrency(calcPrincipal, 'INR')} for ${calcTenure} months at ${rate}% p.a.?`,
+      confirmLabel: 'Yes, Open Deposit',
+      onConfirm: async () => {
+        const res = await createDeposit(primaryAcc.accountId, 'FIXED', calcPrincipal, calcTenure, rate);
+        if (!res.success) {
+          toast.error(res.error || 'Could not open Fixed Deposit');
+          return;
+        }
+        return {
+          title: 'Fixed Deposit Opened',
+          message: `Fixed Deposit ${res.deposit?.depositNumber} opened for ${formatCurrency(calcPrincipal, 'INR')} (Maturity: ₹${totalMaturity.toLocaleString('en-IN')}).`,
+          icon: 'check',
+          referenceId: res.deposit?.depositNumber,
+        };
+      },
+    });
   };
 
   return (
@@ -144,11 +155,10 @@ export const DepositsPage: React.FC = () => {
 
             <button
               type="button"
-              disabled={isOpening}
               onClick={handleOpenDeposit}
-              className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-semibold rounded-[2px] transition-colors cursor-pointer disabled:opacity-50"
+              className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
             >
-              {isOpening ? 'Opening Deposit...' : `Open Instant Fixed Deposit (₹${calcPrincipal.toLocaleString('en-IN')})`}
+              Open Instant Fixed Deposit (₹{calcPrincipal.toLocaleString('en-IN')})
             </button>
           </div>
         </div>

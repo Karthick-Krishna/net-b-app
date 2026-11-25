@@ -262,38 +262,40 @@ export const DashboardPage: React.FC = () => {
                           : 'bg-gradient-to-b from-[#EAECEF] via-[#DFE2E8] to-[#CDD1D9] text-[#1f1f1f] border-gray-300'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <img src="/logo.png" alt="HSBC" className="w-5 h-5 object-contain" />
-                          <span className="text-xs font-bold">HSBC India</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <img src="/logo.png" alt="HSBC" className="w-5 h-5 object-contain shrink-0" />
+                          <span className="text-xs font-bold truncate">
+                            {card.cardName || `HSBC ${card.cardType} Card`}
+                          </span>
                         </div>
                         {frozen ? (
-                          <span className="px-2 py-0.5 rounded bg-[#DB0011] text-white text-[10px] font-bold flex items-center gap-1">
+                          <span className="px-2 py-0.5 rounded bg-[#DB0011] text-white text-[10px] font-bold flex items-center gap-1 shrink-0">
                             <Snowflake className="w-2.5 h-2.5" aria-hidden="true" />
                             FROZEN
                           </span>
                         ) : (
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${isCredit ? 'text-gray-300' : 'text-gray-600'}`}>
-                            {card.cardType}
+                          <span className={`text-[10px] font-bold uppercase tracking-wider shrink-0 ${isCredit ? 'text-gray-300' : 'text-gray-600'}`}>
+                            {card.cardTier === 'GLOBAL_TRAVEL' ? 'BUSINESS DEBIT' : card.cardType}
                           </span>
                         )}
                       </div>
 
-                      <div className="mt-5 font-mono text-sm font-semibold tracking-wider">
+                      <div className="mt-4 font-mono text-sm font-bold tracking-wider">
                         {card.maskedCardNumber}
                       </div>
 
-                      <div className="mt-4 flex items-end justify-between text-[11px]">
+                      <div className="mt-3 flex items-end justify-between text-[11px]">
                         <div>
-                          <span className={`block text-[9px] uppercase ${isCredit ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Expires
-                          </span>
-                          <span className="font-mono font-bold">
-                            {card.expiryMonth}/{card.expiryYear}
+                          <div className={`font-bold uppercase tracking-wide ${isCredit ? 'text-white' : 'text-[#1f1f1f]'}`}>
+                            {card.cardholderName || currentUser?.displayName || 'KARTHICK KRISHNA'}
+                          </div>
+                          <span className={`font-mono text-[10px] ${isCredit ? 'text-gray-300' : 'text-gray-600'}`}>
+                            Exp {card.expiryMonth}/{card.expiryYear}
                           </span>
                         </div>
-                        <span className="font-black italic text-base text-white drop-shadow-xs">
-                          VISA
+                        <span className={`font-black italic text-base ${isCredit ? 'text-white' : 'text-[#1434CB]'}`}>
+                          {card.network === 'MASTERCARD' ? 'MC' : 'VISA'}
                         </span>
                       </div>
                     </button>

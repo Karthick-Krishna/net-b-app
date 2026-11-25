@@ -12,9 +12,11 @@ import {
   Lock,
   Eye,
   EyeOff,
+  RotateCcw,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useAppLock } from '../context/AppLockContext';
+import { useActionFeedback } from '../context/ActionFeedbackContext';
 import { RealtimeStore } from '@shared/realtimeStore';
 import toast from 'react-hot-toast';
 
@@ -30,7 +32,8 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
   isModal = false,
 }) => {
   const { currentUser } = useAuth();
-  const { verifyPin, unlockApp, resetMpin } = useAppLock();
+  const { verifyPin, unlockApp, resetMpin, resetAppLockToDefault } = useAppLock();
+  const { requestAction } = useActionFeedback();
 
   const [pin, setPin] = useState<string>('');
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -306,6 +309,33 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                     <Lock className="w-3.5 h-3.5 text-gray-400" />
                   </button>
                 )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowMenuDropdown(false);
+                    requestAction({
+                      title: 'Reset App Lock?',
+                      message: 'Reset App-Lock PIN back to default (002831) and clear any failed attempt lockouts?',
+                      confirmLabel: 'Yes, Reset App Lock',
+                      tone: 'danger',
+                      onConfirm: () => {
+                        resetAppLockToDefault();
+                        setPin('');
+                        setErrorMsg('');
+                        return {
+                          title: 'App Lock Reset Complete',
+                          message: 'App-Lock security has been reset. Default 6-digit PIN (002831) is restored.',
+                          icon: 'key',
+                        };
+                      },
+                    });
+                  }}
+                  className="w-full px-4 py-2.5 text-left hover:bg-gray-50 flex items-center justify-between text-[#DB0011] font-semibold cursor-pointer"
+                >
+                  <span>Reset App Lock</span>
+                  <RotateCcw className="w-3.5 h-3.5 text-[#DB0011]" />
+                </button>
 
                 <button
                   type="button"

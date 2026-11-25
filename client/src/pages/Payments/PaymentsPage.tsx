@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeftRight,
-  CheckCircle2,
   Building2,
   Users,
   Globe2,
   Zap,
   ArrowRight,
-  QrCode,
   UserPlus,
   CalendarClock,
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
+import { useActionFeedback } from '../../context/ActionFeedbackContext';
 import { BILL_CATEGORIES } from '@shared/constants';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import { ModalDialog } from '../../components/common/ModalDialog';
@@ -31,15 +31,12 @@ const INITIAL_BENEFICIARIES: Beneficiary[] = [
 ];
 
 export const PaymentsPage: React.FC = () => {
+  const navigate = useNavigate();
   const { accounts, submitTransfer, formatCurrency } = useBanking();
+  const { requestAction, showSuccess } = useActionFeedback();
 
-  const [activeTab, setActiveTab] = useState<'UPI' | 'TRANSFER' | 'GLOBAL' | 'BILL_PAY'>('UPI');
-
-  // SimplyPay UPI State
-  const [upiVpa, setUpiVpa] = useState('merchant@okicici');
-  const [upiAmount, setUpiAmount] = useState('1500');
-  const [upiRemark, setUpiRemark] = useState('HSBC SimplyPay UPI');
-  const [showQrModal, setShowQrModal] = useState(false);
+  // Domestic Transfer | Global Money | Pay Bills (UPI removed — handled on separate SimplyPay app)
+  const [activeTab, setActiveTab] = useState<'TRANSFER' | 'GLOBAL' | 'BILL_PAY'>('TRANSFER');
 
   // Saved Beneficiaries + Add Payee Modal
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>(INITIAL_BENEFICIARIES);
@@ -74,7 +71,6 @@ export const PaymentsPage: React.FC = () => {
   const [category] = useState('TRANSFER');
   const [reference, setReference] = useState('TXN/NEFT/' + Date.now().toString().slice(-6));
   const [description, setDescription] = useState('Consulting & Retainer Payment');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Bill Payment State
   const [selectedBillCategory, setSelectedBillCategory] = useState<string>('ELECTRICITY');
@@ -84,32 +80,6 @@ export const PaymentsPage: React.FC = () => {
 
   const selectedAccount = accounts.find(a => a.accountId === sourceAccountId) || accounts[0];
   const effectiveSourceAccountId = selectedAccount?.accountId || '';
-
-  const handleUpiPay = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const numAmt = parseFloat(upiAmount);
-    if (!upiVpa.includes('@') || isNaN(numAmt) || numAmt <= 0 || !effectiveSourceAccountId) {
-      toast.error('Please enter a valid UPI ID (e.g. name@bank) and amount');
-      return;
-    }
-    setIsSubmitting(true);
-    const res = await submitTransfer(effectiveSourceAccountId, {
-      recipientName: upiVpa,
-      recipientAccount: upiVpa,
-      recipientBank: 'NPCI UPI Switch (SimplyPay)',
-      ifscCode: 'HSBC0UPI001',
-      amount: numAmt,
-      reference: 'UPI/' + Date.now().toString().slice(-8),
-      category: 'TRANSFER',
-      note: upiRemark,
-    });
-    setIsSubmitting(false);
-    if (res.success) {
-      toast.success(`Paid ${formatCurrency(numAmt, 'INR')} to ${upiVpa} via HSBC SimplyPay!`);
-    } else {
-      toast.error(res.error || 'UPI payment failed');
-    }
-  };
 
   const handleAddBeneficiary = (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,12 +94,16 @@ export const PaymentsPage: React.FC = () => {
     setRecipientAccount(item.account);
     setRecipientBank(item.bank);
     setIfscCode(item.ifsc);
-    toast.success(`Beneficiary ${item.name} added & verified!`);
     setNewPayeeName('');
     setNewPayeeAcc('');
     setNewPayeeBank('');
     setNewPayeeIfsc('');
     setShowAddPayeeModal(false);
+    showSuccess({
+      title: 'Beneficiary Added',
+      message: `${item.name} (${item.bank}) has been verified and saved to your payee directory.`,
+      icon: 'check',
+    });
   };
 
   const handleSelectTransferType = (type: 'OWN' | 'SAVED' | 'NEW' | 'INTERNATIONAL') => {
@@ -153,7 +127,7 @@ export const PaymentsPage: React.FC = () => {
     }
   };
 
-  const handleExecuteGlobalTransfer = async (e: React.FormEvent) => {
+  const handleExecuteGlobalTransfer = (e: React.FormEvent) => {
     e.preventDefault();
     const numAmount = parseFloat(globalInrAmount);
     if (isNaN(numAmount) || numAmount <= 0 || !effectiveSourceAccountId) {
@@ -164,29 +138,42 @@ export const PaymentsPage: React.FC = () => {
       toast.error('Insufficient available balance in selected account');
       return;
     }
-
     const fxVal = (numAmount / globalCountry.rate).toFixed(2);
-    setIsSubmitting(true);
-    const res = await submitTransfer(effectiveSourceAccountId, {
-      recipientName: globalBeneficiaryName,
-      recipientAccount: globalIban,
-      recipientBank: `HSBC ${globalCountry.name} Core Switch`,
-      ifscCode: globalSwift,
-      amount: numAmount,
-      reference: 'HSBC/GLB/' + Date.now().toString().slice(-6),
-      category: 'TRANSFER',
-      note: `Global Money Transfer - ${globalPurpose} (${fxVal} ${globalCountry.currency})`,
-    });
-    setIsSubmitting(false);
+    const ref = 'HSBC/GLB/' + Date.now().toString().slice(-6);
 
-    if (res.success) {
-      toast.success(`HSBC Global Transfer of ${globalCountry.currency} ${fxVal} dispatched to ${globalBeneficiaryName}!`);
-    } else {
-      toast.error(res.error || 'Global transfer failed');
-    }
+    requestAction({
+      title: `Confirm Global Transfer (${globalCountry.currency} ${fxVal})?`,
+      message: `Send ${formatCurrency(numAmount, 'INR')} (${globalCountry.currency} ${fxVal}) to ${globalBeneficiaryName} in ${globalCountry.name}?`,
+      confirmLabel: 'Yes, Authorize Wire',
+      onConfirm: async () => {
+        const res = await submitTransfer(effectiveSourceAccountId, {
+          recipientName: globalBeneficiaryName,
+          recipientAccount: globalIban,
+          recipientBank: `HSBC ${globalCountry.name} Core Switch`,
+          ifscCode: globalSwift,
+          amount: numAmount,
+          reference: ref,
+          category: 'TRANSFER',
+          note: `Global Money Transfer - ${globalPurpose} (${fxVal} ${globalCountry.currency})`,
+        });
+        if (!res.success) {
+          toast.error(res.error || 'Global transfer failed');
+          return;
+        }
+        return {
+          title: 'Global Wire Dispatched',
+          message: `HSBC Global Money Transfer of ${globalCountry.currency} ${fxVal} (${formatCurrency(numAmount, 'INR')}) sent to ${globalBeneficiaryName}.`,
+          icon: 'check',
+          referenceId: ref,
+          relatedButtons: [
+            { label: 'View Activity Ledger', variant: 'secondary', onClick: () => navigate('/transactions') },
+          ],
+        };
+      },
+    });
   };
 
-  const handleExecuteTransfer = async () => {
+  const handleExecuteTransfer = () => {
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || numAmount <= 0 || !effectiveSourceAccountId) {
       toast.error('Please enter a valid transfer amount');
@@ -197,58 +184,86 @@ export const PaymentsPage: React.FC = () => {
       return;
     }
 
-    setIsSubmitting(true);
-    const res = await submitTransfer(effectiveSourceAccountId, {
-      recipientName,
-      recipientAccount,
-      recipientBank,
-      ifscCode,
-      amount: numAmount,
-      reference,
-      category,
-      note: description,
+    requestAction({
+      title: `Authorize Transfer of ${formatCurrency(numAmount, 'INR')}?`,
+      message: `Transfer ${formatCurrency(numAmount, 'INR')} from ${selectedAccount?.accountType} (${selectedAccount?.maskedAccountNumber}) to ${recipientName} (${recipientBank})?`,
+      confirmLabel: 'Yes, Transfer Money',
+      onConfirm: async () => {
+        const res = await submitTransfer(effectiveSourceAccountId, {
+          recipientName,
+          recipientAccount,
+          recipientBank,
+          ifscCode,
+          amount: numAmount,
+          reference,
+          category,
+          note: description,
+        });
+        if (!res.success) {
+          toast.error(res.error || 'Payment execution failed');
+          return;
+        }
+        setTransferStep(1);
+        const doneRef = reference;
+        setReference('TXN/NEFT/' + Date.now().toString().slice(-6));
+        return {
+          title: 'Transfer Executed',
+          message: `${formatCurrency(numAmount, 'INR')} transferred successfully to ${recipientName}.`,
+          icon: 'check',
+          referenceId: doneRef,
+          relatedButtons: [
+            { label: 'View Activity Ledger', variant: 'secondary', onClick: () => navigate('/transactions') },
+            { label: 'Download Receipt', variant: 'primary', onClick: () => navigate('/statements') },
+          ],
+        };
+      },
     });
-    setIsSubmitting(false);
-
-    if (res.success) {
-      setTransferStep(6);
-      toast.success('Transfer executed successfully!');
-    } else {
-      toast.error(res.error || 'Payment execution failed');
-    }
   };
 
-  const handleExecuteBillPayment = async (e: React.FormEvent) => {
+  const handleExecuteBillPayment = (e: React.FormEvent) => {
     e.preventDefault();
     const numAmount = parseFloat(billAmount);
     if (isNaN(numAmount) || numAmount <= 0 || !effectiveSourceAccountId) {
       toast.error('Please enter a valid bill amount');
       return;
     }
-    setIsSubmitting(true);
-    const res = await submitTransfer(effectiveSourceAccountId, {
-      recipientName: billerProvider,
-      recipientAccount: consumerNumber,
-      recipientBank: 'Utility Aggregator Gateway',
-      ifscCode: 'HSBC0400002',
-      amount: numAmount,
-      reference: 'BILL/' + Date.now().toString().slice(-6),
-      category: 'UTILITIES',
-      note: `Bill Payment - ${selectedBillCategory}`,
-    });
-    setIsSubmitting(false);
+    const ref = 'BILL/' + Date.now().toString().slice(-6);
 
-    if (res.success) {
-      toast.success(`Bill payment of ${formatCurrency(numAmount, 'INR')} processed!`);
-    } else {
-      toast.error(res.error || 'Bill payment failed');
-    }
+    requestAction({
+      title: `Pay ${billerProvider} Bill?`,
+      message: `Confirm utility payment of ${formatCurrency(numAmount, 'INR')} for Consumer #${consumerNumber}?`,
+      confirmLabel: 'Yes, Pay Bill',
+      onConfirm: async () => {
+        const res = await submitTransfer(effectiveSourceAccountId, {
+          recipientName: billerProvider,
+          recipientAccount: consumerNumber,
+          recipientBank: 'Utility Aggregator Gateway',
+          ifscCode: 'HSBC0400002',
+          amount: numAmount,
+          reference: ref,
+          category: 'UTILITIES',
+          note: `Bill Payment - ${selectedBillCategory}`,
+        });
+        if (!res.success) {
+          toast.error(res.error || 'Bill payment failed');
+          return;
+        }
+        return {
+          title: 'Bill Payment Processed',
+          message: `Paid ${formatCurrency(numAmount, 'INR')} to ${billerProvider}.`,
+          icon: 'check',
+          referenceId: ref,
+          relatedButtons: [
+            { label: 'View Activity Ledger', variant: 'secondary', onClick: () => navigate('/transactions') },
+          ],
+        };
+      },
+    });
   };
 
   return (
     <AnimatedPageTransition className="pb-10">
       <div className="bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-xs overflow-hidden">
-        {/* Header + Cards-Style Underline Sub-Tabs */}
         <div className="px-4 sm:px-6 md:px-8 pt-5 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
@@ -256,7 +271,7 @@ export const PaymentsPage: React.FC = () => {
                 Pay &amp; Transfer
               </h1>
               <p className="text-xs text-[#777777] mt-0.5">
-                SimplyPay UPI, NEFT/RTGS/IMPS, Global Money &amp; Utility Bills
+                NEFT/RTGS/IMPS domestic transfers, Global Money &amp; utility bills (UPI available on HSBC SimplyPay)
               </p>
             </div>
             <button
@@ -269,9 +284,8 @@ export const PaymentsPage: React.FC = () => {
             </button>
           </div>
 
-          <div className="mt-4 flex items-center gap-5 sm:gap-8 overflow-x-auto no-scrollbar">
+          <div className="mt-4 flex items-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar">
             {[
-              { id: 'UPI' as const, label: 'SimplyPay UPI' },
               { id: 'TRANSFER' as const, label: 'Domestic Transfer' },
               { id: 'GLOBAL' as const, label: 'Global Money' },
               { id: 'BILL_PAY' as const, label: 'Pay Bills' },
@@ -295,64 +309,11 @@ export const PaymentsPage: React.FC = () => {
         </div>
 
         <div className="px-4 sm:px-6 md:px-8 py-6">
-          {/* TAB 0: HSBC SIMPLYPAY UPI */}
-          {activeTab === 'UPI' && (
-            <div className="max-w-2xl mx-auto space-y-6">
-              <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#DB0011]">HSBC SimplyPay UPI</span>
-                  <div className="text-sm font-bold text-[#1f1f1f] mt-0.5">Your UPI ID: <span className="font-mono">karthick@hsbc</span></div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowQrModal(true)}
-                  className="min-h-[40px] px-4 bg-[#1f1f1f] hover:bg-black text-white rounded-[2px] text-xs font-semibold flex items-center gap-2 cursor-pointer self-start sm:self-auto"
-                >
-                  <QrCode className="w-4 h-4" aria-hidden="true" />
-                  <span>Scan &amp; Pay QR</span>
-                </button>
-              </div>
-
-              <form onSubmit={handleUpiPay} className="space-y-4 text-xs">
-                <div>
-                  <label htmlFor="upi-src" className="font-bold text-[#555555] block mb-1.5">Debit Account</label>
-                  <select id="upi-src" value={effectiveSourceAccountId} onChange={e => setSourceAccountId(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold">
-                    {accounts.map(acc => (
-                      <option key={acc.accountId} value={acc.accountId}>
-                        {acc.accountType === 'CURRENT' ? 'Business Current' : 'Premier Savings'} ({acc.maskedAccountNumber}) — {formatCurrency(acc.managedBalance, acc.currency)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="upi-vpa" className="font-bold text-[#555555] block mb-1.5">Recipient UPI ID / VPA</label>
-                    <input id="upi-vpa" type="text" required value={upiVpa} onChange={e => setUpiVpa(e.target.value)} placeholder="name@okbank" className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono" />
-                  </div>
-                  <div>
-                    <label htmlFor="upi-amt" className="font-bold text-[#555555] block mb-1.5">Amount (INR ₹)</label>
-                    <input id="upi-amt" type="number" min="1" max="100000" required value={upiAmount} onChange={e => setUpiAmount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-bold text-sm" />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="upi-note" className="font-bold text-[#555555] block mb-1.5">UPI Note</label>
-                  <input id="upi-note" type="text" value={upiRemark} onChange={e => setUpiRemark(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
-                </div>
-
-                <button type="submit" disabled={isSubmitting} className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white font-semibold rounded-[2px] cursor-pointer">
-                  {isSubmitting ? 'Processing UPI...' : 'Send Instant UPI Payment'}
-                </button>
-              </form>
-            </div>
-          )}
-
           {/* TAB 1: DOMESTIC TRANSFERS */}
           {activeTab === 'TRANSFER' && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="flex items-center justify-between border-b border-gray-100 pb-4 gap-1">
-                {[1, 2, 3, 4, 5, 6].map(step => (
+                {[1, 2, 3, 4, 5].map(step => (
                   <div key={step} className="flex items-center gap-1.5">
                     <div
                       className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
@@ -362,7 +323,7 @@ export const PaymentsPage: React.FC = () => {
                       {transferStep > step ? '✓' : step}
                     </div>
                     <span className="hidden sm:inline text-[11px] font-semibold text-[#555555]">
-                      {step === 1 ? 'Type' : step === 2 ? 'From' : step === 3 ? 'To' : step === 4 ? 'Amount' : step === 5 ? 'Review' : 'Done'}
+                      {step === 1 ? 'Type' : step === 2 ? 'From' : step === 3 ? 'To' : step === 4 ? 'Amount' : 'Review'}
                     </span>
                   </div>
                 ))}
@@ -399,7 +360,7 @@ export const PaymentsPage: React.FC = () => {
                     })}
                   </div>
 
-                  {/* Scheduled Recurring Instructions */}
+                  {/* Standing Instructions */}
                   <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-2 text-xs">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-[#1f1f1f] flex items-center gap-1.5">
@@ -409,11 +370,22 @@ export const PaymentsPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => {
-                          setScheduledPayments(prev => [
-                            ...prev,
-                            { id: 'si-' + Date.now(), to: recipientName || 'Rajesh Kumar', amount: 15000, freq: 'Monthly • 15th', nextDate: '15 Dec 2026' },
-                          ]);
-                          toast.success('Added monthly standing instruction');
+                          requestAction({
+                            title: 'Schedule Recurring Transfer?',
+                            message: `Create a monthly recurring payment of ₹15,000 to ${recipientName || 'Rajesh Kumar'}?`,
+                            confirmLabel: 'Yes, Schedule',
+                            onConfirm: () => {
+                              setScheduledPayments(prev => [
+                                ...prev,
+                                { id: 'si-' + Date.now(), to: recipientName || 'Rajesh Kumar', amount: 15000, freq: 'Monthly • 15th', nextDate: '15 Dec 2026' },
+                              ]);
+                              return {
+                                title: 'Standing Instruction Active',
+                                message: `Monthly ₹15,000 transfer scheduled for ${recipientName || 'Rajesh Kumar'}.`,
+                                icon: 'check',
+                              };
+                            },
+                          });
                         }}
                         className="text-[#DB0011] font-semibold hover:underline cursor-pointer"
                       >
@@ -580,17 +552,8 @@ export const PaymentsPage: React.FC = () => {
                   </div>
                   <div className="flex justify-between pt-2">
                     <button type="button" onClick={() => setTransferStep(4)} className="min-h-[44px] px-5 bg-[#F2F4F7] text-[#1f1f1f] rounded-[2px] text-xs font-semibold cursor-pointer">Back</button>
-                    <button type="button" disabled={isSubmitting} onClick={handleExecuteTransfer} className="min-h-[44px] px-7 bg-[#DB0011] text-white rounded-[2px] text-xs font-semibold cursor-pointer">{isSubmitting ? 'Authorizing...' : 'Confirm & Pay'}</button>
+                    <button type="button" onClick={handleExecuteTransfer} className="min-h-[44px] px-7 bg-[#DB0011] text-white rounded-[2px] text-xs font-semibold cursor-pointer">Confirm &amp; Pay</button>
                   </div>
-                </div>
-              )}
-
-              {transferStep === 6 && (
-                <div className="text-center py-6 space-y-4">
-                  <div className="w-14 h-14 bg-emerald-50 text-[#16864A] rounded-full mx-auto flex items-center justify-center"><CheckCircle2 className="w-7 h-7" aria-hidden="true" /></div>
-                  <h2 className="text-lg font-bold text-[#1f1f1f]">Payment Successful</h2>
-                  <p className="text-xs text-[#777777]">{formatCurrency(parseFloat(amount) || 0, 'INR')} transferred to {recipientName}</p>
-                  <button type="button" onClick={() => { setTransferStep(1); setReference('TXN/NEFT/' + Date.now().toString().slice(-6)); }} className="min-h-[44px] px-6 bg-[#DB0011] text-white rounded-[2px] text-xs font-semibold cursor-pointer">Make Another Transfer</button>
                 </div>
               )}
             </div>
@@ -644,7 +607,7 @@ export const PaymentsPage: React.FC = () => {
                   <input type="text" required aria-label="IBAN" value={globalIban} onChange={e => setGlobalIban(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono uppercase" />
                   <input type="text" required aria-label="SWIFT" value={globalSwift} onChange={e => setGlobalSwift(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono uppercase" />
                 </div>
-                <button type="submit" disabled={isSubmitting} className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer">{isSubmitting ? 'Dispatching Wire...' : 'Authorize Global Transfer'}</button>
+                <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer">Authorize Global Transfer</button>
               </form>
             </div>
           )}
@@ -670,7 +633,7 @@ export const PaymentsPage: React.FC = () => {
                   </select>
                   <input type="number" required min="1" aria-label="Bill Amount" value={billAmount} onChange={e => setBillAmount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-bold" />
                 </div>
-                <button type="submit" disabled={isSubmitting} className="w-full min-h-[44px] bg-[#DB0011] text-white text-xs font-semibold rounded-[2px] cursor-pointer">{isSubmitting ? 'Authorizing...' : 'Authorize & Pay Bill'}</button>
+                <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] text-white text-xs font-semibold rounded-[2px] cursor-pointer">Authorize &amp; Pay Bill</button>
               </form>
             </div>
           )}
@@ -688,28 +651,6 @@ export const PaymentsPage: React.FC = () => {
             Verify &amp; Save Payee
           </button>
         </form>
-      </ModalDialog>
-
-      {/* UPI Scan QR Dialog */}
-      <ModalDialog open={showQrModal} onClose={() => setShowQrModal(false)} title="HSBC SimplyPay QR" subtitle="Scan any BharatQR / UPI code" maxWidthClass="max-w-sm">
-        <div className="space-y-4 text-center text-xs">
-          <div className="p-6 bg-[#F6F7F9] rounded-xl border border-gray-200 flex flex-col items-center justify-center gap-2">
-            <QrCode className="w-24 h-24 text-[#1f1f1f]" aria-hidden="true" />
-            <span className="font-mono text-[11px] text-[#555555]">UPI ID: karthick@hsbc</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setUpiVpa('tajhotels@hdfcbank');
-              setUpiAmount('2450');
-              setShowQrModal(false);
-              toast.success('Merchant QR scanned: tajhotels@hdfcbank');
-            }}
-            className="w-full min-h-[44px] bg-[#DB0011] text-white font-semibold rounded-[2px] cursor-pointer"
-          >
-            Simulate Merchant QR Scan
-          </button>
-        </div>
       </ModalDialog>
     </AnimatedPageTransition>
   );

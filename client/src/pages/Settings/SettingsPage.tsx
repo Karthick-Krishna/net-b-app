@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useBanking } from '../../context/BankingContext';
 import { useAppLock } from '../../context/AppLockContext';
+import { useActionFeedback } from '../../context/ActionFeedbackContext';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import { ModalDialog } from '../../components/common/ModalDialog';
 import { ToggleSwitch } from '../../components/common/ToggleSwitch';
@@ -26,12 +27,14 @@ export const SettingsPage: React.FC = () => {
     disableAppLock,
     changeMpin,
     resetMpin,
+    resetAppLockToDefault,
     autoLockTimeout,
     setAutoLockTimeout,
     biometricsEnabled,
     setBiometricsEnabled,
     lockApp,
   } = useAppLock();
+  const { requestAction } = useActionFeedback();
 
   const [activeSection, setActiveSection] = useState<'security' | 'notifications' | 'privacy' | 'preferences' | 'account' | 'support'>('security');
 
@@ -193,11 +196,38 @@ export const SettingsPage: React.FC = () => {
                   </button>
                   <button
                     type="button"
+                    onClick={() =>
+                      requestAction({
+                        title: 'Reset App Lock?',
+                        message: 'Restore default 6-digit App-Lock PIN (002831) and clear all lockout counters?',
+                        confirmLabel: 'Yes, Reset App Lock',
+                        tone: 'danger',
+                        onConfirm: () => {
+                          resetAppLockToDefault();
+                          return {
+                            title: 'App Lock Reset Complete',
+                            message: 'App-Lock has been reset to default PIN (002831).',
+                            icon: 'key',
+                            relatedButtons: [
+                              { label: 'Lock App Now', variant: 'secondary', onClick: () => lockApp() },
+                              { label: 'Set Custom PIN', variant: 'primary', onClick: () => setShowResetMpinModal(true) },
+                            ],
+                          };
+                        },
+                      })
+                    }
+                    className="min-h-[40px] px-4 bg-white border border-[#DB0011] text-[#DB0011] hover:bg-red-50 rounded-[2px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
+                    <span>Reset App Lock (Default)</span>
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setShowResetMpinModal(true)}
                     className="min-h-[40px] px-4 bg-white border border-[#333333] text-[#1f1f1f] hover:bg-gray-50 rounded-[2px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                   >
-                    <RotateCcw className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
-                    <span>Reset MPIN</span>
+                    <KeyRound className="w-3.5 h-3.5 text-[#1f1f1f]" aria-hidden="true" />
+                    <span>Custom MPIN</span>
                   </button>
                   {appLockEnabled && (
                     <button

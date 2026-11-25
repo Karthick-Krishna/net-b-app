@@ -71,12 +71,23 @@ export interface BeneficiaryRecord {
   createdAt: any;
 }
 
+export type CardTier =
+  | 'PREMIER_PLATINUM'
+  | 'PREMIER_WORLD_ELITE'
+  | 'GLOBAL_TRAVEL'
+  | 'TRAVEL_ONE'
+  | 'LIVE_PLUS'
+  | 'VISA_PLATINUM';
+
 export interface CardRecord {
   cardId: string;
   ownerUid: string;
   accountId: string;
   cardType: 'DEBIT' | 'CREDIT';
-  cardTier: 'PREMIER_PLATINUM' | 'PREMIER_WORLD_ELITE' | 'GLOBAL_TRAVEL';
+  cardTier: CardTier;
+  cardName?: string;
+  cardholderName?: string;
+  network?: 'VISA' | 'MASTERCARD';
   maskedCardNumber: string;
   expiryMonth: string;
   expiryYear: string;

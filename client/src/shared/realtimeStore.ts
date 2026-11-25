@@ -26,7 +26,7 @@ import {
   INITIAL_AUDIT_LOGS,
 } from './seedData';
 
-const STORE_KEY_PREFIX = 'hsbc_india_banking_store_v5_';
+const STORE_KEY_PREFIX = 'hsbc_india_banking_store_v6_';
 const CHANNEL_NAME = 'hsbc_india_sync_bus';
 
 export type SyncEventType =

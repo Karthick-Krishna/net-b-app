@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, ShieldAlert, KeyRound, CheckCircle2, Fingerprint, Smartphone, Laptop, ShieldCheck, Copy } from 'lucide-react';
 import { useAppLock } from '../../context/AppLockContext';
+import { useActionFeedback } from '../../context/ActionFeedbackContext';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import { ToggleSwitch } from '../../components/common/ToggleSwitch';
-import { ModalDialog } from '../../components/common/ModalDialog';
 import toast from 'react-hot-toast';
 
 export const SecurityPage: React.FC = () => {
-  const { appLockEnabled, enableAppLock, disableAppLock, lockApp, biometricsEnabled, setBiometricsEnabled } = useAppLock();
+  const { appLockEnabled, enableAppLock, disableAppLock, lockApp, resetAppLockToDefault, biometricsEnabled, setBiometricsEnabled } = useAppLock();
+  const { requestAction } = useActionFeedback();
 
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
-  const [showEmergencyDialog, setShowEmergencyDialog] = useState(false);
   const [otcCode, setOtcCode] = useState('482 915');
   const [otcTimer, setOtcTimer] = useState(30);
 
@@ -30,6 +30,26 @@ export const SecurityPage: React.FC = () => {
     return () => clearInterval(id);
   }, []);
 
+  const handleResetAppLock = () => {
+    requestAction({
+      title: 'Reset App Lock?',
+      message: 'This will reset your App-Lock 6-digit PIN back to the default PIN (002831), clear any failed PIN attempt counters, and re-enable App Lock.',
+      confirmLabel: 'Yes, Reset App Lock',
+      tone: 'danger',
+      onConfirm: () => {
+        resetAppLockToDefault();
+        return {
+          title: 'App Lock Reset Complete',
+          message: 'App-Lock security has been reset. Default 6-digit PIN (002831) is active and failed attempts are cleared.',
+          icon: 'key',
+          relatedButtons: [
+            { label: 'Lock App Now', variant: 'secondary', onClick: () => lockApp() },
+          ],
+        };
+      },
+    });
+  };
+
   const handleUpdatePin = (e: React.FormEvent) => {
     e.preventDefault();
     if (newPin.length !== 6 || !/^\d+$/.test(newPin)) {
@@ -41,10 +61,25 @@ export const SecurityPage: React.FC = () => {
       return;
     }
 
-    enableAppLock(newPin);
-    toast.success('App-Lock 6-digit PIN updated!');
-    setNewPin('');
-    setConfirmPin('');
+    const pinToSave = newPin;
+    requestAction({
+      title: 'Update App-Lock PIN?',
+      message: 'Confirm changing your 6-digit App-Lock PIN for future banking launches?',
+      confirmLabel: 'Yes, Save PIN',
+      onConfirm: () => {
+        enableAppLock(pinToSave);
+        setNewPin('');
+        setConfirmPin('');
+        return {
+          title: 'App-Lock PIN Updated',
+          message: 'Your new 6-digit App-Lock PIN has been activated.',
+          icon: 'key',
+          relatedButtons: [
+            { label: 'Lock Screen Now', variant: 'secondary', onClick: () => lockApp() },
+          ],
+        };
+      },
+    });
   };
 
   return (
@@ -93,13 +128,35 @@ export const SecurityPage: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={disableAppLock}
-                    className="min-h-[42px] px-4 bg-white border border-[#DB0011] text-[#DB0011] hover:bg-red-50 rounded-[2px] text-xs font-semibold cursor-pointer"
+                    onClick={() =>
+                      requestAction({
+                        title: 'Disable App-Lock Shield?',
+                        message: 'Disabling App-Lock removes the 6-digit PIN requirement on app launch.',
+                        confirmLabel: 'Yes, Disable',
+                        tone: 'danger',
+                        onConfirm: () => {
+                          disableAppLock();
+                          return {
+                            title: 'App-Lock Disabled',
+                            message: '6-digit PIN lock has been turned off for this device.',
+                            icon: 'unlock',
+                          };
+                        },
+                      })
+                    }
+                    className="min-h-[42px] px-4 bg-white border border-[#333333] text-[#1f1f1f] hover:bg-gray-50 rounded-[2px] text-xs font-semibold cursor-pointer"
                   >
                     Disable App-Lock
                   </button>
                 </>
               )}
+              <button
+                type="button"
+                onClick={handleResetAppLock}
+                className="min-h-[42px] px-4 bg-white border border-[#DB0011] text-[#DB0011] hover:bg-red-50 rounded-[2px] text-xs font-semibold cursor-pointer"
+              >
+                Reset App Lock
+              </button>
             </div>
           </div>
 
@@ -182,7 +239,22 @@ export const SecurityPage: React.FC = () => {
 
               <button
                 type="button"
-                onClick={() => setShowEmergencyDialog(true)}
+                onClick={() =>
+                  requestAction({
+                    title: 'Confirm Emergency Lockdown?',
+                    message: 'This will immediately lock your active banking session and require your 6-digit PIN to re-enter.',
+                    confirmLabel: 'Yes, Lock Immediately',
+                    tone: 'danger',
+                    onConfirm: () => {
+                      lockApp();
+                      return {
+                        title: 'Emergency Lockdown Engaged',
+                        message: 'Session locked securely.',
+                        icon: 'shield',
+                      };
+                    },
+                  })
+                }
                 className="w-full min-h-[44px] bg-white hover:bg-red-50 text-[#DB0011] border border-[#DB0011] rounded-[2px] text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
               >
                 <ShieldAlert className="w-4 h-4" aria-hidden="true" />
@@ -252,38 +324,6 @@ export const SecurityPage: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Emergency Lockdown Confirmation Dialog */}
-      <ModalDialog
-        open={showEmergencyDialog}
-        onClose={() => setShowEmergencyDialog(false)}
-        title="Confirm Emergency Lockdown?"
-        maxWidthClass="max-w-sm"
-      >
-        <p className="text-xs text-[#555555] leading-relaxed">
-          This will immediately lock your active session and require your 6-digit PIN to re-enter.
-        </p>
-        <div className="mt-5 flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={() => setShowEmergencyDialog(false)}
-            className="min-h-[42px] px-4 bg-[#F2F4F7] hover:bg-gray-200 text-[#1f1f1f] text-xs font-semibold rounded-[2px] cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setShowEmergencyDialog(false);
-              lockApp();
-              toast.success('Emergency session lockdown engaged');
-            }}
-            className="min-h-[42px] px-5 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-semibold rounded-[2px] cursor-pointer"
-          >
-            Lock Immediately
-          </button>
-        </div>
-      </ModalDialog>
     </AnimatedPageTransition>
   );
 };

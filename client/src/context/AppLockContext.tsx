@@ -15,6 +15,7 @@ interface AppLockContextType {
   disableAppLock: () => void;
   changeMpin: (currentPin: string, newPin: string) => { success: boolean; message?: string };
   resetMpin: (newPin: string) => { success: boolean; message?: string };
+  resetAppLockToDefault: () => void;
   setAutoLockTimeout: (mins: number) => void;
   setBiometricsEnabled: (enabled: boolean) => void;
   lockApp: () => void;
@@ -144,6 +145,17 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return { success: true };
   };
 
+  const resetAppLockToDefault = () => {
+    if (!currentUser) return;
+    RealtimeStore.setAppLockPin(currentUser.uid, '002831');
+    setAppLockEnabled(true);
+    setFailedAttempts(0);
+    setRemainingAttempts(5);
+    setLockedUntil(null);
+    sessionStorage.setItem('hsbc_session_unlocked', 'true');
+    setIsLocked(false);
+  };
+
   const lockApp = () => {
     sessionStorage.removeItem('hsbc_session_unlocked');
     setIsLocked(true);
@@ -169,6 +181,7 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
         disableAppLock,
         changeMpin,
         resetMpin,
+        resetAppLockToDefault,
         setAutoLockTimeout,
         setBiometricsEnabled,
         lockApp,

@@ -19,15 +19,18 @@ import {
   PiggyBank,
   Shield,
   Activity,
+  RotateCcw,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useAppLock } from '../../context/AppLockContext';
+import { useActionFeedback } from '../../context/ActionFeedbackContext';
 
 export const HsbcTopNav: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, logout } = useAuth();
-  const { lockApp } = useAppLock();
+  const { lockApp, resetAppLockToDefault } = useAppLock();
+  const { requestAction } = useActionFeedback();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -292,6 +295,34 @@ export const HsbcTopNav: React.FC = () => {
                 >
                   <Lock className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
                   <span>Lock Session (MPIN Shield)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    requestAction({
+                      title: 'Reset App Lock?',
+                      message: 'Reset your 6-digit App-Lock PIN back to default (002831) and clear any failed PIN attempts?',
+                      confirmLabel: 'Yes, Reset App Lock',
+                      tone: 'danger',
+                      onConfirm: () => {
+                        resetAppLockToDefault();
+                        return {
+                          title: 'App Lock Reset Complete',
+                          message: 'App-Lock PIN reset to 002831 and lockouts cleared.',
+                          icon: 'key',
+                          relatedButtons: [
+                            { label: 'Lock App Now', variant: 'secondary', onClick: () => lockApp() },
+                          ],
+                        };
+                      },
+                    });
+                  }}
+                  className="w-full min-h-[44px] py-2.5 px-4 bg-white border border-[#333333] hover:bg-gray-50 text-[#1f1f1f] text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <RotateCcw className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
+                  <span>Reset App Lock</span>
                 </button>
 
                 <button
