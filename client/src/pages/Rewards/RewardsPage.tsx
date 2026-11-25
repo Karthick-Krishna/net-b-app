@@ -1,72 +1,96 @@
-import React from 'react';
-import { Gift, Award, Sparkles, Check } from 'lucide-react';
+import React, { useState } from 'react';
+import { Gift, Award, CheckCircle2 } from 'lucide-react';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import toast from 'react-hot-toast';
 
 export const RewardsPage: React.FC = () => {
-  const points = 48250;
+  const [points, setPoints] = useState(48250);
+  const [redeemedList, setRedeemedList] = useState<string[]>([]);
 
   const catalog = [
-    { title: 'Taj Hotels & Resorts Dining Voucher', points: 15000, value: '₹5,000 Dining Credit' },
-    { title: 'British Airways Executive Club Miles', points: 25000, value: '10,000 Avios Air Miles' },
-    { title: 'Statement Cashback Credit', points: 30000, value: '₹10,000 Direct Account Credit' },
-    { title: 'Apple Store Digital Gift Card', points: 45000, value: '₹15,000 Voucher' },
+    { id: 'taj', title: 'Taj Hotels & Resorts Dining Voucher', points: 15000, value: '₹5,000 Dining Credit' },
+    { id: 'ba', title: 'British Airways Executive Club Miles', points: 25000, value: '10,000 Avios Air Miles' },
+    { id: 'cash', title: 'Statement Cashback Credit', points: 30000, value: '₹10,000 Direct Account Credit' },
+    { id: 'apple', title: 'Apple Store Digital Gift Card', points: 45000, value: '₹15,000 Voucher' },
   ];
 
-  const handleRedeem = (title: string, requiredPoints: number) => {
+  const handleRedeem = (id: string, title: string, requiredPoints: number) => {
     if (points < requiredPoints) {
       toast.error('Insufficient reward points balance');
       return;
     }
-    toast.success(`Redeemed: ${title}! Certificate sent to registered email.`);
+    setPoints(prev => prev - requiredPoints);
+    setRedeemedList(prev => [title, ...prev]);
+    toast.success(`Redeemed: ${title}! Voucher sent to registered email.`);
   };
 
   return (
-    <AnimatedPageTransition className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-extrabold text-[#252525] tracking-tight">
-          HSBC Premier Rewards
-        </h2>
-        <p className="text-xs text-[#777777]">
-          Earn points with every transaction and redeem for luxury experiences and statement credits
-        </p>
-      </div>
-
-      <div className="bg-gradient-to-r from-[#DB0011] to-[#B0000D] text-white rounded-3xl p-6 sm:p-8 shadow-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <div className="text-xs uppercase tracking-wider text-white/80 font-bold flex items-center gap-1.5">
-            <Award className="w-4 h-4 text-amber-300" />
-            <span>Available Premier Points</span>
-          </div>
-          <div className="text-3xl sm:text-4xl font-extrabold text-white mt-1">
-            {points.toLocaleString('en-IN')} PTS
-          </div>
+    <AnimatedPageTransition className="pb-10">
+      <div className="bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-xs overflow-hidden">
+        <div className="px-4 sm:px-6 md:px-8 pt-5 pb-5 border-b border-gray-100">
+          <h1 className="text-[19px] sm:text-[22px] font-bold text-[#1f1f1f] tracking-tight">
+            HSBC Premier Rewards
+          </h1>
+          <p className="text-xs text-[#777777] mt-0.5">
+            Redeem Premier points for travel miles, dining, and statement credits
+          </p>
         </div>
-        <div className="bg-white/10 px-5 py-3 rounded-2xl text-center text-xs">
-          <div className="text-white/80 font-medium">Tier Status</div>
-          <div className="text-sm font-extrabold text-amber-300 mt-0.5">Premier World Elite Diamond</div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {catalog.map((item, i) => (
-          <div key={i} className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-card flex flex-col justify-between gap-4">
+        <div className="px-4 sm:px-6 md:px-8 py-6 space-y-6">
+          <div className="p-5 bg-gradient-to-r from-[#DB0011] to-[#B0000D] text-white rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <div className="flex items-center justify-between text-xs font-bold text-[#DB0011]">
-                <span>{item.points.toLocaleString()} Points</span>
-                <Gift className="w-4 h-4" />
+              <div className="text-[11px] uppercase tracking-wider text-white/85 font-bold flex items-center gap-1.5">
+                <Award className="w-4 h-4 text-amber-300" aria-hidden="true" />
+                <span>Available Premier Points</span>
               </div>
-              <h3 className="text-sm font-bold text-gray-900 mt-2">{item.title}</h3>
-              <p className="text-xs text-gray-500 mt-1">{item.value}</p>
+              <div className="text-2xl sm:text-3xl font-bold mt-1">
+                {points.toLocaleString('en-IN')} PTS
+              </div>
             </div>
-            <button
-              onClick={() => handleRedeem(item.title, item.points)}
-              className="w-full py-2.5 bg-gray-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-colors shadow-xs"
-            >
-              Redeem Voucher
-            </button>
+            <div className="bg-white/15 px-4 py-2.5 rounded-lg text-xs">
+              <span className="text-white/80 block text-[10px] uppercase">Tier Status</span>
+              <span className="font-bold text-amber-300">Premier World Elite</span>
+            </div>
           </div>
-        ))}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {catalog.map(item => {
+              const canAfford = points >= item.points;
+              return (
+                <div key={item.id} className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 flex flex-col justify-between gap-4">
+                  <div>
+                    <div className="flex items-center justify-between text-xs font-bold text-[#DB0011]">
+                      <span>{item.points.toLocaleString('en-IN')} Points</span>
+                      <Gift className="w-4 h-4" aria-hidden="true" />
+                    </div>
+                    <h2 className="text-sm font-bold text-[#1f1f1f] mt-2">{item.title}</h2>
+                    <p className="text-xs text-[#777777] mt-0.5">{item.value}</p>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={!canAfford}
+                    onClick={() => handleRedeem(item.id, item.title, item.points)}
+                    className="w-full min-h-[42px] bg-[#1f1f1f] hover:bg-black disabled:bg-gray-300 disabled:text-gray-500 text-white text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
+                  >
+                    {canAfford ? 'Redeem Voucher' : 'Insufficient Points'}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          {redeemedList.length > 0 && (
+            <div className="p-4 bg-emerald-50/70 rounded-xl border border-emerald-200 space-y-2">
+              <div className="text-xs font-bold text-[#16864A]">Recent Redemptions This Session</div>
+              {redeemedList.map((title, idx) => (
+                <div key={idx} className="text-xs text-[#1f1f1f] flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#16864A] shrink-0" aria-hidden="true" />
+                  <span>{title}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </AnimatedPageTransition>
   );

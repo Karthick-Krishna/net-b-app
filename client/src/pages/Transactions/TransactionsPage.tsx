@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import {
   Search,
-  Filter,
   ArrowDownLeft,
   ArrowUpRight,
   Download,
-  Calendar,
-  X,
   FileCheck,
-  Building2,
-  ChevronDown,
+  ArrowRight,
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { TransactionRecord } from '@shared/types';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
+import { ModalDialog } from '../../components/common/ModalDialog';
 
 export const TransactionsPage: React.FC = () => {
   const { transactions, formatCurrency } = useBanking();
@@ -22,6 +19,7 @@ export const TransactionsPage: React.FC = () => {
   const [dateRangeFilter, setDateRangeFilter] = useState<'7DAYS' | '30DAYS' | '3MONTHS' | 'ALL'>('ALL');
   const [selectedTx, setSelectedTx] = useState<TransactionRecord | null>(null);
 
+  const nowMs = Date.now();
   const filtered = transactions.filter(t => {
     const matchesSearch =
       t.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -34,210 +32,212 @@ export const TransactionsPage: React.FC = () => {
       (categoryFilter === 'DEBIT' && t.transactionType === 'DEBIT') ||
       t.category === categoryFilter;
 
-    return matchesSearch && matchesCategory;
+    let matchesDate = true;
+    if (dateRangeFilter !== 'ALL' && t.createdAt) {
+      const txMs = new Date(t.createdAt).getTime();
+      const diffDays = (nowMs - txMs) / (1000 * 60 * 60 * 24);
+      if (dateRangeFilter === '7DAYS') matchesDate = diffDays <= 7;
+      else if (dateRangeFilter === '30DAYS') matchesDate = diffDays <= 30;
+      else if (dateRangeFilter === '3MONTHS') matchesDate = diffDays <= 90;
+    }
+
+    return matchesSearch && matchesCategory && matchesDate;
   });
 
   return (
-    <AnimatedPageTransition className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-2xl font-extrabold text-[#252525] tracking-tight">
-            Transaction Activity & Ledger
-          </h2>
-          <p className="text-xs text-[#777777]">
-            Real-time financial movement synchronized with the central banking ledger
+    <AnimatedPageTransition className="pb-10">
+      <div className="bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-xs overflow-hidden">
+        {/* Header */}
+        <div className="px-4 sm:px-6 md:px-8 pt-5 pb-4 border-b border-gray-100">
+          <h1 className="text-[19px] sm:text-[22px] font-bold text-[#1f1f1f] tracking-tight">
+            Transaction Activity
+          </h1>
+          <p className="text-xs text-[#777777] mt-0.5">
+            Real-time central banking ledger across all accounts
           </p>
-        </div>
-      </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white p-5 rounded-3xl border border-[#E8E8E8] shadow-card space-y-3">
-        <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-          <div className="relative w-full sm:w-96">
-            <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search merchant, recipient, reference..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-3 py-2.5 text-xs bg-[#F5F5F5] border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#DB0011] focus:bg-white transition-all font-medium"
-            />
+          {/* Search & Date Filter Row */}
+          <div className="mt-4 flex flex-col md:flex-row gap-3 md:items-center justify-between">
+            <div className="relative w-full md:w-80">
+              <Search className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" aria-hidden="true" />
+              <input
+                type="text"
+                placeholder="Search payee, description, reference..."
+                aria-label="Search transactions"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="w-full h-11 pl-9 pr-3 text-xs bg-white border border-[#333333] rounded-[2px] focus:outline-none focus:border-[#DB0011] transition-colors"
+              />
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 md:pb-0">
+              {[
+                { id: 'ALL' as const, label: 'All Dates' },
+                { id: '7DAYS' as const, label: '7 Days' },
+                { id: '30DAYS' as const, label: '30 Days' },
+                { id: '3MONTHS' as const, label: '3 Months' },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setDateRangeFilter(tab.id)}
+                  className={`min-h-[36px] px-3 rounded-[2px] text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors ${
+                    dateRangeFilter === tab.id
+                      ? 'bg-[#DB0011] text-white'
+                      : 'bg-[#F2F4F7] text-[#1f1f1f] hover:bg-gray-200'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Date range filter buttons */}
-          <div className="flex items-center gap-1.5 w-full sm:w-auto">
+          {/* Category Underline/Pill Filter */}
+          <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
             {[
-              { id: 'ALL', label: 'All Dates' },
-              { id: '7DAYS', label: 'Last 7 Days' },
-              { id: '30DAYS', label: 'Last 30 Days' },
-              { id: '3MONTHS', label: 'Last 3 Months' },
-            ].map(tab => (
+              { id: 'ALL', label: 'All' },
+              { id: 'CREDIT', label: 'Credits' },
+              { id: 'DEBIT', label: 'Debits' },
+              { id: 'SALARY', label: 'Salary' },
+              { id: 'TRANSFER', label: 'Transfers' },
+              { id: 'INVESTMENT', label: 'Investments' },
+              { id: 'DINING', label: 'Dining' },
+              { id: 'UTILITIES', label: 'Bills' },
+            ].map(cat => (
               <button
-                key={tab.id}
-                onClick={() => setDateRangeFilter(tab.id as any)}
-                className={`px-3 py-2 rounded-xl text-xs font-bold transition-colors ${
-                  dateRangeFilter === tab.id
-                    ? 'bg-[#DB0011] text-white shadow-xs'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                key={cat.id}
+                type="button"
+                onClick={() => setCategoryFilter(cat.id)}
+                className={`px-3 py-1.5 min-h-[32px] rounded-full text-xs font-semibold whitespace-nowrap transition-colors border cursor-pointer ${
+                  categoryFilter === cat.id
+                    ? 'bg-[#1f1f1f] text-white border-[#1f1f1f]'
+                    : 'bg-white text-[#555555] border-gray-200 hover:border-gray-300'
                 }`}
               >
-                {tab.label}
+                {cat.label}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Category Pill Filters */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 no-scrollbar text-xs">
-          {[
-            { id: 'ALL', label: 'All Transactions' },
-            { id: 'CREDIT', label: 'Money In (Credits)' },
-            { id: 'DEBIT', label: 'Money Out (Debits)' },
-            { id: 'SALARY', label: 'Salary' },
-            { id: 'TRANSFER', label: 'Transfers' },
-            { id: 'INVESTMENT', label: 'Investments' },
-            { id: 'DINING', label: 'Dining' },
-            { id: 'UTILITIES', label: 'Bills & Utilities' },
-          ].map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setCategoryFilter(cat.id)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors border ${
-                categoryFilter === cat.id
-                  ? 'bg-slate-900 text-white border-slate-900'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Transaction List */}
-      <div className="bg-white rounded-3xl border border-[#E8E8E8] shadow-card overflow-hidden">
-        <div className="divide-y divide-gray-100">
+        {/* Hairline List Rows */}
+        <div className="px-4 sm:px-6 md:px-8 divide-y divide-gray-100">
           {filtered.length === 0 ? (
-            <div className="p-12 text-center text-xs text-gray-500">
+            <div className="py-12 text-center text-xs text-gray-500">
               No transactions match your search criteria.
             </div>
           ) : (
             filtered.map(tx => {
               const isCredit = tx.transactionType === 'CREDIT';
               return (
-                <div
+                <button
                   key={tx.transactionId}
+                  type="button"
                   onClick={() => setSelectedTx(tx)}
-                  className="p-4 sm:p-5 hover:bg-gray-50 cursor-pointer transition-colors flex items-center justify-between"
+                  className="w-full py-4 hover:bg-gray-50/70 cursor-pointer transition-colors flex items-center justify-between gap-3 text-left group"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3.5 min-w-0">
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        isCredit ? 'bg-emerald-50 text-[#16864A]' : 'bg-red-50 text-[#DB0011]'
+                      className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                        isCredit ? 'bg-emerald-50 text-[#16864A]' : 'bg-[#F2F4F7] text-[#DB0011]'
                       }`}
                     >
-                      {isCredit ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
+                      {isCredit ? (
+                        <ArrowDownLeft className="w-4 h-4" aria-hidden="true" />
+                      ) : (
+                        <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+                      )}
                     </div>
-                    <div>
-                      <div className="text-xs font-bold text-gray-900">{tx.description}</div>
-                      <div className="text-[11px] text-gray-500 mt-0.5 flex items-center gap-2">
-                        <span>{tx.counterpartyName}</span>
-                        <span>•</span>
-                        <span className="font-mono text-gray-400">{tx.reference}</span>
+                    <div className="min-w-0">
+                      <div className="text-[13px] sm:text-[14px] font-semibold text-[#1f1f1f] truncate">
+                        {tx.description}
                       </div>
-                      <div className="text-[10px] text-gray-400 mt-0.5">{tx.transactionDate}</div>
+                      <div className="text-[11px] text-[#777777] mt-0.5 truncate">
+                        {tx.counterpartyName} • {tx.transactionDate}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <div
-                      className={`text-sm font-extrabold ${
-                        isCredit ? 'text-[#16864A]' : 'text-[#252525]'
-                      }`}
-                    >
-                      {isCredit ? '+' : '-'} {formatCurrency(tx.amount, tx.currency)}
+                  <div className="flex items-center gap-2.5 shrink-0">
+                    <div className="text-right">
+                      <div className={`text-[13px] sm:text-sm font-bold ${isCredit ? 'text-[#16864A]' : 'text-[#1f1f1f]'}`}>
+                        {isCredit ? '+' : '-'} {formatCurrency(tx.amount, tx.currency)}
+                      </div>
+                      <span className="text-[10px] font-semibold text-gray-400 uppercase">
+                        {tx.category}
+                      </span>
                     </div>
-                    <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-700">
-                      {tx.category}
-                    </span>
+                    <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#DB0011] transition-colors" aria-hidden="true" />
                   </div>
-                </div>
+                </button>
               );
             })
           )}
         </div>
       </div>
 
-      {/* Transaction Details Modal / Bottom Sheet */}
-      {selectedTx && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative animate-in zoom-in-95 duration-150">
-            <button
-              onClick={() => setSelectedTx(null)}
-              className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="text-center pb-5 border-b border-gray-100">
+      {/* Transaction Receipt Dialog */}
+      <ModalDialog
+        open={!!selectedTx}
+        onClose={() => setSelectedTx(null)}
+        title="Transaction Receipt"
+        subtitle={selectedTx ? `ID: ${selectedTx.transactionId}` : ''}
+        maxWidthClass="max-w-md"
+      >
+        {selectedTx && (
+          <div className="space-y-4">
+            <div className="text-center pb-4 border-b border-gray-100">
               <div
-                className={`w-14 h-14 rounded-full mx-auto flex items-center justify-center mb-3 ${
+                className={`w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-2 ${
                   selectedTx.transactionType === 'CREDIT'
                     ? 'bg-emerald-50 text-[#16864A]'
                     : 'bg-red-50 text-[#DB0011]'
                 }`}
               >
-                <FileCheck className="w-7 h-7" />
+                <FileCheck className="w-6 h-6" aria-hidden="true" />
               </div>
-              <h3 className="text-base font-bold text-gray-900">Transaction Receipt</h3>
-              <p className="text-xs text-gray-400 font-mono mt-0.5">ID: {selectedTx.transactionId}</p>
-              <div className="mt-3 text-3xl font-extrabold text-gray-900">
+              <div className="text-2xl font-bold text-[#1f1f1f]">
                 {selectedTx.transactionType === 'CREDIT' ? '+' : '-'}{' '}
                 {formatCurrency(selectedTx.amount, selectedTx.currency)}
               </div>
+              <p className="text-xs text-[#777777] mt-1">{selectedTx.description}</p>
             </div>
 
-            <div className="py-5 space-y-3.5 text-xs">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Status</span>
-                <span className="font-bold text-[#16864A] flex items-center gap-1">
-                  ● {selectedTx.status}
-                </span>
+            <div className="space-y-2.5 text-xs">
+              <div className="flex justify-between gap-2">
+                <span className="text-[#777777]">Status</span>
+                <span className="font-bold text-[#16864A]">● {selectedTx.status}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Date & Time</span>
-                <span className="font-semibold text-gray-900">{selectedTx.transactionDate}</span>
+              <div className="flex justify-between gap-2">
+                <span className="text-[#777777]">Date &amp; Time</span>
+                <span className="font-semibold text-[#1f1f1f]">{selectedTx.transactionDate}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Category</span>
-                <span className="font-semibold text-gray-900">{selectedTx.category}</span>
+              <div className="flex justify-between gap-2">
+                <span className="text-[#777777]">Category</span>
+                <span className="font-semibold text-[#1f1f1f]">{selectedTx.category}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Counterparty</span>
-                <span className="font-semibold text-gray-900">{selectedTx.counterpartyName}</span>
+              <div className="flex justify-between gap-2">
+                <span className="text-[#777777]">Counterparty</span>
+                <span className="font-semibold text-[#1f1f1f] text-right">{selectedTx.counterpartyName}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Reference Number</span>
-                <span className="font-mono font-bold text-gray-900">{selectedTx.reference}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Originating Account</span>
-                <span className="font-mono text-gray-900">{selectedTx.accountId}</span>
+              <div className="flex justify-between gap-2">
+                <span className="text-[#777777]">Reference Number</span>
+                <span className="font-mono font-bold text-[#1f1f1f]">{selectedTx.reference}</span>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-100">
-              <button
-                onClick={() => window.print()}
-                className="w-full py-3 bg-[#DB0011] text-white rounded-xl text-xs font-bold hover:bg-[#B0000D] transition-colors flex items-center justify-center gap-2 shadow-sm"
-              >
-                <Download className="w-4 h-4" />
-                <span>Print Official Platform Receipt</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Download className="w-4 h-4" aria-hidden="true" />
+              <span>Print Official Receipt</span>
+            </button>
           </div>
-        </div>
-      )}
+        )}
+      </ModalDialog>
     </AnimatedPageTransition>
   );
 };

@@ -42,6 +42,13 @@ interface BankingContextType {
     }
   ) => Promise<{ success: boolean; transaction?: TransactionRecord; error?: string }>;
   updateCardSettings: (cardId: string, updates: Partial<CardRecord>) => void;
+  createDeposit: (
+    accountId: string,
+    depositType: 'FIXED' | 'RECURRING',
+    principalAmount: number,
+    tenureMonths: number,
+    interestRate: number
+  ) => Promise<{ success: boolean; deposit?: DepositRecord; error?: string }>;
   submitTicket: (ticket: {
     subject: string;
     description: string;
@@ -100,7 +107,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           style: { borderRadius: '8px', background: '#252525', color: '#fff', fontSize: '12px' },
         });
       } else if (msg.type === 'CARD_UPDATED') {
-        toast.success('Card settings updated.');
+        // Silent live-sync; triggering component provides specific user feedback
       } else if (msg.type === 'DATA_RESET') {
         toast('Data refreshed successfully.', { icon: '🔄' });
       }
@@ -152,6 +159,30 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     loadData();
   };
 
+  const createDeposit = async (
+    accountId: string,
+    depositType: 'FIXED' | 'RECURRING',
+    principalAmount: number,
+    tenureMonths: number,
+    interestRate: number
+  ) => {
+    if (!currentUser) return { success: false, error: 'Not authenticated' };
+    try {
+      const dep = RealtimeStore.addDeposit(
+        currentUser.uid,
+        accountId,
+        depositType,
+        principalAmount,
+        tenureMonths,
+        interestRate
+      );
+      loadData();
+      return { success: true, deposit: dep };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Could not open deposit' };
+    }
+  };
+
   const submitTicket = async (ticket: {
     subject: string;
     description: string;
@@ -198,6 +229,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         formatCurrency,
         submitTransfer,
         updateCardSettings,
+        createDeposit,
         submitTicket,
         sendTicketReply,
         markNotificationAsRead,

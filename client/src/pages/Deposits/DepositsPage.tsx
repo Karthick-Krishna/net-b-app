@@ -1,124 +1,155 @@
 import React, { useState } from 'react';
-import { PiggyBank, Calculator, CheckCircle2 } from 'lucide-react';
+import { PiggyBank, Calculator } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
+import toast from 'react-hot-toast';
 
 export const DepositsPage: React.FC = () => {
-  const { deposits, formatCurrency } = useBanking();
-  const [calcPrincipal, setCalcPrincipal] = useState(500000);
+  const { accounts, deposits, formatCurrency, createDeposit } = useBanking();
+  const [calcPrincipal, setCalcPrincipal] = useState(100000);
   const [calcTenure, setCalcTenure] = useState(24);
   const [rate] = useState(7.8);
+  const [isOpening, setIsOpening] = useState(false);
 
   const interestEarned = Math.round((calcPrincipal * rate * (calcTenure / 12)) / 100);
   const totalMaturity = calcPrincipal + interestEarned;
 
+  const handleOpenDeposit = async () => {
+    const primaryAcc = accounts[0];
+    if (!primaryAcc) {
+      toast.error('No eligible funding account found');
+      return;
+    }
+    setIsOpening(true);
+    const res = await createDeposit(primaryAcc.accountId, 'FIXED', calcPrincipal, calcTenure, rate);
+    setIsOpening(false);
+    if (res.success) {
+      toast.success(`Fixed Deposit ${res.deposit?.depositNumber} opened for ${formatCurrency(calcPrincipal, 'INR')}!`);
+    } else {
+      toast.error(res.error || 'Could not open Fixed Deposit');
+    }
+  };
+
   return (
-    <AnimatedPageTransition className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-extrabold text-[#252525] tracking-tight">
-          Fixed & Recurring Deposits
-        </h2>
-        <p className="text-xs text-[#777777]">
-          High-yield term deposits with premier sovereign compounding and priority liquidity
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Active Deposits */}
-        <div className="lg:col-span-2 space-y-4">
-          {deposits.map(dep => (
-            <div key={dep.depositId} className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-card space-y-4">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-red-50 text-[#DB0011] flex items-center justify-center">
-                    <PiggyBank className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-gray-900">
-                      {dep.depositType === 'FIXED' ? 'HSBC High Yield Fixed Deposit' : 'HSBC Smart Recurring Deposit'}
-                    </h3>
-                    <div className="text-[11px] text-gray-400 font-mono">{dep.depositNumber}</div>
-                  </div>
-                </div>
-                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-[#16864A] border border-emerald-200">
-                  {dep.status}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-gray-100 text-xs">
-                <div>
-                  <span className="text-gray-500 block">Principal</span>
-                  <span className="font-bold text-gray-900">{formatCurrency(dep.principalAmount, 'INR')}</span>
-                </div>
-                <div>
-                  <span className="text-gray-500 block">Interest Rate</span>
-                  <span className="font-bold text-[#16864A]">{dep.interestRate}% p.a.</span>
-                </div>
-                <div>
-                  <span className="text-gray-500 block">Tenure</span>
-                  <span className="font-bold text-gray-900">{dep.tenureMonths} Months</span>
-                </div>
-                <div>
-                  <span className="text-gray-500 block">Maturity Date</span>
-                  <span className="font-bold text-gray-900">{dep.maturityDate}</span>
-                </div>
-              </div>
-            </div>
-          ))}
+    <AnimatedPageTransition className="pb-10">
+      <div className="bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-xs overflow-hidden">
+        <div className="px-4 sm:px-6 md:px-8 pt-5 pb-5 border-b border-gray-100">
+          <h1 className="text-[19px] sm:text-[22px] font-bold text-[#1f1f1f] tracking-tight">
+            Fixed &amp; Recurring Deposits
+          </h1>
+          <p className="text-xs text-[#777777] mt-0.5">
+            High-yield term deposits with sovereign compounding and instant liquidity
+          </p>
         </div>
 
-        {/* Deposit Calculator */}
-        <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-card space-y-4">
-          <div className="flex items-center gap-2">
-            <Calculator className="w-5 h-5 text-[#DB0011]" />
-            <h3 className="text-sm font-bold text-gray-900">Term Deposit Calculator</h3>
+        <div className="px-4 sm:px-6 md:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Active Deposits List */}
+          <div className="lg:col-span-7 divide-y divide-gray-100">
+            {deposits.map(dep => (
+              <div key={dep.depositId} className="py-5 first:pt-0 space-y-3">
+                <div className="flex justify-between items-center gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-full bg-[#F2F4F7] text-[#DB0011] flex items-center justify-center shrink-0">
+                      <PiggyBank className="w-5 h-5" aria-hidden="true" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-bold text-[#1f1f1f]">
+                        {dep.depositType === 'FIXED' ? 'HSBC High Yield Fixed Deposit' : 'HSBC Smart Recurring Deposit'}
+                      </h2>
+                      <div className="text-[11px] text-[#777777] font-mono">{dep.depositNumber}</div>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-[#16864A] border border-emerald-200">
+                    {dep.status}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
+                  <div>
+                    <span className="text-[#777777] block">Principal</span>
+                    <span className="font-bold text-[#1f1f1f]">{formatCurrency(dep.principalAmount, 'INR')}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#777777] block">Rate</span>
+                    <span className="font-bold text-[#16864A]">{dep.interestRate}% p.a.</span>
+                  </div>
+                  <div>
+                    <span className="text-[#777777] block">Tenure</span>
+                    <span className="font-bold text-[#1f1f1f]">{dep.tenureMonths} Mos</span>
+                  </div>
+                  <div>
+                    <span className="text-[#777777] block">Maturity Date</span>
+                    <span className="font-bold text-[#1f1f1f]">{dep.maturityDate}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
-          <div className="space-y-3 text-xs">
-            <div>
-              <label className="text-gray-600 font-semibold block mb-1">
-                Deposit Amount: ₹{calcPrincipal.toLocaleString('en-IN')}
-              </label>
-              <input
-                type="range"
-                min="50000"
-                max="5000000"
-                step="50000"
-                value={calcPrincipal}
-                onChange={e => setCalcPrincipal(Number(e.target.value))}
-                className="w-full accent-[#DB0011]"
-              />
+          {/* Interactive Calculator + Instant Open */}
+          <div className="lg:col-span-5 p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-4 self-start">
+            <div className="flex items-center gap-2">
+              <Calculator className="w-5 h-5 text-[#DB0011]" aria-hidden="true" />
+              <h2 className="text-sm font-bold text-[#1f1f1f]">Open Term Deposit</h2>
             </div>
 
-            <div>
-              <label className="text-gray-600 font-semibold block mb-1">
-                Tenure: {calcTenure} Months
-              </label>
-              <input
-                type="range"
-                min="6"
-                max="60"
-                step="6"
-                value={calcTenure}
-                onChange={e => setCalcTenure(Number(e.target.value))}
-                className="w-full accent-[#DB0011]"
-              />
-            </div>
-          </div>
+            <div className="space-y-4 text-xs">
+              <div>
+                <label htmlFor="fd-principal" className="text-[#555555] font-semibold block mb-1.5">
+                  Deposit Amount: <strong className="text-[#1f1f1f]">₹{calcPrincipal.toLocaleString('en-IN')}</strong>
+                </label>
+                <input
+                  id="fd-principal"
+                  type="range"
+                  min="25000"
+                  max="1000000"
+                  step="25000"
+                  value={calcPrincipal}
+                  onChange={e => setCalcPrincipal(Number(e.target.value))}
+                  className="w-full accent-[#DB0011] cursor-pointer"
+                />
+              </div>
 
-          <div className="pt-4 border-t border-gray-100 bg-[#F5F5F5] p-4 rounded-2xl space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className="text-gray-500">Interest Rate</span>
-              <span className="font-bold text-[#16864A]">{rate}% p.a.</span>
+              <div>
+                <label htmlFor="fd-tenure" className="text-[#555555] font-semibold block mb-1.5">
+                  Tenure: <strong className="text-[#1f1f1f]">{calcTenure} Months</strong>
+                </label>
+                <input
+                  id="fd-tenure"
+                  type="range"
+                  min="6"
+                  max="60"
+                  step="6"
+                  value={calcTenure}
+                  onChange={e => setCalcTenure(Number(e.target.value))}
+                  className="w-full accent-[#DB0011] cursor-pointer"
+                />
+              </div>
             </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-gray-500">Est. Total Interest</span>
-              <span className="font-bold text-gray-900">₹{interestEarned.toLocaleString('en-IN')}</span>
+
+            <div className="p-4 bg-white rounded-xl border border-gray-200/70 space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span className="text-[#777777]">Interest Rate</span>
+                <span className="font-bold text-[#16864A]">{rate}% p.a.</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#777777]">Est. Interest</span>
+                <span className="font-bold text-[#1f1f1f]">₹{interestEarned.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex justify-between text-sm pt-2 border-t border-gray-100 font-bold">
+                <span>Maturity Value</span>
+                <span className="text-[#DB0011]">₹{totalMaturity.toLocaleString('en-IN')}</span>
+              </div>
             </div>
-            <div className="flex justify-between text-sm pt-2 border-t border-gray-200 font-bold">
-              <span>Maturity Value</span>
-              <span className="text-[#DB0011]">₹{totalMaturity.toLocaleString('en-IN')}</span>
-            </div>
+
+            <button
+              type="button"
+              disabled={isOpening}
+              onClick={handleOpenDeposit}
+              className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-semibold rounded-[2px] transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {isOpening ? 'Opening Deposit...' : `Open Instant Fixed Deposit (₹${calcPrincipal.toLocaleString('en-IN')})`}
+            </button>
           </div>
         </div>
       </div>

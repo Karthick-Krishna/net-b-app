@@ -217,7 +217,8 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-white flex flex-col justify-between select-none overflow-x-hidden font-sans">
+    <div className="relative w-full min-h-dvh bg-white md:bg-[#F6F7F9] flex flex-col md:items-center md:justify-center md:py-8 select-none font-sans">
+      <div className="w-full max-w-md mx-auto flex-1 md:flex-initial bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-sm md:min-h-[680px] flex flex-col justify-between overflow-hidden">
       {/* Invisible auto-focus input for virtual mobile keyboard */}
       <input
         ref={inputRef}
@@ -394,6 +395,17 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               <span>Verifying secure PIN...</span>
             </div>
           )}
+
+          {/* Optional Keypad Toggle for Mouse / Tablet Users */}
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={() => setShowKeypad(prev => !prev)}
+              className="text-[11px] font-semibold text-gray-500 hover:text-[#DB0011] transition-colors cursor-pointer min-h-[28px]"
+            >
+              {showKeypad ? 'Hide numeric keypad' : 'Tap to use on-screen keypad'}
+            </button>
+          </div>
         </div>
 
         {/* SPACIOUS CENTER: HSBC TRANSLUCENT ROSETTE WATERMARK */}
@@ -511,6 +523,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
           </button>
         </div>
       </main>
+      </div>
 
       {/* ========================================================= */}
       {/* 1. FORGOT PIN / PASSWORD RECOVERY MODAL                   */}

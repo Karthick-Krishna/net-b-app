@@ -26,8 +26,8 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { isAuthenticated, isLoading } = useAuth();
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
-        <div className="w-8 h-8 border-3 border-[#DB0011] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-dvh bg-[#F6F7F9] flex items-center justify-center">
+        <div className="w-8 h-8 border-[3px] border-[#DB0011] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }

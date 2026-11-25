@@ -1,16 +1,9 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import {
-  FileText,
   Download,
   Printer,
   ShieldCheck,
-  Calendar,
-  Filter,
-  Building2,
   CheckCircle2,
-  Award,
-  Landmark,
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { useAuth } from '../../context/AuthContext';
@@ -23,7 +16,7 @@ export const StatementsPage: React.FC = () => {
   const { accounts, transactions } = useBanking();
 
   const [activeTab, setActiveTab] = useState<'STATEMENTS' | 'INTEREST_CERTS'>('STATEMENTS');
-  const [selectedAccount, setSelectedAccount] = useState(accounts[0]?.accountId || '');
+  const [selectedAccount, setSelectedAccount] = useState('');
   const [dateRange, setDateRange] = useState('LAST_30_DAYS');
   const [certType, setCertType] = useState<'SAVINGS_INTEREST' | 'FD_TDS'>('SAVINGS_INTEREST');
   const [finYear, setFinYear] = useState('2026-27');
@@ -32,12 +25,8 @@ export const StatementsPage: React.FC = () => {
   const account = accounts.find(a => a.accountId === selectedAccount) || accounts[0];
   const accountTxs = transactions.filter(t => t.accountId === account?.accountId);
 
-  const totalCredits = accountTxs
-    .filter(t => t.transactionType === 'CREDIT')
-    .reduce((acc, t) => acc + t.amount, 0);
-  const totalDebits = accountTxs
-    .filter(t => t.transactionType === 'DEBIT')
-    .reduce((acc, t) => acc + t.amount, 0);
+  const totalCredits = accountTxs.filter(t => t.transactionType === 'CREDIT').reduce((acc, t) => acc + t.amount, 0);
+  const totalDebits = accountTxs.filter(t => t.transactionType === 'DEBIT').reduce((acc, t) => acc + t.amount, 0);
 
   const handlePrint = () => {
     window.print();
@@ -45,331 +34,282 @@ export const StatementsPage: React.FC = () => {
 
   const handleDownloadPDF = () => {
     setIsDownloading(true);
-    toast.loading(activeTab === 'STATEMENTS' ? 'Generating signed e-Statement PDF...' : 'Generating certified Interest Certificate PDF...', { id: 'pdf-toast' });
+    toast.loading(
+      activeTab === 'STATEMENTS' ? 'Generating e-Statement PDF...' : 'Generating Interest Certificate PDF...',
+      { id: 'pdf-toast' }
+    );
     setTimeout(() => {
       setIsDownloading(false);
-      toast.success(activeTab === 'STATEMENTS' ? 'e-Statement PDF downloaded!' : 'Certified Interest Certificate PDF downloaded!', { id: 'pdf-toast' });
-    }, 1200);
+      toast.success(
+        activeTab === 'STATEMENTS' ? 'e-Statement PDF downloaded!' : 'Interest Certificate PDF downloaded!',
+        { id: 'pdf-toast' }
+      );
+    }, 900);
   };
 
   return (
-    <AnimatedPageTransition className="space-y-6">
-      {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 print:hidden">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-black text-[#252525] tracking-tight">
-            Account Statements & Interest Certificates
-          </h2>
+    <AnimatedPageTransition className="pb-10">
+      <div className="bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-xs overflow-hidden">
+        {/* Header + Cards-Style Underline Sub-Tabs */}
+        <div className="px-4 sm:px-6 md:px-8 pt-5 border-b border-gray-200 print:hidden">
+          <h1 className="text-[19px] sm:text-[22px] font-bold text-[#1f1f1f] tracking-tight">
+            Statements &amp; Tax Certificates
+          </h1>
           <p className="text-xs text-[#777777] mt-0.5">
-            Download certified e-Statements, interest certificates for tax returns, and ledger activity
+            Download certified e-Statements and Section 80TTA / Form 16A certificates
           </p>
+
+          <div className="mt-4 flex items-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar">
+            {[
+              { id: 'STATEMENTS' as const, label: 'e-Statements' },
+              { id: 'INTEREST_CERTS' as const, label: 'Interest Certificates (ITR)' },
+            ].map(tab => {
+              const active = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative pb-3 min-h-[40px] text-[13px] sm:text-[14px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                    active ? 'text-[#1f1f1f]' : 'text-[#777777] hover:text-[#1f1f1f]'
+                  }`}
+                >
+                  {tab.label}
+                  {active && (
+                    <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#DB0011] rounded-t-full" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Tab Selector */}
-        <div className="flex items-center gap-1.5 p-1 bg-white border border-[#E8E8E8] rounded-xl self-start sm:self-auto shadow-xs">
-          <button
-            onClick={() => setActiveTab('STATEMENTS')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-              activeTab === 'STATEMENTS' ? 'bg-[#DB0011] text-white shadow-xs' : 'text-gray-600 hover:text-black'
-            }`}
-          >
-            e-Statements
-          </button>
-          <button
-            onClick={() => setActiveTab('INTEREST_CERTS')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-              activeTab === 'INTEREST_CERTS' ? 'bg-[#DB0011] text-white shadow-xs' : 'text-gray-600 hover:text-black'
-            }`}
-          >
-            Interest Certificates (ITR)
-          </button>
+        <div className="px-4 sm:px-6 md:px-8 py-6 space-y-6">
+          {activeTab === 'STATEMENTS' ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end print:hidden">
+                <div className="md:col-span-5">
+                  <label htmlFor="stmt-acc" className="block text-[10px] font-bold uppercase tracking-wider text-[#777777] mb-1.5">
+                    Select Account
+                  </label>
+                  <select
+                    id="stmt-acc"
+                    value={account?.accountId || ''}
+                    onChange={e => setSelectedAccount(e.target.value)}
+                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] text-xs font-semibold"
+                  >
+                    {accounts.map(acc => (
+                      <option key={acc.accountId} value={acc.accountId}>
+                        {acc.accountType} ({acc.maskedAccountNumber}) — {formatINR(acc.managedBalance)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="md:col-span-4">
+                  <label htmlFor="stmt-period" className="block text-[10px] font-bold uppercase tracking-wider text-[#777777] mb-1.5">
+                    Statement Period
+                  </label>
+                  <select
+                    id="stmt-period"
+                    value={dateRange}
+                    onChange={e => setDateRange(e.target.value)}
+                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] text-xs font-semibold"
+                  >
+                    <option value="LAST_30_DAYS">Last 30 Days</option>
+                    <option value="LAST_90_DAYS">Last Quarter (90 Days)</option>
+                    <option value="FINANCIAL_YEAR">FY 2026-27</option>
+                  </select>
+                </div>
+
+                <div className="md:col-span-3 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleDownloadPDF}
+                    disabled={isDownloading}
+                    className="flex-1 min-h-[44px] px-3 bg-white border border-[#333333] text-[#1f1f1f] rounded-[2px] text-xs font-semibold hover:bg-gray-50 flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
+                    <span>PDF</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePrint}
+                    className="flex-1 min-h-[44px] px-3 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Printer className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span>Print</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Statement Paper */}
+              <div className="p-4 sm:p-6 bg-[#F9FAFB] rounded-xl border border-gray-200 space-y-5">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-4 pb-4 border-b border-gray-200">
+                  <div className="flex items-center gap-2.5">
+                    <img src="/logo.png" alt="HSBC India" className="w-8 h-8 object-contain" />
+                    <div>
+                      <div className="text-sm font-bold text-[#1f1f1f]">HSBC INDIA e-Statement</div>
+                      <div className="text-[11px] text-[#777777]">
+                        {currentUser?.displayName} • {currentUser?.customerId}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-left sm:text-right text-[11px] text-[#555555]">
+                    <div>A/C: <strong className="font-mono text-[#1f1f1f]">{account?.accountNumber}</strong></div>
+                    <div>IFSC: <strong className="font-mono text-[#1f1f1f]">{account?.ifscCode}</strong></div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div className="bg-white p-3 rounded-lg border border-gray-200/70">
+                    <span className="text-[10px] text-[#777777] block">Closing Balance</span>
+                    <span className="font-bold text-[#1f1f1f]">{formatINR(account?.managedBalance || 0)}</span>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-gray-200/70">
+                    <span className="text-[10px] text-[#777777] block">Ledger Balance</span>
+                    <span className="font-bold text-[#1f1f1f]">{formatINR(account?.ledgerBalance || 0)}</span>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-gray-200/70">
+                    <span className="text-[10px] text-[#777777] block">Total Credits</span>
+                    <span className="font-bold text-[#16864A]">+{formatINR(totalCredits)}</span>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-gray-200/70">
+                    <span className="text-[10px] text-[#777777] block">Total Debits</span>
+                    <span className="font-bold text-[#1f1f1f]">-{formatINR(totalDebits)}</span>
+                  </div>
+                </div>
+
+                {/* Responsive Ledger Table */}
+                <div className="overflow-x-auto bg-white rounded-xl border border-gray-200" tabIndex={0} role="region" aria-label="Account statement ledger">
+                  <table className="w-full text-left text-xs min-w-[540px]">
+                    <thead>
+                      <tr className="border-b border-gray-200 text-[#777777] uppercase text-[10px] font-bold bg-[#F6F7F9]">
+                        <th className="py-3 px-3">Date</th>
+                        <th className="py-3 px-3">Description</th>
+                        <th className="py-3 px-3 text-right">Debit</th>
+                        <th className="py-3 px-3 text-right">Credit</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {accountTxs.map(tx => {
+                        const isCredit = tx.transactionType === 'CREDIT';
+                        return (
+                          <tr key={tx.transactionId}>
+                            <td className="py-3 px-3 text-[#555555] whitespace-nowrap">{tx.transactionDate}</td>
+                            <td className="py-3 px-3">
+                              <div className="font-semibold text-[#1f1f1f]">{tx.description}</div>
+                              <div className="text-[10px] text-gray-400 font-mono">{tx.reference}</div>
+                            </td>
+                            <td className="py-3 px-3 text-right font-mono">{!isCredit ? formatINR(tx.amount) : '-'}</td>
+                            <td className="py-3 px-3 text-right font-mono font-bold text-[#16864A]">{isCredit ? `+${formatINR(tx.amount)}` : '-'}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="flex items-center gap-2 text-[11px] text-[#777777]">
+                  <CheckCircle2 className="w-4 h-4 text-[#16864A] shrink-0" aria-hidden="true" />
+                  <span>Digitally Signed HSBC India Banking Statement Record</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div>
+                  <label htmlFor="cert-type" className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">Certificate Type</label>
+                  <select
+                    id="cert-type"
+                    value={certType}
+                    onChange={e => setCertType(e.target.value as any)}
+                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                  >
+                    <option value="SAVINGS_INTEREST">Savings Interest (Sec 80TTA)</option>
+                    <option value="FD_TDS">FD Interest &amp; TDS (Form 16A)</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="cert-fy" className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">Financial Year</label>
+                  <select
+                    id="cert-fy"
+                    value={finYear}
+                    onChange={e => setFinYear(e.target.value)}
+                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                  >
+                    <option value="2026-27">FY 2026-27</option>
+                    <option value="2025-26">FY 2025-26</option>
+                    <option value="2024-25">FY 2024-25</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="cert-acc" className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">Account</label>
+                  <select
+                    id="cert-acc"
+                    value={account?.accountId || ''}
+                    onChange={e => setSelectedAccount(e.target.value)}
+                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                  >
+                    {accounts.map(acc => (
+                      <option key={acc.accountId} value={acc.accountId}>
+                        {acc.accountType} ({acc.maskedAccountNumber})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200 space-y-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-3 pb-4 border-b border-gray-200">
+                  <div>
+                    <div className="font-bold text-sm text-[#1f1f1f]">
+                      {certType === 'SAVINGS_INTEREST'
+                        ? 'SAVINGS ACCOUNT INTEREST CERTIFICATE'
+                        : 'FIXED DEPOSIT INTEREST & TDS SUMMARY'}
+                    </div>
+                    <div className="text-[11px] text-[#777777] mt-0.5">
+                      FY {finYear} • PAN: ABCDE1234F • Client ID: {currentUser?.customerId}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleDownloadPDF}
+                    disabled={isDownloading}
+                    className="min-h-[40px] px-4 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span>Download PDF</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                  <div className="bg-white p-3 rounded-lg border border-gray-200/70">
+                    <span className="text-[#777777] block">Gross Interest</span>
+                    <span className="font-bold text-[#16864A] text-sm">
+                      {certType === 'SAVINGS_INTEREST' ? '₹34,850.00' : '₹1,42,600.00'}
+                    </span>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-gray-200/70">
+                    <span className="text-[#777777] block">TDS Deducted</span>
+                    <span className="font-bold text-[#1f1f1f] text-sm">
+                      {certType === 'SAVINGS_INTEREST' ? '₹0.00' : '₹14,260.00'}
+                    </span>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-gray-200/70">
+                    <span className="text-[#777777] block">TRACES Status</span>
+                    <span className="font-bold text-[#16864A] text-sm flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
+                      Reconciled
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {activeTab === 'STATEMENTS' ? (
-        <>
-          {/* Controls */}
-          <div className="bg-white p-4 rounded-2xl border border-[#E8E8E8] shadow-xs flex flex-col sm:flex-row gap-4 items-center print:hidden">
-            <div className="w-full sm:w-1/2">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-[#777777] mb-1.5">
-                Select Account
-              </label>
-              <select
-                value={selectedAccount}
-                onChange={e => setSelectedAccount(e.target.value)}
-                className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl text-xs font-semibold text-[#252525] focus:outline-none focus:border-[#DB0011]"
-              >
-                {accounts.map(acc => (
-                  <option key={acc.accountId} value={acc.accountId}>
-                    {acc.accountType} ({acc.maskedAccountNumber}) — {formatINR(acc.managedBalance)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="w-full sm:w-1/2">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-[#777777] mb-1.5">
-                Statement Period
-              </label>
-              <select
-                value={dateRange}
-                onChange={e => setDateRange(e.target.value)}
-                className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl text-xs font-semibold text-[#252525] focus:outline-none focus:border-[#DB0011]"
-              >
-                <option value="LAST_30_DAYS">Current Month / Last 30 Days</option>
-                <option value="LAST_90_DAYS">Last Quarter (90 Days)</option>
-                <option value="FINANCIAL_YEAR">Current Financial Year (FY 2026-27)</option>
-              </select>
-            </div>
-
-            <div className="flex gap-2 self-end sm:self-auto pt-2 sm:pt-4">
-              <button
-                onClick={handleDownloadPDF}
-                disabled={isDownloading}
-                className="px-3.5 py-2.5 bg-white border border-[#E8E8E8] text-[#252525] rounded-xl text-xs font-bold hover:bg-gray-50 transition-colors shadow-xs flex items-center gap-1.5"
-              >
-                <Download className="w-3.5 h-3.5 text-[#DB0011]" />
-                <span>PDF</span>
-              </button>
-              <button
-                onClick={handlePrint}
-                className="px-4 py-2.5 bg-[#DB0011] text-white rounded-xl text-xs font-bold hover:bg-[#B0000D] transition-colors shadow-xs flex items-center gap-1.5"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                <span>Print</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Formatted Statement Document Paper */}
-          <div className="bg-white p-6 sm:p-10 rounded-2xl border border-[#E8E8E8] shadow-card print:border-none print:shadow-none print:p-0 space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 pb-6 border-b border-[#E8E8E8]">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <img src="/logo.png" alt="HSBC India" className="w-9 h-9 object-contain" />
-                  <div>
-                    <h1 className="text-base sm:text-lg font-black text-[#252525] tracking-tight leading-none">
-                      HSBC INDIA
-                    </h1>
-                    <p className="text-[10px] text-[#777777] uppercase tracking-widest font-bold mt-1">
-                      Personal Internet Banking e-Statement
-                    </p>
-                  </div>
-                </div>
-                <div className="text-xs text-[#555555] space-y-0.5 pt-1">
-                  <div>Customer Name: <strong className="text-[#252525]">{currentUser?.displayName || 'Premier Customer'}</strong></div>
-                  <div>Customer ID: <strong className="font-mono text-[#252525]">{currentUser?.customerId}</strong></div>
-                  <div>Registered Address: {currentUser?.address || 'Fort'}, {currentUser?.city || 'Mumbai'} - 400001</div>
-                </div>
-              </div>
-
-              <div className="text-left sm:text-right text-xs text-[#555555] space-y-0.5 bg-gray-50 sm:bg-transparent p-3 sm:p-0 rounded-xl w-full sm:w-auto">
-                <div>Branch: <strong className="text-[#252525]">{account?.branchName || 'Mumbai Main Branch, Fort'}</strong></div>
-                <div>Account Number: <strong className="font-mono text-[#252525]">{account?.accountNumber}</strong></div>
-                <div>IFSC Code: <strong className="font-mono text-[#252525]">{account?.ifscCode || 'HSBC0400002'}</strong></div>
-                <div>Generated On: <strong className="text-[#252525]">{new Date().toISOString().split('T')[0]}</strong></div>
-              </div>
-            </div>
-
-            {/* Regulatory Disclaimer Notice */}
-            <div className="bg-red-50/70 p-3.5 rounded-xl border border-red-200 text-[11px] text-[#B0000D] leading-relaxed flex items-start gap-2.5">
-              <ShieldCheck className="w-4 h-4 flex-shrink-0 mt-0.5" />
-              <span>
-                <strong>Application-Managed Record:</strong> This official statement is generated from an independently operated digital banking demonstration system. All balances and records represent simulated application records.
-              </span>
-            </div>
-
-            {/* Financial Summary */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 sm:p-5 bg-[#F9F9F9] rounded-2xl border border-[#E8E8E8] text-xs">
-              <div>
-                <span className="text-[11px] text-[#777777] font-semibold block">Closing Managed Balance</span>
-                <span className="text-sm sm:text-base font-black text-[#252525] mt-0.5 block">{formatINR(account?.managedBalance || 0)}</span>
-              </div>
-              <div>
-                <span className="text-[11px] text-[#777777] font-semibold block">General Ledger Balance</span>
-                <span className="text-sm sm:text-base font-black text-[#252525] mt-0.5 block">{formatINR(account?.ledgerBalance || 0)}</span>
-              </div>
-              <div>
-                <span className="text-[11px] text-[#777777] font-semibold block">Period Total Credits</span>
-                <span className="text-sm sm:text-base font-black text-[#16864A] mt-0.5 block">+{formatINR(totalCredits)}</span>
-              </div>
-              <div>
-                <span className="text-[11px] text-[#777777] font-semibold block">Period Total Debits</span>
-                <span className="text-sm sm:text-base font-black text-[#252525] mt-0.5 block">-{formatINR(totalDebits)}</span>
-              </div>
-            </div>
-
-            {/* Statement Transactions Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-[#E8E8E8] text-[#777777] uppercase tracking-wider text-[10px] font-bold">
-                    <th className="py-3 px-2">Date</th>
-                    <th className="py-3 px-2">Description & Reference</th>
-                    <th className="py-3 px-2">Category</th>
-                    <th className="py-3 px-2 text-right">Debit (INR)</th>
-                    <th className="py-3 px-2 text-right">Credit (INR)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#E8E8E8]">
-                  {accountTxs.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="py-8 text-center text-[#777777] text-xs">
-                        No transactions found for the selected account in this statement period.
-                      </td>
-                    </tr>
-                  ) : (
-                    accountTxs.map(tx => {
-                      const isCredit = tx.transactionType === 'CREDIT';
-                      return (
-                        <tr key={tx.transactionId} className="hover:bg-gray-50/60 transition-colors">
-                          <td className="py-3.5 px-2 text-[#555555] whitespace-nowrap font-medium">{tx.transactionDate}</td>
-                          <td className="py-3.5 px-2">
-                            <div className="font-bold text-[#252525]">{tx.description}</div>
-                            <div className="text-[10px] text-[#777777] font-mono mt-0.5">Ref: {tx.reference}</div>
-                          </td>
-                          <td className="py-3.5 px-2">
-                            <span className="px-2 py-0.5 bg-gray-100 text-[#555555] rounded-md text-[10px] font-semibold">
-                              {tx.category}
-                            </span>
-                          </td>
-                          <td className="py-3.5 px-2 text-right font-mono font-semibold text-[#252525]">
-                            {!isCredit ? formatINR(tx.amount) : '-'}
-                          </td>
-                          <td className="py-3.5 px-2 text-right font-mono font-bold text-[#16864A]">
-                            {isCredit ? `+${formatINR(tx.amount)}` : '-'}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="pt-6 border-t border-[#E8E8E8] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#777777] gap-3">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#16864A]" />
-                <span>Digital Signature Verified: HSBC India Central Core Banking Server</span>
-              </div>
-              <span className="font-mono text-[10px]">AUTH_HASH: 7F8E-99A1-24B3-D6E8</span>
-            </div>
-          </div>
-        </>
-      ) : (
-        /* TAB 2: INTEREST CERTIFICATES (FOR TAX / ITR FILING) */
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-xs space-y-5">
-            <div>
-              <h3 className="text-sm font-bold text-[#252525]">
-                Download Certified Interest Certificate
-              </h3>
-              <p className="text-xs text-[#777777]">
-                Official certificate under Section 80TTA / Form 16A for Income Tax Return (ITR) filing
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-              <div>
-                <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">
-                  Certificate Category
-                </label>
-                <select
-                  value={certType}
-                  onChange={e => setCertType(e.target.value as any)}
-                  className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-bold"
-                >
-                  <option value="SAVINGS_INTEREST">Savings Account Interest (Sec 80TTA)</option>
-                  <option value="FD_TDS">Fixed Deposit Interest & TDS Summary</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">
-                  Financial Year
-                </label>
-                <select
-                  value={finYear}
-                  onChange={e => setFinYear(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-bold"
-                >
-                  <option value="2026-27">FY 2026-27 (Assessment Year 2027-28)</option>
-                  <option value="2025-26">FY 2025-26 (Assessment Year 2026-27)</option>
-                  <option value="2024-25">FY 2024-25 (Assessment Year 2025-26)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">
-                  Select Account
-                </label>
-                <select
-                  value={selectedAccount}
-                  onChange={e => setSelectedAccount(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-bold"
-                >
-                  {accounts.map(acc => (
-                    <option key={acc.accountId} value={acc.accountId}>
-                      {acc.accountType} ({acc.maskedAccountNumber})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Interest Certificate Preview Paper */}
-            <div className="p-6 bg-[#F9F9F9] rounded-2xl border border-[#E8E8E8] space-y-4">
-              <div className="flex justify-between items-start pb-4 border-b border-[#E8E8E8]">
-                <div>
-                  <div className="font-black text-[#252525] text-sm">
-                    {certType === 'SAVINGS_INTEREST'
-                      ? 'CERTIFICATE OF SAVINGS ACCOUNT INTEREST CREDITED'
-                      : 'FIXED DEPOSIT INTEREST & TDS DEDUCTION CERTIFICATE'}
-                  </div>
-                  <div className="text-[11px] text-gray-500 mt-0.5">
-                    Financial Year: {finYear} • PAN: ABCDE1234F • Client ID: {currentUser?.customerId}
-                  </div>
-                </div>
-                <button
-                  onClick={handleDownloadPDF}
-                  disabled={isDownloading}
-                  className="px-4 py-2 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-xl text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Download Signed PDF</span>
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                <div>
-                  <span className="text-gray-500 block">Gross Interest Earned</span>
-                  <span className="font-black text-sm text-[#16864A] mt-0.5 block">
-                    {certType === 'SAVINGS_INTEREST' ? '₹34,850.00' : '₹1,42,600.00'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-500 block">TDS Deducted (Sec 194A)</span>
-                  <span className="font-black text-sm text-[#252525] mt-0.5 block">
-                    {certType === 'SAVINGS_INTEREST' ? '₹0.00 (Exempt)' : '₹14,260.00'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-500 block">Net Interest Credited</span>
-                  <span className="font-black text-sm text-[#252525] mt-0.5 block">
-                    {certType === 'SAVINGS_INTEREST' ? '₹34,850.00' : '₹1,28,340.00'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-500 block">Status on TRACES Portal</span>
-                  <span className="font-bold text-xs text-[#16864A] mt-0.5 block">
-                    Reconciled & Filed
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </AnimatedPageTransition>
   );
 };

@@ -3,30 +3,17 @@ import { useAuth } from '../../context/AuthContext';
 import { useBanking } from '../../context/BankingContext';
 import { useAppLock } from '../../context/AppLockContext';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
-import { Icon } from '../../components/common/Icon';
+import { ModalDialog } from '../../components/common/ModalDialog';
+import { ToggleSwitch } from '../../components/common/ToggleSwitch';
 import {
-  Shield,
   LockKeyhole,
   KeyRound,
   RotateCcw,
   Fingerprint,
   Smartphone,
-  Bell,
-  Eye,
-  EyeOff,
-  Globe,
-  Sliders,
-  CircleUserRound,
-  FileText,
-  CircleHelp,
-  Headset,
   LogOut,
   CheckCircle2,
-  AlertTriangle,
-  ChevronRight,
-  X,
-  Laptop,
-  Check,
+  ArrowRight,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -48,24 +35,25 @@ export const SettingsPage: React.FC = () => {
 
   const [activeSection, setActiveSection] = useState<'security' | 'notifications' | 'privacy' | 'preferences' | 'account' | 'support'>('security');
 
-  // MPIN Form States
+  // MPIN states
   const [currentPin, setCurrentPin] = useState('');
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [showPinInput, setShowPinInput] = useState(false);
 
-  // Reset MPIN Modal
+  // Modals
   const [showResetMpinModal, setShowResetMpinModal] = useState(false);
-  const [resetAuthPassword, setResetAuthPassword] = useState('');
   const [resetNewPin, setResetNewPin] = useState('');
   const [resetConfirmPin, setResetConfirmPin] = useState('');
-
-  // Password Modal
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [currPassword, setCurrPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showComplaintModal, setShowComplaintModal] = useState(false);
+  const [showChequeRequestModal, setShowChequeRequestModal] = useState(false);
+  const [complaintText, setComplaintText] = useState('');
 
-  // Notifications preferences
   const [notifications, setNotifications] = useState({
     transactions: true,
     accountAlerts: true,
@@ -76,28 +64,13 @@ export const SettingsPage: React.FC = () => {
     emailEnabled: true,
   });
 
-  // Privacy preferences
   const [maskAccountNumbers, setMaskAccountNumbers] = useState(true);
   const [privacyMode, setPrivacyMode] = useState(false);
-
-  // App preferences
   const [selectedLanguage, setSelectedLanguage] = useState('English (IN)');
   const [currencyDisplay, setCurrencyDisplay] = useState('INR (₹)');
   const [dateFormat, setDateFormat] = useState('DD/MM/YYYY');
-  const [themeMode, setThemeMode] = useState<'light' | 'dark' | 'system'>('light');
 
-  // Modals for legal / support
-  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
-  const [showTerms, setShowTerms] = useState(false);
-  const [showComplaintModal, setShowComplaintModal] = useState(false);
-  const [showChequeRequestModal, setShowChequeRequestModal] = useState(false);
-  const [complaintText, setComplaintText] = useState('');
-
-  // Weak MPIN detection
-  const isWeakPin = (p: string) => {
-    const weakList = ['123456', '654321', '000000', '111111', '222222', '333333', '999999', '121212'];
-    return weakList.includes(p);
-  };
+  const isWeakPin = (p: string) => ['123456', '654321', '000000', '111111', '222222', '333333', '999999', '121212'].includes(p);
 
   const handleChangeMpin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,14 +79,13 @@ export const SettingsPage: React.FC = () => {
       return;
     }
     if (isWeakPin(newPin)) {
-      toast.error('Weak MPIN. Sequential or repeated digits (e.g. 123456, 111111) are not allowed.');
+      toast.error('Weak MPIN. Sequential or repeated digits are not allowed.');
       return;
     }
     if (newPin !== confirmPin) {
       toast.error('New MPIN confirmation does not match');
       return;
     }
-
     if (appLockEnabled) {
       const res = changeMpin(currentPin, newPin);
       if (!res.success) {
@@ -123,8 +95,7 @@ export const SettingsPage: React.FC = () => {
     } else {
       enableAppLock(newPin);
     }
-
-    toast.success('6-Digit Application MPIN successfully updated!');
+    toast.success('6-Digit MPIN successfully updated!');
     setCurrentPin('');
     setNewPin('');
     setConfirmPin('');
@@ -137,954 +108,542 @@ export const SettingsPage: React.FC = () => {
       return;
     }
     if (isWeakPin(resetNewPin)) {
-      toast.error('Weak MPIN. Please choose a non-sequential 6-digit PIN.');
+      toast.error('Please choose a non-sequential 6-digit PIN.');
       return;
     }
     if (resetNewPin !== resetConfirmPin) {
       toast.error('PIN entries do not match');
       return;
     }
-
     resetMpin(resetNewPin);
     toast.success('Application MPIN reset successfully!');
     setShowResetMpinModal(false);
-    setResetAuthPassword('');
     setResetNewPin('');
     setResetConfirmPin('');
   };
 
-  const toggleNotification = (key: keyof typeof notifications) => {
-    setNotifications(prev => {
-      const updated = { ...prev, [key]: !prev[key] };
-      toast.success('Notification preference saved');
-      return updated;
-    });
-  };
-
   return (
-    <AnimatedPageTransition className="space-y-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div>
-        <h2 className="text-xl sm:text-2xl font-black text-[#252525] tracking-tight">
-          Application Settings & Preferences
-        </h2>
-        <p className="text-xs text-[#777777] mt-0.5">
-          Configure security MPIN, notification gates, privacy safeguards, and profile details
-        </p>
-      </div>
+    <AnimatedPageTransition className="pb-10">
+      <div className="bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-xs overflow-hidden">
+        {/* Header + Cards-UI Underline Navigation Tabs */}
+        <div className="px-4 sm:px-6 md:px-8 pt-5 border-b border-gray-200">
+          <h1 className="text-[19px] sm:text-[22px] font-bold text-[#1f1f1f] tracking-tight">
+            Settings &amp; Profile
+          </h1>
+          <p className="text-xs text-[#777777] mt-0.5">
+            MPIN security, notification alerts, privacy &amp; KYC profile
+          </p>
 
-      {/* Navigation Tabs */}
-      <div className="flex overflow-x-auto gap-2 p-1.5 bg-white rounded-2xl border border-[#E8E8E8] shadow-xs">
-        <button
-          onClick={() => setActiveSection('security')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
-            activeSection === 'security'
-              ? 'bg-[#DB0011] text-white shadow-xs'
-              : 'text-[#555555] hover:bg-gray-100 hover:text-[#252525]'
-          }`}
-        >
-          <Shield className="w-4 h-4" />
-          <span>Security & MPIN</span>
-        </button>
-
-        <button
-          onClick={() => setActiveSection('notifications')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
-            activeSection === 'notifications'
-              ? 'bg-[#DB0011] text-white shadow-xs'
-              : 'text-[#555555] hover:bg-gray-100 hover:text-[#252525]'
-          }`}
-        >
-          <Bell className="w-4 h-4" />
-          <span>Notifications</span>
-        </button>
-
-        <button
-          onClick={() => setActiveSection('privacy')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
-            activeSection === 'privacy'
-              ? 'bg-[#DB0011] text-white shadow-xs'
-              : 'text-[#555555] hover:bg-gray-100 hover:text-[#252525]'
-          }`}
-        >
-          <EyeOff className="w-4 h-4" />
-          <span>Privacy</span>
-        </button>
-
-        <button
-          onClick={() => setActiveSection('preferences')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
-            activeSection === 'preferences'
-              ? 'bg-[#DB0011] text-white shadow-xs'
-              : 'text-[#555555] hover:bg-gray-100 hover:text-[#252525]'
-          }`}
-        >
-          <Sliders className="w-4 h-4" />
-          <span>Preferences</span>
-        </button>
-
-        <button
-          onClick={() => setActiveSection('account')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
-            activeSection === 'account'
-              ? 'bg-[#DB0011] text-white shadow-xs'
-              : 'text-[#555555] hover:bg-gray-100 hover:text-[#252525]'
-          }`}
-        >
-          <CircleUserRound className="w-4 h-4" />
-          <span>Profile & KYC</span>
-        </button>
-
-        <button
-          onClick={() => setActiveSection('support')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
-            activeSection === 'support'
-              ? 'bg-[#DB0011] text-white shadow-xs'
-              : 'text-[#555555] hover:bg-gray-100 hover:text-[#252525]'
-          }`}
-        >
-          <Headset className="w-4 h-4" />
-          <span>Help & About</span>
-        </button>
-      </div>
-
-      {/* SECTION A & B: SECURITY & MPIN */}
-      {activeSection === 'security' && (
-        <div className="space-y-6">
-          {/* MPIN Status Banner */}
-          <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-xs space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E8E8E8]">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-red-50 text-[#DB0011] flex items-center justify-center flex-shrink-0">
-                  <LockKeyhole className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold text-[#252525]">
-                    6-Digit Application MPIN Shield
-                  </h3>
-                  <p className="text-xs text-[#777777]">
-                    Secures opening of the application, transfer confirmations, and sensitive transactions
-                  </p>
-                </div>
-              </div>
-              <span
-                className={`px-3 py-1 self-start sm:self-auto rounded-full text-xs font-bold ${
-                  appLockEnabled
-                    ? 'bg-emerald-50 text-[#16864A] border border-emerald-200'
-                    : 'bg-gray-100 text-gray-500'
-                }`}
-              >
-                {appLockEnabled ? 'MPIN Enforced' : 'Disabled'}
-              </span>
-            </div>
-
-            <div className="flex flex-wrap gap-2.5">
-              <button
-                type="button"
-                onClick={lockApp}
-                className="py-2.5 px-4 bg-[#252525] text-white rounded-xl text-xs font-bold hover:bg-black transition-colors"
-              >
-                Lock App Now
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowResetMpinModal(true)}
-                className="py-2.5 px-4 bg-gray-50 text-[#252525] hover:bg-gray-100 rounded-xl text-xs font-bold transition-colors border border-[#E8E8E8] flex items-center gap-1.5"
-              >
-                <RotateCcw className="w-3.5 h-3.5 text-[#DB0011]" />
-                <span>Reset MPIN</span>
-              </button>
-              {appLockEnabled && (
+          <div className="mt-4 flex items-center gap-5 sm:gap-7 overflow-x-auto no-scrollbar">
+            {[
+              { id: 'security' as const, label: 'Security' },
+              { id: 'notifications' as const, label: 'Alerts' },
+              { id: 'privacy' as const, label: 'Privacy' },
+              { id: 'preferences' as const, label: 'Regional' },
+              { id: 'account' as const, label: 'Profile & KYC' },
+              { id: 'support' as const, label: 'Help' },
+            ].map(tab => {
+              const active = activeSection === tab.id;
+              return (
                 <button
+                  key={tab.id}
                   type="button"
-                  onClick={disableAppLock}
-                  className="py-2.5 px-4 bg-red-50 text-[#DB0011] hover:bg-red-100 rounded-xl text-xs font-bold transition-colors border border-red-200"
+                  onClick={() => setActiveSection(tab.id)}
+                  className={`relative pb-3 min-h-[40px] text-[13px] sm:text-[14px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                    active ? 'text-[#1f1f1f]' : 'text-[#777777] hover:text-[#1f1f1f]'
+                  }`}
                 >
-                  Disable MPIN
+                  {tab.label}
+                  {active && (
+                    <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#DB0011] rounded-t-full" />
+                  )}
                 </button>
-              )}
-            </div>
+              );
+            })}
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Change MPIN Form */}
-            <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-xs space-y-4">
-              <div className="flex items-center gap-2 pb-2 border-b border-[#E8E8E8]">
-                <KeyRound className="w-4 h-4 text-[#DB0011]" />
-                <h3 className="text-sm font-bold text-[#252525]">
-                  {appLockEnabled ? 'Change 6-Digit MPIN' : 'Set Up New 6-Digit MPIN'}
-                </h3>
-              </div>
-
-              <form onSubmit={handleChangeMpin} className="space-y-3.5 text-xs">
-                {appLockEnabled && (
-                  <div>
-                    <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">
-                      Current 6-Digit MPIN
-                    </label>
-                    <input
-                      type={showPinInput ? 'text' : 'password'}
-                      maxLength={6}
-                      required
-                      value={currentPin}
-                      onChange={e => setCurrentPin(e.target.value)}
-                      className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-mono tracking-widest text-[#252525]"
-                      placeholder="••••••"
-                    />
+        <div className="px-4 sm:px-6 md:px-8 py-6">
+          {/* SECURITY */}
+          {activeSection === 'security' && (
+            <div className="space-y-6">
+              <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-white text-[#DB0011] border border-gray-200/70 flex items-center justify-center shrink-0">
+                      <LockKeyhole className="w-5 h-5" aria-hidden="true" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-bold text-[#1f1f1f]">6-Digit Application MPIN Shield</h2>
+                      <p className="text-xs text-[#777777]">Secures launch &amp; sensitive actions</p>
+                    </div>
                   </div>
-                )}
-
-                <div>
-                  <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">
-                    New 6-Digit MPIN
-                  </label>
-                  <input
-                    type={showPinInput ? 'text' : 'password'}
-                    maxLength={6}
-                    required
-                    value={newPin}
-                    onChange={e => setNewPin(e.target.value)}
-                    className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-mono tracking-widest text-[#252525]"
-                    placeholder="••••••"
-                  />
-                  <span className="text-[10px] text-gray-400 mt-1 block">
-                    Must not be sequential (123456) or repeated (111111)
+                  <span className={`px-2.5 py-1 rounded text-[11px] font-bold self-start sm:self-auto ${appLockEnabled ? 'bg-emerald-50 text-[#16864A] border border-emerald-200' : 'bg-gray-200 text-gray-600'}`}>
+                    {appLockEnabled ? 'MPIN Enforced' : 'Disabled'}
                   </span>
                 </div>
 
-                <div>
-                  <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">
-                    Confirm New MPIN
-                  </label>
-                  <input
-                    type={showPinInput ? 'text' : 'password'}
-                    maxLength={6}
-                    required
-                    value={confirmPin}
-                    onChange={e => setConfirmPin(e.target.value)}
-                    className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-mono tracking-widest text-[#252525]"
-                    placeholder="••••••"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between pt-1">
+                <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => setShowPinInput(!showPinInput)}
-                    className="text-[11px] text-[#777777] hover:text-[#252525] font-semibold"
+                    onClick={lockApp}
+                    className="min-h-[40px] px-4 bg-[#1f1f1f] hover:bg-black text-white rounded-[2px] text-xs font-semibold cursor-pointer"
                   >
-                    {showPinInput ? 'Hide PIN characters' : 'Show PIN characters'}
+                    Lock App Now
                   </button>
                   <button
-                    type="submit"
-                    className="py-2.5 px-5 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-xl font-bold transition-colors shadow-xs"
+                    type="button"
+                    onClick={() => setShowResetMpinModal(true)}
+                    className="min-h-[40px] px-4 bg-white border border-[#333333] text-[#1f1f1f] hover:bg-gray-50 rounded-[2px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                   >
-                    Save New MPIN
+                    <RotateCcw className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
+                    <span>Reset MPIN</span>
                   </button>
-                </div>
-              </form>
-            </div>
-
-            {/* Timeout & Biometric Settings */}
-            <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-xs space-y-4">
-              <div className="flex items-center gap-2 pb-2 border-b border-[#E8E8E8]">
-                <Smartphone className="w-4 h-4 text-[#DB0011]" />
-                <h3 className="text-sm font-bold text-[#252525]">
-                  Auto-Lock & Biometrics
-                </h3>
-              </div>
-
-              {/* Inactivity Timeout selector */}
-              <div>
-                <label className="font-bold text-[#777777] uppercase text-[10px] block mb-2">
-                  Inactivity Auto-Lock Timeout
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[1, 3, 5].map(t => (
+                  {appLockEnabled && (
                     <button
-                      key={t}
                       type="button"
-                      onClick={() => {
-                        setAutoLockTimeout(t);
-                        toast.success(`Auto-lock timeout set to ${t} minute${t > 1 ? 's' : ''}`);
-                      }}
-                      className={`p-2.5 rounded-xl border text-xs font-bold transition-colors ${
-                        autoLockTimeout === t
-                          ? 'bg-[#DB0011] text-white border-[#DB0011] shadow-xs'
-                          : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
-                      }`}
+                      onClick={disableAppLock}
+                      className="min-h-[40px] px-4 bg-white border border-[#DB0011] text-[#DB0011] hover:bg-red-50 rounded-[2px] text-xs font-semibold cursor-pointer"
                     >
-                      {t} Min{t > 1 ? 's' : ''}
+                      Disable MPIN
                     </button>
-                  ))}
+                  )}
                 </div>
               </div>
 
-              {/* Biometrics Toggle */}
-              <div className="flex items-center justify-between p-3.5 bg-gray-50 rounded-2xl border border-[#E8E8E8]">
-                <div className="flex items-center gap-3">
-                  <Fingerprint className="w-5 h-5 text-[#DB0011]" />
-                  <div>
-                    <div className="text-xs font-bold text-[#252525]">Biometric Fast Unlock</div>
-                    <div className="text-[10px] text-gray-500">Touch ID / Face ID simulation</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-gray-200/70">
+                    <KeyRound className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
+                    <h2 className="text-sm font-bold text-[#1f1f1f]">Change 6-Digit MPIN</h2>
                   </div>
+
+                  <form onSubmit={handleChangeMpin} className="space-y-3 text-xs">
+                    {appLockEnabled && (
+                      <div>
+                        <label htmlFor="set-cur-pin" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Current MPIN</label>
+                        <input
+                          id="set-cur-pin"
+                          type={showPinInput ? 'text' : 'password'}
+                          maxLength={6}
+                          required
+                          value={currentPin}
+                          onChange={e => setCurrentPin(e.target.value.replace(/\D/g, ''))}
+                          className="w-full h-11 px-3 bg-white border border-gray-200 rounded-[2px] font-mono tracking-widest"
+                          placeholder="••••••"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <label htmlFor="set-new-pin" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">New MPIN</label>
+                      <input
+                        id="set-new-pin"
+                        type={showPinInput ? 'text' : 'password'}
+                        maxLength={6}
+                        required
+                        value={newPin}
+                        onChange={e => setNewPin(e.target.value.replace(/\D/g, ''))}
+                        className="w-full h-11 px-3 bg-white border border-gray-200 rounded-[2px] font-mono tracking-widest"
+                        placeholder="••••••"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="set-conf-pin" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Confirm MPIN</label>
+                      <input
+                        id="set-conf-pin"
+                        type={showPinInput ? 'text' : 'password'}
+                        maxLength={6}
+                        required
+                        value={confirmPin}
+                        onChange={e => setConfirmPin(e.target.value.replace(/\D/g, ''))}
+                        className="w-full h-11 px-3 bg-white border border-gray-200 rounded-[2px] font-mono tracking-widest"
+                        placeholder="••••••"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowPinInput(!showPinInput)}
+                        className="text-[11px] text-[#555555] hover:text-[#1f1f1f] font-semibold cursor-pointer min-h-[32px]"
+                      >
+                        {showPinInput ? 'Hide PIN' : 'Show PIN'}
+                      </button>
+                      <button
+                        type="submit"
+                        className="min-h-[40px] px-5 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer"
+                      >
+                        Save MPIN
+                      </button>
+                    </div>
+                  </form>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setBiometricsEnabled(!biometricsEnabled);
-                    toast.success(biometricsEnabled ? 'Biometrics disabled' : 'Biometrics enabled');
-                  }}
-                  className={`w-11 h-6 rounded-full transition-colors relative ${biometricsEnabled ? 'bg-[#DB0011]' : 'bg-gray-300'}`}
-                >
-                  <span className={`block w-4 h-4 bg-white rounded-full transition-transform absolute top-1 ${biometricsEnabled ? 'left-6' : 'left-1'}`} />
-                </button>
-              </div>
 
-              {/* Password update shortcut */}
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowPasswordModal(true)}
-                  className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-[#252525] rounded-xl text-xs font-bold transition-colors"
-                >
-                  Change Internet Banking Password
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Active Sessions */}
-          <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-xs space-y-3">
-            <h3 className="text-xs font-bold text-[#777777] uppercase tracking-wider">
-              Connected Devices & Sessions
-            </h3>
-            <div className="divide-y divide-[#E8E8E8] text-xs">
-              <div className="py-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Laptop className="w-4 h-4 text-[#777777]" />
-                  <div>
-                    <span className="font-bold text-[#252525]">MacBook Pro — Safari 18.1</span>
-                    <span className="text-[10px] bg-red-100 text-[#DB0011] font-bold px-1.5 py-0.2 rounded ml-2">Current Session</span>
-                    <div className="text-[11px] text-[#777777]">Mumbai, Maharashtra • IP: 103.21.144.12</div>
+                <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b border-gray-200/70">
+                    <Smartphone className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
+                    <h2 className="text-sm font-bold text-[#1f1f1f]">Auto-Lock &amp; Biometrics</h2>
                   </div>
-                </div>
-                <span className="text-[#16864A] font-bold">Active Now</span>
-              </div>
-              <div className="py-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Smartphone className="w-4 h-4 text-[#777777]" />
+
                   <div>
-                    <span className="font-bold text-[#252525]">iPhone 15 Pro — HSBC India Mobile App</span>
-                    <div className="text-[11px] text-[#777777]">Mumbai, Maharashtra • Last sync 1 hour ago</div>
+                    <span className="font-bold text-[#777777] uppercase text-[10px] block mb-2">Inactivity Timeout</span>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[1, 3, 5].map(t => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => {
+                            setAutoLockTimeout(t);
+                            toast.success(`Auto-lock set to ${t} min${t > 1 ? 's' : ''}`);
+                          }}
+                          className={`min-h-[40px] rounded-[2px] border text-xs font-semibold cursor-pointer ${
+                            autoLockTimeout === t ? 'bg-[#DB0011] text-white border-[#DB0011]' : 'bg-white text-[#1f1f1f] border-gray-200'
+                          }`}
+                        >
+                          {t} Min{t > 1 ? 's' : ''}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => toast.success('Session token revoked')}
-                  className="text-[#DB0011] hover:underline font-bold"
-                >
-                  Revoke
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* SECTION C: NOTIFICATIONS */}
-      {activeSection === 'notifications' && (
-        <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-xs space-y-5">
-          <div>
-            <h3 className="text-sm font-bold text-[#252525]">Real-Time Notification Preferences</h3>
-            <p className="text-xs text-[#777777]">Choose which alerts are transmitted to your verified mobile number and email</p>
-          </div>
+                  <div className="flex items-center justify-between p-3.5 bg-white rounded-xl border border-gray-200/70">
+                    <div className="flex items-center gap-2.5">
+                      <Fingerprint className="w-5 h-5 text-[#DB0011]" aria-hidden="true" />
+                      <div>
+                        <div className="text-xs font-bold text-[#1f1f1f]">Biometric Fast Unlock</div>
+                        <div className="text-[10px] text-[#777777]">Face ID / Touch ID</div>
+                      </div>
+                    </div>
+                    <ToggleSwitch
+                      checked={biometricsEnabled}
+                      onChange={val => {
+                        setBiometricsEnabled(val);
+                        toast.success(val ? 'Biometrics enabled' : 'Biometrics disabled');
+                      }}
+                      ariaLabel="Biometric Fast Unlock"
+                    />
+                  </div>
 
-          <div className="divide-y divide-[#E8E8E8] text-xs">
-            {[
-              { key: 'transactions' as const, label: 'Transaction SMS & Push Alerts', desc: 'Instant alerts on all debit, credit and transfer activity above ₹0' },
-              { key: 'accountAlerts' as const, label: 'Account Balance & Statement Notices', desc: 'Monthly e-Statement ready notifications and minimum balance alerts' },
-              { key: 'cardActivity' as const, label: 'Card Fraud & Usage Alerts', desc: 'Real-time notification for POS, online e-commerce and international transactions' },
-              { key: 'securityNotice' as const, label: 'Security & App-Lock Alerts', desc: 'Alerts when App-Lock PIN is changed or new device logs in' },
-              { key: 'promotions' as const, label: 'Premier Offers & Wealth Insights', desc: 'Curated investment reports and Premier reward point multiplier promos' },
-              { key: 'pushEnabled' as const, label: 'Browser Push Notifications', desc: 'Receive high-priority alerts even when browser is minimized' },
-              { key: 'emailEnabled' as const, label: 'Certified Email Dispatches', desc: 'Receive digitally signed PDF receipts for all funds transfers' },
-            ].map(item => (
-              <div key={item.key} className="py-3.5 flex items-center justify-between">
-                <div className="pr-4">
-                  <div className="font-bold text-[#252525]">{item.label}</div>
-                  <div className="text-[11px] text-[#777777] mt-0.5">{item.desc}</div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => toggleNotification(item.key)}
-                  className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 ${
-                    notifications[item.key] ? 'bg-[#DB0011]' : 'bg-gray-300'
-                  }`}
-                >
-                  <span className={`block w-4 h-4 bg-white rounded-full transition-transform absolute top-1 ${
-                    notifications[item.key] ? 'left-6' : 'left-1'
-                  }`} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* SECTION D: PRIVACY */}
-      {activeSection === 'privacy' && (
-        <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-xs space-y-5">
-          <div>
-            <h3 className="text-sm font-bold text-[#252525]">Display Privacy & Safeguards</h3>
-            <p className="text-xs text-[#777777]">Manage visibility of sensitive banking balances in public or shared environments</p>
-          </div>
-
-          <div className="divide-y divide-[#E8E8E8] text-xs">
-            <div className="py-3.5 flex items-center justify-between">
-              <div>
-                <div className="font-bold text-[#252525]">Hide Sensitive Account Balances by Default</div>
-                <div className="text-[11px] text-[#777777]">Replaces rupees balances with •••••• until explicitly tapped</div>
-              </div>
-              <button
-                type="button"
-                onClick={toggleBalanceVisibility}
-                className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 ${
-                  hideBalances ? 'bg-[#DB0011]' : 'bg-gray-300'
-                }`}
-              >
-                <span className={`block w-4 h-4 bg-white rounded-full transition-transform absolute top-1 ${
-                  hideBalances ? 'left-6' : 'left-1'
-                }`} />
-              </button>
-            </div>
-
-            <div className="py-3.5 flex items-center justify-between">
-              <div>
-                <div className="font-bold text-[#252525]">Mask Account & Card Numbers</div>
-                <div className="text-[11px] text-[#777777]">Display only the trailing 4 digits across all screens and receipts</div>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setMaskAccountNumbers(!maskAccountNumbers);
-                  toast.success('Account masking setting saved');
-                }}
-                className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 ${
-                  maskAccountNumbers ? 'bg-[#DB0011]' : 'bg-gray-300'
-                }`}
-              >
-                <span className={`block w-4 h-4 bg-white rounded-full transition-transform absolute top-1 ${
-                  maskAccountNumbers ? 'left-6' : 'left-1'
-                }`} />
-              </button>
-            </div>
-
-            <div className="py-3.5 flex items-center justify-between">
-              <div>
-                <div className="font-bold text-[#252525]">Privacy Screen Shield</div>
-                <div className="text-[11px] text-[#777777]">Blurs application preview in mobile multitasking app switcher</div>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setPrivacyMode(!privacyMode);
-                  toast.success('App switcher privacy shield enabled');
-                }}
-                className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 ${
-                  privacyMode ? 'bg-[#DB0011]' : 'bg-gray-300'
-                }`}
-              >
-                <span className={`block w-4 h-4 bg-white rounded-full transition-transform absolute top-1 ${
-                  privacyMode ? 'left-6' : 'left-1'
-                }`} />
-              </button>
-            </div>
-          </div>
-
-          <div className="pt-3 flex gap-3 text-xs">
-            <button
-              type="button"
-              onClick={() => setShowPrivacyPolicy(true)}
-              className="text-[#DB0011] hover:underline font-bold"
-            >
-              View HSBC India Privacy Notice →
-            </button>
-            <span className="text-gray-300">|</span>
-            <button
-              type="button"
-              onClick={() => setShowTerms(true)}
-              className="text-[#DB0011] hover:underline font-bold"
-            >
-              Terms & Conditions →
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* SECTION E: PREFERENCES */}
-      {activeSection === 'preferences' && (
-        <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-xs space-y-5">
-          <div>
-            <h3 className="text-sm font-bold text-[#252525]">Regional & Display Preferences</h3>
-            <p className="text-xs text-[#777777]">Customise numerical format, date notation, and language</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div>
-              <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">Language</label>
-              <select
-                value={selectedLanguage}
-                onChange={e => {
-                  setSelectedLanguage(e.target.value);
-                  toast.success(`Language set to ${e.target.value}`);
-                }}
-                className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-bold"
-              >
-                <option value="English (IN)">English (India)</option>
-                <option value="Hindi (हिन्दी)">हिन्दी (Hindi)</option>
-                <option value="English (UK)">English (UK)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">Currency Notation</label>
-              <select
-                value={currencyDisplay}
-                onChange={e => {
-                  setCurrencyDisplay(e.target.value);
-                  toast.success(`Currency display set to ${e.target.value}`);
-                }}
-                className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-bold"
-              >
-                <option value="INR (₹)">INR — Indian Rupee (₹)</option>
-                <option value="USD ($)">USD — US Dollar ($)</option>
-                <option value="GBP (£)">GBP — British Pound (£)</option>
-                <option value="EUR (€)">EUR — Euro (€)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">Date Format</label>
-              <select
-                value={dateFormat}
-                onChange={e => {
-                  setDateFormat(e.target.value);
-                  toast.success(`Date format set to ${e.target.value}`);
-                }}
-                className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-bold"
-              >
-                <option value="DD/MM/YYYY">DD/MM/YYYY (Indian Standard)</option>
-                <option value="YYYY-MM-DD">YYYY-MM-DD (ISO 8601)</option>
-                <option value="MM/DD/YYYY">MM/DD/YYYY (US Format)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">Interface Theme</label>
-              <div className="grid grid-cols-3 gap-2">
-                {(['light', 'dark', 'system'] as const).map(m => (
                   <button
-                    key={m}
                     type="button"
-                    onClick={() => {
-                      setThemeMode(m);
-                      toast.success(`Theme set to ${m} mode`);
-                    }}
-                    className={`p-2 rounded-xl border text-xs font-bold capitalize transition-colors ${
-                      themeMode === m
-                        ? 'bg-[#DB0011] text-white border-[#DB0011]'
-                        : 'bg-gray-50 text-gray-700 border-gray-200'
-                    }`}
+                    onClick={() => setShowPasswordModal(true)}
+                    className="w-full min-h-[42px] bg-white hover:bg-gray-50 border border-[#333333] text-[#1f1f1f] rounded-[2px] text-xs font-semibold cursor-pointer"
                   >
-                    {m}
+                    Change Login Password
                   </button>
-                ))}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* SECTION F: ACCOUNT & KYC */}
-      {activeSection === 'account' && (
-        <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-xs space-y-5">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-sm font-bold text-[#252525]">Personal Account & KYC Verification</h3>
-              <p className="text-xs text-[#777777]">Official KYC details verified with Reserve Bank of India compliant central registry</p>
-            </div>
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-[#16864A] border border-emerald-200 flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Full KYC Verified</span>
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-2xl border border-[#E8E8E8] text-xs">
-            <div>
-              <span className="text-gray-500 block">Full Legal Name</span>
-              <span className="font-bold text-gray-900 mt-0.5 block">{currentUser?.displayName}</span>
-            </div>
-            <div>
-              <span className="text-gray-500 block">Customer Relationship Number (CRN)</span>
-              <span className="font-mono font-bold text-gray-900 mt-0.5 block">{currentUser?.customerId}</span>
-            </div>
-            <div>
-              <span className="text-gray-500 block">Primary Email</span>
-              <span className="font-bold text-gray-900 mt-0.5 block">{currentUser?.email}</span>
-            </div>
-            <div>
-              <span className="text-gray-500 block">Registered Mobile</span>
-              <span className="font-bold text-gray-900 mt-0.5 block">{currentUser?.phone}</span>
-            </div>
-            <div>
-              <span className="text-gray-500 block">PAN Number</span>
-              <span className="font-mono font-bold text-gray-900 mt-0.5 block">ABCDE1234F (Verified)</span>
-            </div>
-            <div>
-              <span className="text-gray-500 block">Home Branch</span>
-              <span className="font-bold text-gray-900 mt-0.5 block">Mumbai Main Branch, Fort (002)</span>
-            </div>
-            <div className="col-span-2">
-              <span className="text-gray-500 block">Permanent Communication Address</span>
-              <span className="font-medium text-gray-900 mt-0.5 block">{currentUser?.address}, {currentUser?.city} - 400001</span>
-            </div>
-          </div>
-
-          {/* Service Requests */}
-          <div className="pt-2">
-            <h4 className="text-xs font-bold text-[#777777] uppercase tracking-wider mb-2">Account Service Requests</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setShowChequeRequestModal(true)}
-                className="p-3.5 rounded-2xl border border-[#E8E8E8] hover:border-gray-400 text-left transition-colors"
-              >
-                <div className="font-bold text-xs text-[#252525]">Request New Cheque Book</div>
-                <div className="text-[11px] text-[#777777] mt-0.5">25 or 50 personalized leaves dispatched to home address</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => toast.success('Address update request opened with relationship manager')}
-                className="p-3.5 rounded-2xl border border-[#E8E8E8] hover:border-gray-400 text-left transition-colors"
-              >
-                <div className="font-bold text-xs text-[#252525]">Update Registered Address</div>
-                <div className="text-[11px] text-[#777777] mt-0.5">Upload Aadhaar / Passport utility proof via DigiLocker</div>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* SECTION G: SUPPORT & ABOUT */}
-      {activeSection === 'support' && (
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-xs space-y-4">
-            <div>
-              <h3 className="text-sm font-bold text-[#252525]">Help Centre & Frequently Asked Questions</h3>
-              <p className="text-xs text-[#777777]">Quick answers to common questions about Premier internet banking</p>
-            </div>
-
-            <div className="space-y-2 text-xs">
+          {/* NOTIFICATIONS */}
+          {activeSection === 'notifications' && (
+            <div className="divide-y divide-gray-100 text-xs">
               {[
-                { q: 'How do I reset my 6-digit MPIN if forgotten?', a: 'Click the Reset MPIN button under Security Settings, or authenticate via your Premier Relationship Manager.' },
-                { q: 'What is the daily RTGS / NEFT transfer limit?', a: 'Standard daily online transfer limit is ₹10,00,000. Higher limits can be scheduled via Operations Console.' },
-                { q: 'How do I temporarily freeze my debit or credit card?', a: 'Navigate to Cards, choose your card and tap Freeze Card. Unfreezing is instantaneous.' },
-                { q: 'Are deposits insured by DICGC?', a: 'Yes, all eligible customer deposits up to ₹5,00,000 per depositor are insured by DICGC.' },
-              ].map((faq, i) => (
-                <div key={i} className="p-3.5 bg-gray-50 rounded-2xl border border-[#E8E8E8]">
-                  <div className="font-bold text-[#252525]">{faq.q}</div>
-                  <div className="text-[11px] text-[#555555] mt-1">{faq.a}</div>
+                { key: 'transactions' as const, label: 'Transaction SMS & Push Alerts', desc: 'Instant alerts on all debit & credit movements' },
+                { key: 'accountAlerts' as const, label: 'Account Balance Notices', desc: 'Monthly e-Statement & minimum balance alerts' },
+                { key: 'cardActivity' as const, label: 'Card Fraud & Usage Alerts', desc: 'Real-time alert for online and overseas spend' },
+                { key: 'securityNotice' as const, label: 'Security & App-Lock Alerts', desc: 'Alerts when MPIN is changed or device logs in' },
+                { key: 'promotions' as const, label: 'Premier Offers & Insights', desc: 'Curated wealth insights & reward multipliers' },
+              ].map(item => (
+                <div key={item.key} className="py-4 flex items-center justify-between gap-4">
+                  <div>
+                    <div className="font-bold text-[#1f1f1f]">{item.label}</div>
+                    <div className="text-[11px] text-[#777777] mt-0.5">{item.desc}</div>
+                  </div>
+                  <ToggleSwitch
+                    checked={notifications[item.key]}
+                    onChange={val => {
+                      setNotifications(prev => ({ ...prev, [item.key]: val }));
+                      toast.success('Notification preference saved');
+                    }}
+                    ariaLabel={item.label}
+                  />
                 </div>
               ))}
             </div>
+          )}
 
-            <div className="pt-2 flex flex-wrap gap-3 text-xs">
-              <button
-                type="button"
-                onClick={() => setShowComplaintModal(true)}
-                className="px-4 py-2.5 bg-red-50 text-[#DB0011] rounded-xl font-bold hover:bg-red-100 transition-colors border border-red-200"
-              >
-                Raise Formal Complaint / Grievance
-              </button>
-              <button
-                type="button"
-                onClick={() => toast.success('Connected to 24/7 Premier Emergency Helpline: 1800 266 3456')}
-                className="px-4 py-2.5 bg-gray-100 text-[#252525] rounded-xl font-bold hover:bg-gray-200 transition-colors"
-              >
-                Emergency Helpline (1800 266 3456)
-              </button>
-            </div>
-          </div>
-
-          {/* About App Box */}
-          <div className="bg-white p-6 rounded-3xl border border-[#E8E8E8] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-            <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="HSBC India" className="w-9 h-9 object-contain" />
-              <div>
-                <div className="font-black text-[#252525]">HSBC India Personal Internet Banking</div>
-                <div className="text-[11px] text-[#777777]">Version 3.4.0 (Build 2026.11) • Official Mobile Banking</div>
-              </div>
-            </div>
-            <button
-              onClick={logout}
-              className="px-4 py-2 bg-red-50 hover:bg-red-100 text-[#DB0011] rounded-xl font-bold transition-colors border border-red-200 flex items-center gap-1.5"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Sign Out Securely</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Reset MPIN Modal */}
-      {showResetMpinModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-[#E8E8E8]">
-            <div className="flex justify-between items-center pb-2 border-b border-[#E8E8E8]">
-              <div className="flex items-center gap-2 text-[#DB0011]">
-                <RotateCcw className="w-5 h-5" />
-                <h3 className="text-sm font-black text-[#252525]">Reset 6-Digit MPIN</h3>
-              </div>
-              <button onClick={() => setShowResetMpinModal(false)}>
-                <X className="w-4 h-4 text-gray-400" />
-              </button>
-            </div>
-
-            <p className="text-xs text-[#555555]">
-              Verify your authenticated session to establish a brand-new 6-digit MPIN.
-            </p>
-
-            <form onSubmit={handleExecuteResetMpin} className="space-y-3.5 text-xs">
-              <div>
-                <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">
-                  New 6-Digit MPIN
-                </label>
-                <input
-                  type="password"
-                  maxLength={6}
-                  required
-                  value={resetNewPin}
-                  onChange={e => setResetNewPin(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-mono text-center text-lg tracking-widest text-[#252525]"
-                  placeholder="••••••"
-                />
+          {/* PRIVACY */}
+          {activeSection === 'privacy' && (
+            <div className="space-y-4">
+              <div className="divide-y divide-gray-100 text-xs">
+                <div className="py-4 flex items-center justify-between gap-4">
+                  <div>
+                    <div className="font-bold text-[#1f1f1f]">Hide Sensitive Balances</div>
+                    <div className="text-[11px] text-[#777777]">Replaces currency amounts with ••••••</div>
+                  </div>
+                  <ToggleSwitch
+                    checked={hideBalances}
+                    onChange={() => toggleBalanceVisibility()}
+                    ariaLabel="Hide Sensitive Balances"
+                  />
+                </div>
+                <div className="py-4 flex items-center justify-between gap-4">
+                  <div>
+                    <div className="font-bold text-[#1f1f1f]">Mask Account &amp; Card Numbers</div>
+                    <div className="text-[11px] text-[#777777]">Display only trailing 4 digits across screens</div>
+                  </div>
+                  <ToggleSwitch
+                    checked={maskAccountNumbers}
+                    onChange={val => {
+                      setMaskAccountNumbers(val);
+                      toast.success('Masking setting saved');
+                    }}
+                    ariaLabel="Mask Account and Card Numbers"
+                  />
+                </div>
+                <div className="py-4 flex items-center justify-between gap-4">
+                  <div>
+                    <div className="font-bold text-[#1f1f1f]">Privacy Screen Shield</div>
+                    <div className="text-[11px] text-[#777777]">Blurs preview in multitasking switcher</div>
+                  </div>
+                  <ToggleSwitch
+                    checked={privacyMode}
+                    onChange={val => {
+                      setPrivacyMode(val);
+                      toast.success('Privacy screen shield updated');
+                    }}
+                    ariaLabel="Privacy Screen Shield"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">
-                  Confirm New MPIN
-                </label>
-                <input
-                  type="password"
-                  maxLength={6}
-                  required
-                  value={resetConfirmPin}
-                  onChange={e => setResetConfirmPin(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-mono text-center text-lg tracking-widest text-[#252525]"
-                  placeholder="••••••"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2 border-t border-[#E8E8E8]">
+              <div className="flex flex-wrap gap-4 pt-2 text-xs">
                 <button
                   type="button"
-                  onClick={() => setShowResetMpinModal(false)}
-                  className="px-4 py-2 border border-[#E8E8E8] rounded-xl font-bold text-[#777777]"
+                  onClick={() => setShowPrivacyPolicy(true)}
+                  className="text-[#DB0011] hover:underline font-semibold cursor-pointer min-h-[32px]"
                 >
-                  Cancel
+                  HSBC India Privacy Notice →
                 </button>
                 <button
-                  type="submit"
-                  className="px-5 py-2 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-xl font-bold"
+                  type="button"
+                  onClick={() => setShowTerms(true)}
+                  className="text-[#DB0011] hover:underline font-semibold cursor-pointer min-h-[32px]"
                 >
-                  Authorize New MPIN
+                  Terms &amp; Conditions →
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+            </div>
+          )}
 
-      {/* Change Password Modal */}
-      {showPasswordModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 border border-[#E8E8E8]">
-            <div className="flex justify-between items-center pb-2 border-b border-[#E8E8E8]">
-              <h3 className="text-sm font-bold text-[#252525]">Change Login Password</h3>
-              <button onClick={() => setShowPasswordModal(false)}><X className="w-4 h-4 text-gray-400" /></button>
-            </div>
-            <form onSubmit={e => {
-              e.preventDefault();
-              toast.success('Internet Banking Password successfully changed');
-              setShowPasswordModal(false);
-            }} className="space-y-3 text-xs">
+          {/* PREFERENCES */}
+          {activeSection === 'preferences' && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
               <div>
-                <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Current Password</label>
-                <input
-                  type="password"
-                  required
-                  value={currPassword}
-                  onChange={e => setCurrPassword(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl"
-                />
-              </div>
-              <div>
-                <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">New Strong Password</label>
-                <input
-                  type="password"
-                  required
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl"
-                  placeholder="Min 8 chars, 1 uppercase, 1 symbol"
-                />
-              </div>
-              <button type="submit" className="w-full py-2.5 bg-[#DB0011] text-white rounded-xl font-bold">
-                Update Password
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Cheque Book Request Modal */}
-      {showChequeRequestModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 border border-[#E8E8E8]">
-            <div className="flex justify-between items-center pb-2 border-b border-[#E8E8E8]">
-              <h3 className="text-sm font-bold text-[#252525]">Request New Cheque Book</h3>
-              <button onClick={() => setShowChequeRequestModal(false)}><X className="w-4 h-4 text-gray-400" /></button>
-            </div>
-            <div className="text-xs space-y-3">
-              <p className="text-[#555555]">
-                Account: <strong>HSBC Premier Savings (•••• 8829)</strong>
-              </p>
-              <div>
-                <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Number of Leaves</label>
-                <select className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-bold">
-                  <option value="25">25 Leaves (Personalized)</option>
-                  <option value="50">50 Leaves (Personalized)</option>
-                </select>
-              </div>
-              <p className="text-[11px] text-gray-500">
-                Delivery Address: {currentUser?.address}, {currentUser?.city} (Est. 3 working days).
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  toast.success('Cheque book request dispatched to Fort Branch!');
-                  setShowChequeRequestModal(false);
-                }}
-                className="w-full py-2.5 bg-[#DB0011] text-white rounded-xl font-bold shadow-xs"
-              >
-                Confirm Cheque Book Order
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Complaint Modal */}
-      {showComplaintModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-[#E8E8E8]">
-            <div className="flex justify-between items-center pb-2 border-b border-[#E8E8E8]">
-              <h3 className="text-sm font-bold text-[#252525]">Raise Formal Grievance</h3>
-              <button onClick={() => setShowComplaintModal(false)}><X className="w-4 h-4 text-gray-400" /></button>
-            </div>
-            <form onSubmit={e => {
-              e.preventDefault();
-              toast.success('Grievance lodged under ticket HSBC/GRV/' + Date.now().toString().slice(-5));
-              setShowComplaintModal(false);
-              setComplaintText('');
-            }} className="space-y-3 text-xs">
-              <div>
-                <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Nature of Complaint</label>
-                <select className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl font-bold">
-                  <option>Transaction Dispute / Delay</option>
-                  <option>Card Charges / Interest Calculation</option>
-                  <option>Service Quality / Staff</option>
-                  <option>Digital Banking Technical Issue</option>
+                <label htmlFor="pref-lang" className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">Language</label>
+                <select
+                  id="pref-lang"
+                  value={selectedLanguage}
+                  onChange={e => {
+                    setSelectedLanguage(e.target.value);
+                    toast.success(`Language set to ${e.target.value}`);
+                  }}
+                  className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                >
+                  <option value="English (IN)">English (India)</option>
+                  <option value="Hindi (हिन्दी)">हिन्दी (Hindi)</option>
+                  <option value="English (UK)">English (UK)</option>
                 </select>
               </div>
               <div>
-                <label className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Details</label>
-                <textarea
-                  rows={4}
-                  required
-                  value={complaintText}
-                  onChange={e => setComplaintText(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 border border-[#E8E8E8] rounded-xl"
-                  placeholder="Describe your grievance..."
-                />
+                <label htmlFor="pref-curr" className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">Currency Display</label>
+                <select
+                  id="pref-curr"
+                  value={currencyDisplay}
+                  onChange={e => {
+                    setCurrencyDisplay(e.target.value);
+                    toast.success(`Currency set to ${e.target.value}`);
+                  }}
+                  className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                >
+                  <option value="INR (₹)">INR — Indian Rupee (₹)</option>
+                  <option value="USD ($)">USD — US Dollar ($)</option>
+                  <option value="GBP (£)">GBP — British Pound (£)</option>
+                </select>
               </div>
-              <button type="submit" className="w-full py-2.5 bg-[#DB0011] text-white rounded-xl font-bold">
-                Submit Formal Grievance
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+              <div>
+                <label htmlFor="pref-date" className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">Date Format</label>
+                <select
+                  id="pref-date"
+                  value={dateFormat}
+                  onChange={e => {
+                    setDateFormat(e.target.value);
+                    toast.success(`Date format set to ${e.target.value}`);
+                  }}
+                  className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                >
+                  <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                  <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                  <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                </select>
+              </div>
+            </div>
+          )}
 
-      {/* Privacy Policy Modal */}
-      {showPrivacyPolicy && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-[#E8E8E8] max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center pb-2 border-b border-[#E8E8E8]">
-              <h3 className="text-sm font-bold text-[#252525]">HSBC India Privacy Policy</h3>
-              <button onClick={() => setShowPrivacyPolicy(false)}><X className="w-4 h-4 text-gray-400" /></button>
-            </div>
-            <div className="text-xs text-[#555555] space-y-2 leading-relaxed">
-              <p>
-                The Hongkong and Shanghai Banking Corporation Limited, India (“HSBC India”) is committed to safeguarding your personal data in accordance with the Digital Personal Data Protection Act (DPDP), 2023 and Reserve Bank of India regulations.
-              </p>
-              <p>
-                We process your personal information, financial identifiers, and device telemetry strictly for authentication, fraud mitigation, regulatory compliance, and transaction settlement.
-              </p>
-              <p>
-                All data in transit is encrypted using TLS 1.3 with 256-bit encryption. Card credentials are never stored in plaintext and conform with PCI-DSS guidelines.
-              </p>
-            </div>
-            <div className="pt-2 text-right">
-              <button
-                onClick={() => setShowPrivacyPolicy(false)}
-                className="px-4 py-2 bg-[#DB0011] text-white rounded-xl text-xs font-bold"
-              >
-                Close Notice
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          {/* PROFILE & KYC */}
+          {activeSection === 'account' && (
+            <div className="space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h2 className="text-sm font-bold text-[#1f1f1f]">Personal Profile &amp; KYC</h2>
+                  <p className="text-xs text-[#777777]">Verified with Central KYC Registry</p>
+                </div>
+                <span className="px-2.5 py-1 rounded text-[11px] font-bold bg-emerald-50 text-[#16864A] border border-emerald-200 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Full KYC Verified</span>
+                </span>
+              </div>
 
-      {/* Terms & Conditions Modal */}
-      {showTerms && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-[#E8E8E8] max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center pb-2 border-b border-[#E8E8E8]">
-              <h3 className="text-sm font-bold text-[#252525]">Terms & Conditions</h3>
-              <button onClick={() => setShowTerms(false)}><X className="w-4 h-4 text-gray-400" /></button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-[#F6F7F9] rounded-xl border border-gray-200/70 text-xs">
+                <div>
+                  <span className="text-[#777777] block">Full Legal Name</span>
+                  <span className="font-bold text-[#1f1f1f]">{currentUser?.displayName}</span>
+                </div>
+                <div>
+                  <span className="text-[#777777] block">Customer Relationship ID</span>
+                  <span className="font-mono font-bold text-[#1f1f1f]">{currentUser?.customerId}</span>
+                </div>
+                <div>
+                  <span className="text-[#777777] block">Primary Email</span>
+                  <span className="font-bold text-[#1f1f1f]">{currentUser?.email}</span>
+                </div>
+                <div>
+                  <span className="text-[#777777] block">Registered Mobile</span>
+                  <span className="font-bold text-[#1f1f1f]">{currentUser?.phone}</span>
+                </div>
+              </div>
+
+              <div className="divide-y divide-gray-100 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setShowChequeRequestModal(true)}
+                  className="w-full py-4 flex items-center justify-between text-left hover:bg-gray-50/70 transition-colors cursor-pointer group"
+                >
+                  <div>
+                    <div className="text-sm font-semibold text-[#1f1f1f]">Request New Cheque Book</div>
+                    <div className="text-[11px] text-[#777777]">25 or 50 personalized leaves</div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#DB0011]" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toast.success('Address update request opened with Relationship Manager')}
+                  className="w-full py-4 flex items-center justify-between text-left hover:bg-gray-50/70 transition-colors cursor-pointer group"
+                >
+                  <div>
+                    <div className="text-sm font-semibold text-[#1f1f1f]">Update Registered Address</div>
+                    <div className="text-[11px] text-[#777777]">Via Aadhaar DigiLocker verification</div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#DB0011]" aria-hidden="true" />
+                </button>
+              </div>
             </div>
-            <div className="text-xs text-[#555555] space-y-2 leading-relaxed">
-              <p>
-                By accessing HSBC India Personal Internet Banking, you agree to maintain the confidentiality of your 6-digit MPIN, password, and security tokens.
-              </p>
-              <p>
-                Security notice: All electronic fund transfers, account statements, and financial services are subject to Reserve Bank of India (RBI) guidelines and HSBC India terms & conditions.
-              </p>
+          )}
+
+          {/* HELP & ABOUT */}
+          {activeSection === 'support' && (
+            <div className="space-y-5 text-xs">
+              <div className="space-y-2.5">
+                {[
+                  { q: 'How do I reset my 6-digit MPIN?', a: 'Tap Reset MPIN in Security settings, or use Forgot your PIN? on the lock screen.' },
+                  { q: 'How do I freeze my debit or credit card?', a: 'Navigate to Cards and tap the Freeze card circular action button.' },
+                  { q: 'Are deposits insured?', a: 'Eligible customer deposits up to ₹5,00,000 are insured by DICGC.' },
+                ].map((faq, i) => (
+                  <div key={i} className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200/70">
+                    <div className="font-bold text-[#1f1f1f]">{faq.q}</div>
+                    <div className="text-[#555555] mt-1">{faq.a}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setShowComplaintModal(true)}
+                  className="min-h-[42px] px-4 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer"
+                >
+                  Raise Formal Grievance
+                </button>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="min-h-[42px] px-4 bg-white border border-[#333333] text-[#1f1f1f] hover:bg-gray-50 rounded-[2px] font-semibold flex items-center gap-1.5 cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Log Off</span>
+                </button>
+              </div>
             </div>
-            <div className="pt-2 text-right">
-              <button
-                onClick={() => setShowTerms(false)}
-                className="px-4 py-2 bg-[#DB0011] text-white rounded-xl text-xs font-bold"
-              >
-                I Understand
-              </button>
-            </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Modals */}
+      <ModalDialog open={showResetMpinModal} onClose={() => setShowResetMpinModal(false)} title="Reset 6-Digit MPIN" maxWidthClass="max-w-sm">
+        <form onSubmit={handleExecuteResetMpin} className="space-y-3.5 text-xs">
+          <div>
+            <label htmlFor="rst-new" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">New 6-Digit MPIN</label>
+            <input id="rst-new" type="password" maxLength={6} required value={resetNewPin} onChange={e => setResetNewPin(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono text-center text-base tracking-widest" placeholder="••••••" />
+          </div>
+          <div>
+            <label htmlFor="rst-conf" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Confirm MPIN</label>
+            <input id="rst-conf" type="password" maxLength={6} required value={resetConfirmPin} onChange={e => setResetConfirmPin(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono text-center text-base tracking-widest" placeholder="••••••" />
+          </div>
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer">
+            Authorize New MPIN
+          </button>
+        </form>
+      </ModalDialog>
+
+      <ModalDialog open={showPasswordModal} onClose={() => setShowPasswordModal(false)} title="Change Login Password" maxWidthClass="max-w-sm">
+        <form onSubmit={e => { e.preventDefault(); toast.success('Password updated'); setShowPasswordModal(false); }} className="space-y-3.5 text-xs">
+          <div>
+            <label htmlFor="pwd-cur" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Current Password</label>
+            <input id="pwd-cur" type="password" required value={currPassword} onChange={e => setCurrPassword(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
+          </div>
+          <div>
+            <label htmlFor="pwd-new" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">New Password</label>
+            <input id="pwd-new" type="password" required value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
+          </div>
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] text-white rounded-[2px] font-semibold cursor-pointer">Update Password</button>
+        </form>
+      </ModalDialog>
+
+      <ModalDialog open={showChequeRequestModal} onClose={() => setShowChequeRequestModal(false)} title="Request New Cheque Book" maxWidthClass="max-w-sm">
+        <div className="space-y-3.5 text-xs">
+          <p className="text-[#555555]">Account: <strong>HSBC Premier Savings (•••• 4101)</strong></p>
+          <select aria-label="Number of cheque leaves" className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold">
+            <option value="25">25 Leaves (Personalized)</option>
+            <option value="50">50 Leaves (Personalized)</option>
+          </select>
+          <button type="button" onClick={() => { toast.success('Cheque book request dispatched!'); setShowChequeRequestModal(false); }} className="w-full min-h-[44px] bg-[#DB0011] text-white rounded-[2px] font-semibold cursor-pointer">
+            Confirm Order
+          </button>
+        </div>
+      </ModalDialog>
+
+      <ModalDialog open={showComplaintModal} onClose={() => setShowComplaintModal(false)} title="Raise Formal Grievance" maxWidthClass="max-w-md">
+        <form onSubmit={e => { e.preventDefault(); toast.success('Grievance lodged: HSBC/GRV/' + Date.now().toString().slice(-5)); setShowComplaintModal(false); setComplaintText(''); }} className="space-y-3.5 text-xs">
+          <textarea rows={4} required value={complaintText} onChange={e => setComplaintText(e.target.value)} className="w-full p-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" placeholder="Describe your grievance..." />
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] text-white rounded-[2px] font-semibold cursor-pointer">Submit Grievance</button>
+        </form>
+      </ModalDialog>
+
+      <ModalDialog open={showPrivacyPolicy} onClose={() => setShowPrivacyPolicy(false)} title="HSBC India Privacy Notice" maxWidthClass="max-w-md">
+        <div className="text-xs text-[#555555] space-y-2.5 leading-relaxed">
+          <p>The Hongkong and Shanghai Banking Corporation Limited, India protects personal data under the DPDP Act, 2023 and RBI directives.</p>
+          <p>All data in transit is encrypted using TLS 1.3 with 256-bit security.</p>
+        </div>
+      </ModalDialog>
+
+      <ModalDialog open={showTerms} onClose={() => setShowTerms(false)} title="Terms & Conditions" maxWidthClass="max-w-md">
+        <div className="text-xs text-[#555555] space-y-2.5 leading-relaxed">
+          <p>Maintain confidentiality of your 6-digit MPIN and Security Key credentials at all times.</p>
+          <p>All electronic transfers are governed by Reserve Bank of India settlement rules.</p>
+        </div>
+      </ModalDialog>
     </AnimatedPageTransition>
   );
 };
