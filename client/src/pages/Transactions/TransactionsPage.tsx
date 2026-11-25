@@ -13,14 +13,17 @@ import { AnimatedPageTransition } from '../../components/AnimatedPageTransition'
 import { ModalDialog } from '../../components/common/ModalDialog';
 
 export const TransactionsPage: React.FC = () => {
-  const { transactions, formatCurrency } = useBanking();
+  const { transactions, accounts, formatCurrency } = useBanking();
   const [searchTerm, setSearchTerm] = useState('');
+  const [accountFilter, setAccountFilter] = useState<string>('ALL');
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
   const [dateRangeFilter, setDateRangeFilter] = useState<'7DAYS' | '30DAYS' | '3MONTHS' | 'ALL'>('ALL');
   const [selectedTx, setSelectedTx] = useState<TransactionRecord | null>(null);
 
   const nowMs = Date.now();
   const filtered = transactions.filter(t => {
+    const matchesAccount = accountFilter === 'ALL' || t.accountId === accountFilter;
+
     const matchesSearch =
       t.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -41,20 +44,69 @@ export const TransactionsPage: React.FC = () => {
       else if (dateRangeFilter === '3MONTHS') matchesDate = diffDays <= 90;
     }
 
-    return matchesSearch && matchesCategory && matchesDate;
+    return matchesAccount && matchesSearch && matchesCategory && matchesDate;
   });
+
+  const filteredNet = filtered.reduce(
+    (sum, t) => sum + (t.transactionType === 'CREDIT' ? t.amount : -t.amount),
+    0
+  );
 
   return (
     <AnimatedPageTransition className="pb-10">
       <div className="bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-xs overflow-hidden">
         {/* Header */}
         <div className="px-4 sm:px-6 md:px-8 pt-5 pb-4 border-b border-gray-100">
-          <h1 className="text-[19px] sm:text-[22px] font-bold text-[#1f1f1f] tracking-tight">
-            Transaction Activity
-          </h1>
-          <p className="text-xs text-[#777777] mt-0.5">
-            Real-time central banking ledger across all accounts
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h1 className="text-[19px] sm:text-[22px] font-bold text-[#1f1f1f] tracking-tight">
+                Transaction Activity
+              </h1>
+              <p className="text-xs text-[#777777] mt-0.5">
+                Real-time central banking ledger · {filtered.length} transactions shown (Net{' '}
+                <span className="font-semibold text-[#1f1f1f]">
+                  {filteredNet >= 0 ? '+' : '-'}{formatCurrency(Math.abs(filteredNet))}
+                </span>
+                )
+              </p>
+            </div>
+          </div>
+
+          {/* Account Filter Pills */}
+          <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+            <button
+              type="button"
+              onClick={() => setAccountFilter('ALL')}
+              className={`px-3 py-1.5 min-h-[32px] rounded-full text-xs font-semibold whitespace-nowrap transition-colors border cursor-pointer ${
+                accountFilter === 'ALL'
+                  ? 'bg-[#DB0011] text-white border-[#DB0011]'
+                  : 'bg-[#F8F9FA] text-[#444] border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              All Accounts ({transactions.length})
+            </button>
+            {accounts.map(acc => {
+              const count = transactions.filter(t => t.accountId === acc.accountId).length;
+              const label =
+                acc.accountType === 'CURRENT'
+                  ? `Business Current (${count})`
+                  : `Premier Savings (${count})`;
+              return (
+                <button
+                  key={acc.accountId}
+                  type="button"
+                  onClick={() => setAccountFilter(acc.accountId)}
+                  className={`px-3 py-1.5 min-h-[32px] rounded-full text-xs font-semibold whitespace-nowrap transition-colors border cursor-pointer ${
+                    accountFilter === acc.accountId
+                      ? 'bg-[#DB0011] text-white border-[#DB0011]'
+                      : 'bg-[#F8F9FA] text-[#444] border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
 
           {/* Search & Date Filter Row */}
           <div className="mt-4 flex flex-col md:flex-row gap-3 md:items-center justify-between">

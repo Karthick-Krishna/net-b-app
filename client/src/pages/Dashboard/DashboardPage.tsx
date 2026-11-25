@@ -235,20 +235,20 @@ export const DashboardPage: React.FC = () => {
             <section>
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-[16px] font-semibold text-[#1f1f1f]">
-                  Cards ({cards.length})
+                  Cards ({Math.min(2, cards.length)} of {cards.length})
                 </h2>
                 <button
                   type="button"
                   onClick={() => navigate('/cards')}
                   className="text-xs font-semibold text-[#DB0011] hover:underline flex items-center gap-1 cursor-pointer min-h-[32px]"
                 >
-                  <span>Manage cards</span>
+                  <span>View all {cards.length} cards</span>
                   <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                 </button>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {cards.map(card => {
+                {cards.slice(0, 2).map(card => {
                   const frozen = card.cardStatus === 'FROZEN' || card.cardStatus === 'BLOCKED';
                   const tier = card.cardTier;
                   const isLightCard = tier === 'VISA_PLATINUM';
