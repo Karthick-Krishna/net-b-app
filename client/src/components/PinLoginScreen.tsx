@@ -349,11 +349,11 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
           </div>
 
           {/* 6 PIN HOLLOW CIRCLES */}
-          <div
+          <motion.div
+            animate={shake ? { x: [-6, 6, -4, 4, 0] } : { x: 0 }}
+            transition={{ duration: 0.24, ease: 'easeOut' }}
             onClick={() => inputRef.current?.focus()}
-            className={`mt-7 flex items-center justify-between max-w-[320px] cursor-pointer ${
-              shake ? 'animate-bounce' : ''
-            }`}
+            className="mt-7 flex items-center justify-between max-w-[320px] cursor-pointer"
           >
             {[0, 1, 2, 3, 4, 5].map(index => {
               const isFilled = index < pin.length;
@@ -374,7 +374,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                 </div>
               );
             })}
-          </div>
+          </motion.div>
 
           {/* Error Message */}
           {errorMsg && (
@@ -865,10 +865,9 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               exit={{ opacity: 0, scale: 0.9 }}
               className="w-64 bg-white/95 rounded-3xl p-6 text-center shadow-2xl border border-gray-100 flex flex-col items-center"
             >
-              <div className="relative w-20 h-20 mb-4 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-2 border-[#DB0011]/30 animate-ping" />
-                <div className="w-16 h-16 rounded-full bg-red-50 text-[#DB0011] flex items-center justify-center shadow-inner">
-                  <ScanFace className="w-9 h-9 animate-pulse" />
+              <div className="relative w-18 h-18 mb-4 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-red-50 border border-red-200 text-[#DB0011] flex items-center justify-center">
+                  <ScanFace className="w-8 h-8" />
                 </div>
               </div>
 

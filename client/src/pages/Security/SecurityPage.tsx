@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Lock, ShieldAlert, KeyRound, CheckCircle2, Fingerprint, Smartphone, Laptop } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Lock, ShieldAlert, KeyRound, CheckCircle2, Fingerprint, Smartphone, Laptop, ShieldCheck, Copy } from 'lucide-react';
 import { useAppLock } from '../../context/AppLockContext';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import { ToggleSwitch } from '../../components/common/ToggleSwitch';
@@ -12,6 +12,23 @@ export const SecurityPage: React.FC = () => {
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [showEmergencyDialog, setShowEmergencyDialog] = useState(false);
+  const [otcCode, setOtcCode] = useState('482 915');
+  const [otcTimer, setOtcTimer] = useState(30);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setOtcTimer(prev => {
+        if (prev <= 1) {
+          const r1 = Math.floor(100 + Math.random() * 900);
+          const r2 = Math.floor(100 + Math.random() * 900);
+          setOtcCode(`${r1} ${r2}`);
+          return 30;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const handleUpdatePin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,6 +187,33 @@ export const SecurityPage: React.FC = () => {
               >
                 <ShieldAlert className="w-4 h-4" aria-hidden="true" />
                 <span>Emergency Session Lockdown</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Digital Secure Key (In-App OTC Token) */}
+          <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white text-[#DB0011] border border-gray-200/70 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-5 h-5" aria-hidden="true" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-[#1f1f1f]">Digital Secure Key (OTC)</h2>
+                <p className="text-xs text-[#777777]">Single-use security code for high-value authorization ({otcTimer}s)</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-gray-200">
+              <span className="font-mono text-lg font-extrabold tracking-widest text-[#1f1f1f]">{otcCode}</span>
+              <button
+                type="button"
+                aria-label="Copy security code"
+                onClick={() => {
+                  navigator.clipboard?.writeText(otcCode.replace(/\s+/g, ''));
+                  toast.success('Digital Secure Key copied');
+                }}
+                className="text-gray-500 hover:text-[#DB0011] cursor-pointer"
+              >
+                <Copy className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
           </div>

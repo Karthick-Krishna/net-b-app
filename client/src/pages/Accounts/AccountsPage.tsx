@@ -8,12 +8,20 @@ import {
   Send,
   AlertTriangle,
   RotateCcw,
+  Globe2,
+  Copy,
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import { ModalDialog } from '../../components/common/ModalDialog';
 import { formatINR } from '@shared/utils/formatters';
 import toast from 'react-hot-toast';
+
+const GLOBAL_VIEW_ACCOUNTS = [
+  { country: 'United Kingdom', flag: '🇬🇧', bank: 'HSBC UK Bank plc', account: '40-05-15 • 88210944', currency: 'GBP', balance: 28450.00, rate: 106.40 },
+  { country: 'Singapore', flag: '🇸🇬', bank: 'HSBC Singapore', account: '141-882910-001', currency: 'SGD', balance: 42100.00, rate: 63.10 },
+  { country: 'UAE', flag: '🇦🇪', bank: 'HSBC Bank Middle East', account: 'AE410200000882910', currency: 'AED', balance: 95000.00, rate: 23.00 },
+];
 
 export const AccountsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -119,10 +127,21 @@ export const AccountsPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h2 className="text-base sm:text-lg font-bold text-[#1f1f1f]">
-                  {activeAccount.accountType} Account Details
+                  {activeAccount.accountType === 'CURRENT' ? 'Business Current Account' : 'Premier Savings Account'}
                 </h2>
-                <div className="text-xs text-[#777777] font-mono mt-0.5">
-                  A/C: {activeAccount.accountNumber} • IFSC: {activeAccount.ifscCode}
+                <div className="flex flex-wrap items-center gap-2 text-xs text-[#777777] font-mono mt-0.5">
+                  <span>A/C: {activeAccount.accountNumber} • IFSC: {activeAccount.ifscCode}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard?.writeText(`A/C: ${activeAccount.accountNumber} | IFSC: ${activeAccount.ifscCode}`);
+                      toast.success('Account number & IFSC copied');
+                    }}
+                    className="inline-flex items-center gap-1 text-[#DB0011] font-sans font-semibold hover:underline cursor-pointer"
+                  >
+                    <Copy className="w-3 h-3" aria-hidden="true" />
+                    <span>Copy</span>
+                  </button>
                 </div>
               </div>
 
@@ -230,6 +249,39 @@ export const AccountsPage: React.FC = () => {
                     );
                   })
                 )}
+              </div>
+            </div>
+            {/* HSBC Global View Linked International Accounts */}
+            <div className="pt-4 border-t border-gray-100 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Globe2 className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
+                  <h3 className="text-sm font-semibold text-[#1f1f1f]">HSBC Global View (Linked Overseas Accounts)</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => navigate('/payments')}
+                  className="text-xs font-semibold text-[#DB0011] hover:underline cursor-pointer"
+                >
+                  Global Transfer →
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {GLOBAL_VIEW_ACCOUNTS.map(g => (
+                  <div key={g.country} className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-[#1f1f1f]">{g.flag} {g.country}</span>
+                      <span className="text-[10px] font-mono text-[#777777]">{g.currency}</span>
+                    </div>
+                    <div className="text-[11px] text-[#777777]">{g.bank}</div>
+                    <div className="text-base font-bold text-[#1f1f1f] pt-1">
+                      {g.currency} {g.balance.toLocaleString('en-IN')}
+                    </div>
+                    <div className="text-[10px] text-[#16864A] font-semibold">
+                      ≈ {formatINR(Math.round(g.balance * g.rate))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

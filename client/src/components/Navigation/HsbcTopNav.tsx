@@ -198,7 +198,7 @@ export const HsbcTopNav: React.FC = () => {
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="relative ml-auto w-full max-w-sm bg-white h-dvh shadow-2xl flex flex-col justify-between overflow-y-auto z-10"
             >
               {/* Drawer Header */}

@@ -80,8 +80,8 @@ export const CardArtwork: React.FC<CardArtworkProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`relative w-full aspect-[1.586/1] rounded-2xl p-5 sm:p-6 flex flex-col justify-between overflow-hidden shadow-card select-none transition-all duration-300 ${
-        interactive ? 'cursor-pointer hover:scale-[1.02] hover:shadow-elevated active:scale-[0.99]' : ''
+      className={`relative w-full aspect-[1.586/1] rounded-2xl p-5 sm:p-6 flex flex-col justify-between overflow-hidden shadow-card select-none transition-shadow duration-200 ${
+        interactive ? 'cursor-pointer hover:shadow-elevated' : ''
       } ${getBackgroundStyles()} ${className}`}
     >
       {/* Background Decorative Guilloche / Laser Pattern SVG */}
@@ -111,7 +111,7 @@ export const CardArtwork: React.FC<CardArtworkProps> = ({
       {isFrozen && (
         <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-20">
           <div className="px-4 py-1.5 bg-red-600/90 text-white rounded-full text-xs font-black tracking-wider flex items-center gap-2 shadow-lg border border-red-400">
-            <Snowflake className="w-4 h-4 animate-spin-slow" />
+            <Snowflake className="w-4 h-4" />
             <span>CARD TEMPORARILY FROZEN</span>
           </div>
         </div>

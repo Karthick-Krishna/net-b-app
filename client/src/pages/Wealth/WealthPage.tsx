@@ -107,6 +107,9 @@ export const WealthPage: React.FC = () => {
   const [investModalFund, setInvestModalFund] = useState<FundItem | null>(null);
   const [redeemModalFund, setRedeemModalFund] = useState<FundItem | null>(null);
   const [investAmount, setInvestAmount] = useState('25000');
+  const [showRiskModal, setShowRiskModal] = useState(false);
+  const [riskScore, setRiskScore] = useState(3);
+  const [riskProfileLabel, setRiskProfileLabel] = useState('Balanced Growth');
 
   const totalInvestedDynamic = funds.reduce((acc, f) => acc + f.heldAmount, 0);
 
@@ -308,27 +311,85 @@ export const WealthPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Advisory List Row */}
-          <button
-            type="button"
-            onClick={() => toast.success('Advisory consultation booked with Relationship Manager Vikram Singhania')}
-            className="w-full p-4 bg-[#F6F7F9] hover:bg-gray-100 rounded-xl border border-gray-200/70 flex items-center justify-between text-left transition-colors cursor-pointer group"
-          >
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#DB0011]">
-                HSBC Simply Invest
-              </span>
-              <div className="text-sm font-bold text-[#1f1f1f] mt-0.5">
-                Request Wealth Relationship Manager Call
+          {/* Advisory + Risk Profiler Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setShowRiskModal(true)}
+              className="p-4 bg-[#F6F7F9] hover:bg-gray-100 rounded-xl border border-gray-200/70 flex items-center justify-between text-left transition-colors cursor-pointer group"
+            >
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#16864A]">
+                  Risk Assessment
+                </span>
+                <div className="text-sm font-bold text-[#1f1f1f] mt-0.5">
+                  Profile: {riskProfileLabel}
+                </div>
+                <div className="text-[11px] text-[#777777]">
+                  Retake HSBC Risk Tolerance Questionnaire
+                </div>
               </div>
-              <div className="text-[11px] text-[#777777]">
-                Bespoke portfolio review &amp; tax harvesting guidance
+              <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#DB0011] shrink-0" aria-hidden="true" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => toast.success('HSBC Simply Invest Brokerage linked & RM call booked!')}
+              className="p-4 bg-[#F6F7F9] hover:bg-gray-100 rounded-xl border border-gray-200/70 flex items-center justify-between text-left transition-colors cursor-pointer group"
+            >
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#DB0011]">
+                  HSBC Simply Invest
+                </span>
+                <div className="text-sm font-bold text-[#1f1f1f] mt-0.5">
+                  Brokerage &amp; Relationship Manager
+                </div>
+                <div className="text-[11px] text-[#777777]">
+                  Consult Vikram Singhania (VP Wealth)
+                </div>
               </div>
-            </div>
-            <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#DB0011] shrink-0" aria-hidden="true" />
-          </button>
+              <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#DB0011] shrink-0" aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Risk Profile Questionnaire Dialog */}
+      <ModalDialog open={showRiskModal} onClose={() => setShowRiskModal(false)} title="Risk Profile Questionnaire" subtitle="Assess your asset allocation preference" maxWidthClass="max-w-sm">
+        <div className="space-y-4 text-xs">
+          <div>
+            <label htmlFor="risk-horizon" className="font-bold text-[#1f1f1f] block mb-2">
+              Investment Horizon &amp; Volatility Tolerance ({riskScore}/5)
+            </label>
+            <input
+              id="risk-horizon"
+              type="range"
+              min={1}
+              max={5}
+              value={riskScore}
+              onChange={e => setRiskScore(Number(e.target.value))}
+              className="w-full accent-[#DB0011]"
+            />
+            <div className="flex justify-between text-[10px] text-gray-500 mt-1">
+              <span>Conservative</span>
+              <span>Balanced</span>
+              <span>Aggressive</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const label = riskScore <= 2 ? 'Conservative Income' : riskScore === 3 ? 'Balanced Growth' : 'Aggressive Equity';
+              setRiskProfileLabel(label);
+              toast.success(`Investor risk profile updated to ${label}`);
+              setShowRiskModal(false);
+            }}
+            className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white font-semibold rounded-[2px] cursor-pointer"
+          >
+            Save Risk Profile
+          </button>
+        </div>
+      </ModalDialog>
 
       {/* Invest Dialog */}
       <ModalDialog

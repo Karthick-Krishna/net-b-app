@@ -149,7 +149,7 @@ export const HsbcChatBar: React.FC = () => {
           {/* Chat Status Bar */}
           <div className="px-5 py-2.5 bg-[#F6F7F9] border-b border-gray-100 flex items-center gap-2 text-[11px] font-semibold text-emerald-700">
             <Sparkles className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
             <span>Encrypted Premier Banking Concierge Online</span>
           </div>
 

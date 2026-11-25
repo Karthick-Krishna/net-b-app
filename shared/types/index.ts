@@ -91,7 +91,11 @@ export interface CardRecord {
   onlineEnabled?: boolean;
   internationalEnabled?: boolean;
   contactlessEnabled?: boolean;
+  atmEnabled?: boolean;
+  posEnabled?: boolean;
   gamblingRestricted?: boolean;
+  isActivated?: boolean;
+  cardPin?: string;
   createdAt: any;
   updatedAt: any;
 }

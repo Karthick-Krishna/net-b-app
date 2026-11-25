@@ -66,7 +66,7 @@ export const DashboardPage: React.FC = () => {
                 <span>Premier Banking • INR (₹)</span>
                 <span aria-hidden="true">•</span>
                 <span className="flex items-center gap-1.5 text-[#16864A] font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#16864A] animate-pulse" aria-hidden="true" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#16864A]" aria-hidden="true" />
                   Live Sync Active
                 </span>
               </div>
