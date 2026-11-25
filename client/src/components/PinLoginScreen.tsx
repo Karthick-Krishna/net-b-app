@@ -162,15 +162,10 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
     return () => clearInterval(interval);
   }, [forgotStep, showForgotPinModal]);
 
-  // Face ID Biometric Authentication
+  // Face ID Trigger: prompt that Face ID is not set up and ask user to enter PIN / password
   const handleFaceIdTrigger = () => {
     setShowBiometricsModal(true);
-    setTimeout(() => {
-      unlockApp();
-      if (onSuccess) onSuccess();
-      toast.success('Face ID authenticated successfully');
-      setShowBiometricsModal(false);
-    }, 1200);
+    setErrorMsg("You didn't set up Face ID. Kindly enter your password.");
   };
 
   // Forgot PIN Flow Handlers
@@ -884,29 +879,52 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* 3. FACE ID BIOMETRICS MODAL                              */}
+      {/* 3. FACE ID NOT SET UP MODAL                              */}
       {/* ========================================================= */}
       <AnimatePresence>
         {showBiometricsModal && (
           <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="w-64 bg-white/95 rounded-3xl p-6 text-center shadow-2xl border border-gray-100 flex flex-col items-center"
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-xs bg-white rounded-2xl p-6 text-center shadow-2xl border border-gray-100 flex flex-col items-center"
             >
-              <div className="relative w-18 h-18 mb-4 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-red-50 border border-red-200 text-[#DB0011] flex items-center justify-center">
-                  <ScanFace className="w-8 h-8" />
-                </div>
+              <div className="w-14 h-14 mb-3 rounded-full bg-red-50 border border-red-200 text-[#DB0011] flex items-center justify-center">
+                <ScanFace className="w-7 h-7" />
               </div>
 
-              <h4 className="text-sm font-bold text-[#1f1f1f]">
-                Face ID
+              <h4 className="text-base font-bold text-[#1f1f1f]">
+                Face ID Not Set Up
               </h4>
-              <p className="text-[11px] text-gray-500 mt-1">
-                Authenticating biometric key...
+              <p className="text-xs text-gray-600 mt-2 leading-relaxed">
+                You didn&apos;t set up Face ID. Kindly enter password / 6-digit PIN to continue.
               </p>
+
+              <div className="mt-5 w-full space-y-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowBiometricsModal(false);
+                    setTimeout(() => inputRef.current?.focus(), 60);
+                  }}
+                  className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
+                >
+                  Enter 6-Digit PIN
+                </button>
+                {onSwitchToPasswordLogin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowBiometricsModal(false);
+                      onSwitchToPasswordLogin();
+                    }}
+                    className="w-full min-h-[42px] bg-white hover:bg-gray-50 border border-[#333333] text-[#1f1f1f] text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
+                  >
+                    Enter Password Instead
+                  </button>
+                )}
+              </div>
             </motion.div>
           </div>
         )}

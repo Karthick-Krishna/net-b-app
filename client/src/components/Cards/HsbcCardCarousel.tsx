@@ -51,7 +51,8 @@ const CardFace: React.FC<{ card: CardRecord; isCenter: boolean; cardholderFallba
   }
 
   const holderName = (card.cardholderName || cardholderFallback).toUpperCase();
-  const displayNumber = card.maskedCardNumber || '4532 8829 4101 4281';
+  const last4 = (card.maskedCardNumber || '4281').slice(-4);
+  const displayNumber = `•••• •••• •••• ${last4}`;
 
   return (
     <div className={`relative w-full h-full rounded-2xl p-3.5 sm:p-5 border flex flex-col justify-between overflow-hidden ${bgStyle}`}>

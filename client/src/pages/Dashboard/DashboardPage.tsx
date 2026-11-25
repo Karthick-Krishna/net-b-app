@@ -282,7 +282,7 @@ export const DashboardPage: React.FC = () => {
                       </div>
 
                       <div className="mt-4 font-mono text-sm font-bold tracking-wider">
-                        {card.maskedCardNumber}
+                        •••• •••• •••• {card.maskedCardNumber.slice(-4)}
                       </div>
 
                       <div className="mt-3 flex items-end justify-between text-[11px]">

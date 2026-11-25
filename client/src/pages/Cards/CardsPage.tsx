@@ -120,7 +120,12 @@ export const CardsPage: React.FC = () => {
     .slice(0, 4);
 
   const revealedCardPin = activeCard.cardPin || (activeCard.cardType === 'CREDIT' ? '4192' : '8829');
-  const fullVirtualNumber = activeCard.maskedCardNumber || `4532 8829 4101 ${maskedFourDigits}`;
+  const fullVirtualNumber =
+    activeCard.cardTier === 'GLOBAL_TRAVEL'
+      ? `4532 8829 4102 ${maskedFourDigits}`
+      : activeCard.cardType === 'CREDIT'
+      ? `5412 7500 8829 ${maskedFourDigits}`
+      : `4532 8829 4101 ${maskedFourDigits}`;
 
   // 1. Freeze / Unfreeze with Confirmation + Fullscreen Result Popup + Related Buttons
   const handleToggleFreeze = () => {
@@ -367,46 +372,11 @@ export const CardsPage: React.FC = () => {
   return (
     <div className="w-full select-none font-sans pb-10">
       <div className="bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-xs md:p-6 lg:p-8">
-        {/* Card Quick Switcher Pills: Personal Debit + Business Debit + All 4 Personal Credit Cards */}
-        {cards.length > 0 && (
-          <div className="px-4 md:px-0 pt-4 md:pt-0 pb-2 flex items-center justify-start sm:justify-center gap-2 overflow-x-auto no-scrollbar">
-            {cards.map((c, idx) => {
-              const selected = idx === safeIndex;
-              const pillLabel =
-                c.cardTier === 'GLOBAL_TRAVEL'
-                  ? `Business Debit •${c.maskedCardNumber.slice(-4)}`
-                  : c.cardType === 'DEBIT'
-                  ? `Personal Debit •${c.maskedCardNumber.slice(-4)}`
-                  : c.cardTier === 'TRAVEL_ONE'
-                  ? `TravelOne •${c.maskedCardNumber.slice(-4)}`
-                  : c.cardTier === 'LIVE_PLUS'
-                  ? `Live+ •${c.maskedCardNumber.slice(-4)}`
-                  : c.cardTier === 'VISA_PLATINUM'
-                  ? `Visa Platinum •${c.maskedCardNumber.slice(-4)}`
-                  : `Premier Credit •${c.maskedCardNumber.slice(-4)}`;
-              return (
-                <button
-                  key={c.cardId}
-                  type="button"
-                  onClick={() => setActiveCardIndex(idx)}
-                  className={`px-3 py-1.5 min-h-[32px] rounded-full text-[11px] font-semibold whitespace-nowrap border transition-colors cursor-pointer shrink-0 ${
-                    selected
-                      ? 'bg-[#1f1f1f] text-white border-[#1f1f1f]'
-                      : 'bg-[#F2F4F7] text-[#333333] border-transparent hover:bg-gray-200'
-                  }`}
-                >
-                  {pillLabel}
-                </button>
-              );
-            })}
-          </div>
-        )}
-
         <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-10 lg:items-start">
           {/* LEFT COLUMN */}
           <div className="lg:col-span-6">
             {/* CARD TITLE & MASKED DIGITS */}
-            <div className="pt-2 pb-1 text-center px-4">
+            <div className="pt-4 md:pt-0 pb-1 text-center px-4">
               <div className="inline-flex items-center gap-2 flex-wrap justify-center">
                 <h1 className="text-[17px] font-semibold text-[#1f1f1f]">
                   {cardTitle}
@@ -418,7 +388,7 @@ export const CardsPage: React.FC = () => {
                 )}
               </div>
               <p className="text-[13px] text-[#777777] font-mono font-medium tracking-wide mt-0.5">
-                {activeCard.maskedCardNumber} • {activeCard.cardholderName || 'KARTHICK KRISHNA'}
+                •••• {maskedFourDigits} • {activeCard.cardholderName || 'KARTHICK KRISHNA'}
               </p>
             </div>
 
