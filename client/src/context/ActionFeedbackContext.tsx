@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, AlertTriangle, KeyRound } from 'lucide-react';
 import { ModalDialog } from '../components/common/ModalDialog';
+import { useAuth } from './AuthContext';
+import { RealtimeStore } from '@shared/realtimeStore';
 
 export interface RelatedActionButton {
   label: string;
@@ -25,6 +27,7 @@ export interface ConfirmActionConfig {
   confirmLabel?: string;
   cancelLabel?: string;
   tone?: 'danger' | 'neutral';
+  requireMpin?: boolean;
   onConfirm: () => Promise<SuccessOverlayConfig | void> | SuccessOverlayConfig | void;
   successTitle?: string;
   successMessage?: string;
@@ -78,26 +81,55 @@ const ExecutiveStatusBadge: React.FC<{ type: FeedbackIconType }> = ({ type }) =>
 };
 
 export const ActionFeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { currentUser } = useAuth();
   const [confirmConfig, setConfirmConfig] = useState<ConfirmActionConfig | null>(null);
   const [successConfig, setSuccessConfig] = useState<SuccessOverlayConfig | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [mpin, setMpin] = useState('');
+  const [mpinError, setMpinError] = useState('');
 
   const requestAction = (config: ConfirmActionConfig) => {
+    setMpin('');
+    setMpinError('');
     setConfirmConfig(config);
   };
 
   const showSuccess = (config: SuccessOverlayConfig) => {
     setConfirmConfig(null);
+    setMpin('');
+    setMpinError('');
     setSuccessConfig(config);
   };
 
   const closeFeedback = () => {
     setConfirmConfig(null);
     setSuccessConfig(null);
+    setMpin('');
+    setMpinError('');
   };
 
   const handleConfirm = async () => {
     if (!confirmConfig || isProcessing) return;
+
+    if (confirmConfig.requireMpin) {
+      if (mpin.length !== 6) {
+        setMpinError('Please enter your 6-digit HSBC MPIN to authorize.');
+        return;
+      }
+      const uid = currentUser?.uid || 'cust-karthick-8829';
+      const verification = RealtimeStore.verifyTransactionMpin(uid, mpin);
+      if (!verification.verified) {
+        setMpin('');
+        setMpinError(
+          verification.lockedOut
+            ? 'Maximum MPIN attempts reached. Security lock active.'
+            : `Incorrect MPIN. ${verification.remainingAttempts} attempts remaining.`
+        );
+        return;
+      }
+      setMpinError('');
+    }
+
     setIsProcessing(true);
     try {
       const result = await confirmConfig.onConfirm();
@@ -109,7 +141,11 @@ export const ActionFeedbackProvider: React.FC<{ children: React.ReactNode }> = (
         relatedButtons: confirmConfig.relatedButtons,
       };
       setConfirmConfig(null);
+      setMpin('');
+      setMpinError('');
       setSuccessConfig(resolved);
+    } catch (err: any) {
+      setMpinError(err?.message || 'Unable to process request. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -122,7 +158,13 @@ export const ActionFeedbackProvider: React.FC<{ children: React.ReactNode }> = (
       {/* STEP 1: CONFIRMATION DIALOG */}
       <ModalDialog
         open={!!confirmConfig}
-        onClose={() => !isProcessing && setConfirmConfig(null)}
+        onClose={() => {
+          if (!isProcessing) {
+            setConfirmConfig(null);
+            setMpin('');
+            setMpinError('');
+          }
+        }}
         title={confirmConfig?.title || 'Confirm Action'}
         maxWidthClass="max-w-sm"
       >
@@ -139,22 +181,67 @@ export const ActionFeedbackProvider: React.FC<{ children: React.ReactNode }> = (
               </p>
             </div>
 
+            {confirmConfig.requireMpin && (
+              <div className="p-3.5 bg-white border border-gray-200 rounded-xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="tx-auth-mpin" className="text-[11px] font-bold uppercase tracking-wider text-[#1f1f1f] flex items-center gap-1.5">
+                    <KeyRound className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
+                    <span>Enter 6-Digit MPIN</span>
+                  </label>
+                  <span className="text-[10px] text-[#777777] font-mono">{mpin.length}/6</span>
+                </div>
+                <input
+                  id="tx-auth-mpin"
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={6}
+                  autoFocus
+                  value={mpin}
+                  onChange={e => {
+                    setMpinError('');
+                    setMpin(e.target.value.replace(/\D/g, '').slice(0, 6));
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleConfirm();
+                    }
+                  }}
+                  placeholder="••••••"
+                  className="w-full h-11 px-4 text-center tracking-[0.45em] font-mono text-base font-bold bg-[#F5F6F8] border border-gray-300 rounded-[2px] focus:bg-white focus:outline-none focus:border-[#DB0011]"
+                />
+                {mpinError ? (
+                  <p className="text-[11px] font-semibold text-[#DB0011]" role="alert">
+                    {mpinError}
+                  </p>
+                ) : (
+                  <p className="text-[10px] text-[#777777]">
+                    Required to authorize payments and debit your HSBC Premier account.
+                  </p>
+                )}
+              </div>
+            )}
+
             <div className="flex items-center justify-end gap-2.5 pt-1">
               <button
                 type="button"
                 disabled={isProcessing}
-                onClick={() => setConfirmConfig(null)}
-                className="min-h-[42px] px-5 bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] text-[#1f1f1f] text-xs font-semibold rounded-full transition-all cursor-pointer"
+                onClick={() => {
+                  setConfirmConfig(null);
+                  setMpin('');
+                  setMpinError('');
+                }}
+                className="min-h-[42px] px-5 bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] text-[#1f1f1f] text-xs font-semibold rounded-[2px] border border-gray-300 transition-all cursor-pointer"
               >
                 {confirmConfig.cancelLabel || 'Cancel'}
               </button>
               <button
                 type="button"
-                disabled={isProcessing}
+                disabled={isProcessing || (confirmConfig.requireMpin && mpin.length !== 6)}
                 onClick={handleConfirm}
-                className="min-h-[42px] px-5 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-semibold rounded-full transition-all cursor-pointer disabled:opacity-50 shadow-xs"
+                className="min-h-[42px] px-5 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-semibold rounded-[2px] transition-all cursor-pointer disabled:opacity-50 shadow-xs"
               >
-                {isProcessing ? 'Processing...' : confirmConfig.confirmLabel || 'Yes, Confirm'}
+                {isProcessing ? 'Authorizing...' : confirmConfig.confirmLabel || 'Yes, Confirm'}
               </button>
             </div>
           </div>

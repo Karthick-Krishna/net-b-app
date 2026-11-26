@@ -54,8 +54,8 @@ export const INITIAL_ACCOUNTS: BankAccountRecord[] = [
     accountNumber: '06410088294101',
     maskedAccountNumber: '•••• •••• •••• 4101',
     currency: 'INR',
-    managedBalance: 4223547.84,
-    ledgerBalance: 4223547.84,
+    managedBalance: 4223547.83,
+    ledgerBalance: 4223547.83,
     accountStatus: 'ACTIVE',
     branchName: 'Coimbatore Branch, Race Course Road',
     ifscCode: 'HSBC0641002',
@@ -132,141 +132,136 @@ function generatePersonalTransactions(): TransactionRecord[] {
 
   const entries: RawEntry[] = [];
 
-  // 1. INTERNATIONAL INWARD CREDITS FROM SALESFORCE & MICROSOFT = ₹7,34,00,000 (₹7.34 Cr)
-  const intlCredits: Array<RawEntry> = [
+  // 1. INTERNATIONAL INWARD CREDITS FROM SALESFORCE & MICROSOFT (~₹7.34 Cr)
+  // Using real 2026 monthly USD/INR exchange rates & exact 10-day intervals between wires
+  const rawIntlSchedule = [
     {
-      iso: '2026-08-29T05:14:00.000Z',
-      category: 'TRANSFER',
-      description: 'Intl Wire Credit (USD 82,842.68 @ ₹84.52) · Salesforce Inc. Global Enterprise Remittance',
-      amount: 7001863.42,
-      transactionType: 'CREDIT',
-      counterpartyName: 'Salesforce, Inc. (San Francisco, USA)',
-      counterpartyAccount: 'US-FED-8841029',
-      counterpartyBank: 'Citibank N.A., New York (SWIFT: CITIUS33)',
-      channel: 'SWIFT',
-    },
-    {
-      iso: '2026-08-19T06:22:00.000Z',
-      category: 'TRANSFER',
-      description: 'Intl Wire Credit (USD 76,867.09 @ ₹84.58) · Microsoft Corp Azure Cloud Settlement',
-      amount: 6501418.75,
-      transactionType: 'CREDIT',
+      iso: '2026-08-28T05:14:00.000Z',
+      usd: 69641.20,
+      fxRate: 95.18,
+      label: 'Microsoft Corp Azure Cloud Settlement',
       counterpartyName: 'Microsoft Corporation (Redmond, USA)',
       counterpartyAccount: 'US-CHIPS-440219',
       counterpartyBank: 'Bank of America N.A., USA (SWIFT: BOFAUS3N)',
-      channel: 'SWIFT',
     },
     {
-      iso: '2026-07-24T04:48:00.000Z',
-      category: 'TRANSFER',
-      description: 'Intl Wire Credit (USD 88,835.93 @ ₹84.45) · Salesforce Cloud Architecture Delivery',
-      amount: 7502194.18,
-      transactionType: 'CREDIT',
+      iso: '2026-08-18T06:22:00.000Z',
+      usd: 73650.80,
+      fxRate: 95.65,
+      label: 'Salesforce Inc. Global Enterprise Remittance',
       counterpartyName: 'Salesforce, Inc. (San Francisco, USA)',
       counterpartyAccount: 'US-FED-8841029',
       counterpartyBank: 'Citibank N.A., New York (SWIFT: CITIUS33)',
-      channel: 'SWIFT',
     },
     {
-      iso: '2026-07-08T05:35:00.000Z',
-      category: 'TRANSFER',
-      description: 'Intl Wire Credit (USD 70,910.17 @ ₹84.63) · Microsoft Global AI Engineering Wire',
-      amount: 6001127.64,
-      transactionType: 'CREDIT',
+      iso: '2026-08-08T04:48:00.000Z',
+      usd: 69180.45,
+      fxRate: 95.43,
+      label: 'Microsoft Global AI Engineering Wire',
       counterpartyName: 'Microsoft Corporation (Redmond, USA)',
       counterpartyAccount: 'US-CHIPS-440219',
       counterpartyBank: 'Bank of America N.A., USA (SWIFT: BOFAUS3N)',
-      channel: 'SWIFT',
     },
     {
-      iso: '2026-06-18T06:10:00.000Z',
-      category: 'TRANSFER',
-      description: 'Intl Wire Credit (USD 94,797.98 @ ₹84.42) · Salesforce Enterprise AI Platform Settlement',
-      amount: 8002845.29,
-      transactionType: 'CREDIT',
+      iso: '2026-07-29T05:35:00.000Z',
+      usd: 78245.10,
+      fxRate: 95.24,
+      label: 'Salesforce Cloud Architecture Delivery',
       counterpartyName: 'Salesforce, Inc. (San Francisco, USA)',
       counterpartyAccount: 'US-FED-8841029',
       counterpartyBank: 'Citibank N.A., New York (SWIFT: CITIUS33)',
-      channel: 'SWIFT',
     },
     {
-      iso: '2026-06-03T04:55:00.000Z',
-      category: 'TRANSFER',
-      description: 'Intl Wire Credit (USD 74,475.56 @ ₹84.61) · Microsoft Corp Global Vendor Retainer',
-      amount: 6301376.84,
-      transactionType: 'CREDIT',
+      iso: '2026-07-19T06:10:00.000Z',
+      usd: 70412.30,
+      fxRate: 95.83,
+      label: 'Microsoft Corp Cloud Infrastructure Milestone',
       counterpartyName: 'Microsoft Corporation (Redmond, USA)',
       counterpartyAccount: 'US-CHIPS-440219',
       counterpartyBank: 'Bank of America N.A., USA (SWIFT: BOFAUS3N)',
-      channel: 'SWIFT',
     },
     {
-      iso: '2026-05-12T05:18:00.000Z',
-      category: 'TRANSFER',
-      description: 'Intl Wire Credit (USD 76,818.58 @ ₹84.64) · Salesforce APAC Engineering Milestone',
-      amount: 6501924.53,
-      transactionType: 'CREDIT',
+      iso: '2026-07-09T04:55:00.000Z',
+      usd: 62840.75,
+      fxRate: 95.62,
+      label: 'Salesforce Enterprise AI Platform Settlement',
       counterpartyName: 'Salesforce, Inc. (San Francisco, USA)',
       counterpartyAccount: 'US-FED-8841029',
       counterpartyBank: 'Citibank N.A., New York (SWIFT: CITIUS33)',
-      channel: 'SWIFT',
     },
     {
-      iso: '2026-04-14T06:04:00.000Z',
-      category: 'TRANSFER',
-      description: 'Intl Wire Credit (USD 76,972.33 @ ₹84.46) · Microsoft Enterprise Services Remittance',
-      amount: 6501083.17,
-      transactionType: 'CREDIT',
+      iso: '2026-06-29T05:18:00.000Z',
+      usd: 68520.50,
+      fxRate: 94.93,
+      label: 'Microsoft Corp Global Vendor Retainer',
       counterpartyName: 'Microsoft Corporation (Redmond, USA)',
       counterpartyAccount: 'US-CHIPS-440219',
       counterpartyBank: 'Bank of America N.A., USA (SWIFT: BOFAUS3N)',
-      channel: 'SWIFT',
     },
     {
-      iso: '2026-03-25T05:42:00.000Z',
-      category: 'TRANSFER',
-      description: 'Intl Wire Credit (USD 82,967.80 @ ₹84.39) · Salesforce Inc. Multi-Region Deployment',
-      amount: 7001652.48,
-      transactionType: 'CREDIT',
+      iso: '2026-06-19T06:04:00.000Z',
+      usd: 74115.40,
+      fxRate: 94.68,
+      label: 'Salesforce APAC Engineering Milestone',
       counterpartyName: 'Salesforce, Inc. (San Francisco, USA)',
       counterpartyAccount: 'US-FED-8841029',
       counterpartyBank: 'Citibank N.A., New York (SWIFT: CITIUS33)',
-      channel: 'SWIFT',
     },
     {
-      iso: '2026-02-09T06:15:00.000Z',
-      category: 'TRANSFER',
-      description: 'Intl Wire Credit (USD 68,540.82 @ ₹84.64) · Salesforce Inc. Q1 Enterprise Advisory Wire',
-      amount: 5801294.66,
-      transactionType: 'CREDIT',
-      counterpartyName: 'Salesforce, Inc. (San Francisco, USA)',
-      counterpartyAccount: 'US-FED-8841029',
-      counterpartyBank: 'Citibank N.A., New York (SWIFT: CITIUS33)',
-      channel: 'SWIFT',
-    },
-    {
-      iso: '2026-01-22T05:00:00.000Z',
-      category: 'TRANSFER',
-      description: 'Intl Wire Credit (USD 74,601.48 @ ₹84.47) · Microsoft Corp Q1 International Remittance',
-      amount: 6301587.21,
-      transactionType: 'CREDIT',
+      iso: '2026-06-09T05:42:00.000Z',
+      usd: 64910.25,
+      fxRate: 94.93,
+      label: 'Microsoft Enterprise Services Remittance',
       counterpartyName: 'Microsoft Corporation (Redmond, USA)',
       counterpartyAccount: 'US-CHIPS-440219',
       counterpartyBank: 'Bank of America N.A., USA (SWIFT: BOFAUS3N)',
-      channel: 'SWIFT',
+    },
+    {
+      iso: '2026-05-30T06:15:00.000Z',
+      usd: 71842.60,
+      fxRate: 95.85,
+      label: 'Salesforce Inc. Multi-Region Deployment',
+      counterpartyName: 'Salesforce, Inc. (San Francisco, USA)',
+      counterpartyAccount: 'US-FED-8841029',
+      counterpartyBank: 'Citibank N.A., New York (SWIFT: CITIUS33)',
+    },
+    {
+      iso: '2026-05-20T05:00:00.000Z',
+      usd: 66421.15,
+      fxRate: 95.55,
+      label: 'Microsoft Corp Q2 International Remittance',
+      counterpartyName: 'Microsoft Corporation (Redmond, USA)',
+      counterpartyAccount: 'US-CHIPS-440219',
+      counterpartyBank: 'Bank of America N.A., USA (SWIFT: BOFAUS3N)',
     },
   ];
+
+  const intlCredits: Array<RawEntry> = rawIntlSchedule.map(item => {
+    const inrPaise = Math.round(item.usd * item.fxRate * 100);
+    const usdStr = item.usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return {
+      iso: item.iso,
+      category: 'TRANSFER',
+      description: `Intl Wire Credit (USD ${usdStr} @ ₹${item.fxRate.toFixed(2)}) · ${item.label}`,
+      amount: inrPaise / 100,
+      transactionType: 'CREDIT',
+      counterpartyName: item.counterpartyName,
+      counterpartyAccount: item.counterpartyAccount,
+      counterpartyBank: item.counterpartyBank,
+      channel: 'SWIFT',
+    };
+  });
   entries.push(...intlCredits);
 
-  // 2. HARDWARE & LAPTOP SHOPS PURCHASES = ₹24,15,787.00 (Spaced 2–11 min gaps per shopping run)
+  // 2. HARDWARE & LAPTOP SHOPS PURCHASES (Realistic GST invoice paise, spaced 2–11 min gaps)
   const augShopStart = new Date('2026-08-15T06:30:00.000Z').getTime();
   let shopCursorMs = augShopStart;
   const augHardwareItems = [
-    { description: 'Apple India Flagship Store — MacBook Pro 16" M4 Max Workstations (2x)', amount: 698412.50, counterpartyName: 'Apple India Pvt Ltd', counterpartyBank: 'Citibank N.A.', channel: 'POS' },
+    { description: 'Apple India Flagship Store — MacBook Pro 16" M4 Max Workstations (2x)', amount: 698452.40, counterpartyName: 'Apple India Pvt Ltd', counterpartyBank: 'Citibank N.A.', channel: 'POS' },
     { description: 'Imagine Store Coimbatore — Apple Studio Displays & Thunderbolt Docks', amount: 345218.75, counterpartyName: 'Ample Technologies Pvt Ltd', counterpartyBank: 'HDFC Bank Ltd', channel: 'POS' },
-    { description: 'Dell Exclusive Store Race Course — Precision Mobile Workstations (3x)', amount: 495640.30, counterpartyName: 'Dell India Pvt Ltd', counterpartyBank: 'ICICI Bank Ltd', channel: 'NEFT' },
-    { description: 'Croma Infiniti Tech — Keychron Mechanical Keyboards & MX Master 3S Kits', amount: 114785.40, counterpartyName: 'Infiniti Retail Ltd (Croma)', counterpartyBank: 'Axis Bank Ltd', channel: 'POS' },
-    { description: 'APC Schneider Store — Enterprise Rack UPS & Power Backup Hardware', amount: 145390.65, counterpartyName: 'Vijay Sales Hardware Hub', counterpartyBank: 'HDFC Bank Ltd', channel: 'POS' },
+    { description: 'Dell Exclusive Store Race Course — Precision Mobile Workstations (3x)', amount: 495140.60, counterpartyName: 'Dell India Pvt Ltd', counterpartyBank: 'ICICI Bank Ltd', channel: 'NEFT' },
+    { description: 'Croma Infiniti Tech — Keychron Mechanical Keyboards & MX Master 3S Kits', amount: 114785.20, counterpartyName: 'Infiniti Retail Ltd (Croma)', counterpartyBank: 'Axis Bank Ltd', channel: 'POS' },
+    { description: 'APC Schneider Store — Enterprise Rack UPS & Power Backup Hardware', amount: 145129.90, counterpartyName: 'Vijay Sales Hardware Hub', counterpartyBank: 'HDFC Bank Ltd', channel: 'POS' },
   ];
   augHardwareItems.forEach((item, idx) => {
     if (idx > 0) shopCursorMs += nextGapMinutes() * 60 * 1000;
@@ -285,10 +280,10 @@ function generatePersonalTransactions(): TransactionRecord[] {
 
   let julShopCursorMs = new Date('2026-07-25T07:10:00.000Z').getTime();
   const julHardwareItems = [
-    { description: 'Lenovo Commercial Store — ThinkPad P16 Developer Laptops (2x)', amount: 360480.25, counterpartyName: 'Lenovo India Commercial Systems', counterpartyBank: 'Standard Chartered Bank', channel: 'NEFT' },
-    { description: 'Reliance Digital Pollachi — LG UltraFine 4K Work Displays (6x)', amount: 138245.80, counterpartyName: 'Reliance Retail Ltd', counterpartyBank: 'HDFC Bank Ltd', channel: 'POS' },
-    { description: 'PrimeABGB Tech Hardware — Ubiquiti UniFi Wi-Fi 7 Mesh & 10GbE Switches', amount: 72318.90, counterpartyName: 'PrimeABGB Computer Hardware', counterpartyBank: 'ICICI Bank Ltd', channel: 'IMPS' },
-    { description: 'Samsung Experience Store — 990 Pro 4TB NVMe SSDs & Portable T9 Drives', amount: 45294.45, counterpartyName: 'Samsung India Electronics Pvt Ltd', counterpartyBank: 'Axis Bank Ltd', channel: 'POS' },
+    { description: 'Lenovo Commercial Store — ThinkPad P16 Developer Laptops (2x)', amount: 360245.50, counterpartyName: 'Lenovo India Commercial Systems', counterpartyBank: 'Standard Chartered Bank', channel: 'NEFT' },
+    { description: 'Reliance Digital Pollachi — LG UltraFine 4K Work Displays (6x)', amount: 138112.84, counterpartyName: 'Reliance Retail Ltd', counterpartyBank: 'HDFC Bank Ltd', channel: 'POS' },
+    { description: 'PrimeABGB Tech Hardware — Ubiquiti UniFi Wi-Fi 7 Mesh & 10GbE Switches', amount: 72190.45, counterpartyName: 'PrimeABGB Computer Hardware', counterpartyBank: 'ICICI Bank Ltd', channel: 'IMPS' },
+    { description: 'Samsung Experience Store — 990 Pro 4TB NVMe SSDs & Portable T9 Drives', amount: 45211.08, counterpartyName: 'Samsung India Electronics Pvt Ltd', counterpartyBank: 'Axis Bank Ltd', channel: 'POS' },
   ];
   julHardwareItems.forEach((item, idx) => {
     if (idx > 0) julShopCursorMs += nextGapMinutes() * 60 * 1000;
@@ -306,20 +301,16 @@ function generatePersonalTransactions(): TransactionRecord[] {
   });
 
   // 3. AUGUST 02: GOOGLE GEMINI PRO (GOOGLE AI PRO) SUBSCRIPTIONS FOR ALL 84 ACCOUNTS
-  // Real Google AI Pro USD $22.99 / ₹1,950 monthly plan FX-settled with non-zero paise (Spaced 2–11 min gaps)
+  // Real Google India price = ₹1,950/account × 84 accounts = ₹1,63,800 (Spaced strictly 2–11 min gaps)
   let geminiCursorMs = new Date('2026-08-02T02:35:00.000Z').getTime(); // Starts 08:05 AM IST on 02 Aug 2026
-  const geminiAmountsPaise: number[] = [];
   SOUTH_INDIAN_EMPLOYEES.forEach((empName, idx) => {
     if (idx > 0) geminiCursorMs += nextGapMinutes() * 60 * 1000;
     const seatNo = String(idx + 1).padStart(2, '0');
-    const paiseTail = 11 + ((idx * 23 + 7) % 88); // 11..98, never .00
-    const seatPaise = 194900 + paiseTail; // ₹1,949.11 – ₹1,949.98 (~₹1,950 real plan price)
-    geminiAmountsPaise.push(seatPaise);
     entries.push({
       iso: new Date(geminiCursorMs).toISOString(),
       category: 'UTILITIES',
       description: `Google AI Pro (Gemini Pro) Subscription · Seat #${seatNo} (${empName})`,
-      amount: seatPaise / 100,
+      amount: 1950,
       transactionType: 'DEBIT',
       counterpartyName: 'Google Asia Pacific Pte Ltd (Gemini Pro)',
       counterpartyAccount: '•••• •••• 7740',
@@ -328,45 +319,49 @@ function generatePersonalTransactions(): TransactionRecord[] {
     });
   });
 
-  // 4. PAYROLL SALARIES TO ALL 84 SOUTH INDIAN MALE EMPLOYEES (₹6,00,000 to ₹14,00,000 each, exact integer-paise reconciliation)
-  const totalCreditsPaise = intlCredits.reduce((sum, item) => sum + Math.round(item.amount * 100), 0);
-  const hardwarePaise = [...augHardwareItems, ...julHardwareItems].reduce((sum, item) => sum + Math.round(item.amount * 100), 0);
-  const geminiPaise = geminiAmountsPaise.reduce((sum, p) => sum + p, 0);
-  const closingBalancePaise = 422354784; // ₹42,23,547.84 exact closing balance
-  const TARGET_SALARY_SUM_PAISE = totalCreditsPaise - closingBalancePaise - hardwarePaise - geminiPaise;
+  // 4. PAYROLL SALARIES TO ALL 84 SOUTH INDIAN MALE EMPLOYEES (₹6,00,000 to ₹14,00,000 each with non-.00 paise)
+  // Exact integer-paise reconciliation so Total Credits - Total Debits = ₹42,23,547.83
+  const TARGET_BALANCE_PAISE = 422354783;
+  const creditsPaise = entries
+    .filter(e => e.transactionType === 'CREDIT')
+    .reduce((sum, e) => sum + Math.round(e.amount * 100), 0);
+  const nonSalaryDebitsPaise = entries
+    .filter(e => e.transactionType === 'DEBIT')
+    .reduce((sum, e) => sum + Math.round(e.amount * 100), 0);
+  const targetSalaryPaise = creditsPaise - nonSalaryDebitsPaise - TARGET_BALANCE_PAISE;
 
-  const salariesPaise = SOUTH_INDIAN_EMPLOYEES.map((_, idx) => {
-    const minorRupees = (nextRand() % 4800) * 100;
-    const paise = 12 + (nextRand() % 87); // .12 to .98, never .00
+  const salaryPaise = SOUTH_INDIAN_EMPLOYEES.map((_, idx) => {
+    // Non-zero paise suffix in [11..98] avoiding multiples of 10 so salaries don't end in .00
+    const rawPaise = 11 + (nextRand() % 88);
+    const paiseSuffix = rawPaise % 10 === 0 ? rawPaise + 3 : rawPaise;
     if (idx < 10) {
-      // Senior / Principal Engineers: ₹11,00,000 – ₹13,95,000+
-      return 110000000 + (nextRand() % 58) * 500000 + minorRupees + paise;
+      // Senior / Principal Engineers: ₹11,00,000 – ₹13,95,000 + paise
+      return (1100000 + (nextRand() % 60) * 5000) * 100 + paiseSuffix;
     }
     if (idx < 34) {
-      // Tech Leads / Staff Engineers: ₹8,00,000 – ₹10,50,000+
-      return 80000000 + (nextRand() % 49) * 500000 + minorRupees + paise;
+      // Tech Leads / Staff Engineers: ₹8,00,000 – ₹10,50,000 + paise
+      return (800000 + (nextRand() % 51) * 5000) * 100 + paiseSuffix;
     }
-    // Core Software Engineers: ₹6,00,000 – ₹7,85,000+
-    return 60000000 + (nextRand() % 36) * 500000 + minorRupees + paise;
+    // Core Software Engineers: ₹6,00,000 – ₹7,80,000 + paise
+    return (600000 + (nextRand() % 37) * 5000) * 100 + paiseSuffix;
   });
 
-  // Reconcile exact salary sum in integer paise inside [₹6,00,000.01, ₹14,00,000.00] without creating any .00 paise
-  let currentSumPaise = salariesPaise.reduce((a, b) => a + b, 0);
+  // Reconcile exact integer-paise salary sum cleanly inside [₹6,00,000.01, ₹14,00,000.00]
+  let currentPaiseSum = salaryPaise.reduce((a, b) => a + b, 0);
   let adjIdx = 0;
-  while (currentSumPaise !== TARGET_SALARY_SUM_PAISE) {
-    const diff = TARGET_SALARY_SUM_PAISE - currentSumPaise;
-    let step = Math.abs(diff) >= 500000 ? (diff > 0 ? 500000 : -500000) : diff;
-    // Ensure candidate keeps non-zero paise
-    let candidate = salariesPaise[adjIdx] + step;
-    if (candidate % 100 === 0) {
-      step += step > 0 ? -1 : 1;
-      candidate = salariesPaise[adjIdx] + step;
+  while (currentPaiseSum !== targetSalaryPaise) {
+    const diff = targetSalaryPaise - currentPaiseSum;
+    const rupeeStep = Math.abs(diff) >= 500000 ? 500000 : Math.abs(diff);
+    const signedStep = diff > 0 ? rupeeStep : -rupeeStep;
+    const candidate = salaryPaise[adjIdx] + signedStep;
+    if (candidate >= 60000001 && candidate <= 140000000 && candidate % 100 !== 0) {
+      salaryPaise[adjIdx] = candidate;
+      currentPaiseSum += signedStep;
+    } else if (Math.abs(diff) < 100 && salaryPaise[adjIdx] + diff >= 60000001 && salaryPaise[adjIdx] + diff <= 140000000) {
+      salaryPaise[adjIdx] += diff;
+      currentPaiseSum += diff;
     }
-    if (candidate >= 60000100 && candidate <= 139999999) {
-      salariesPaise[adjIdx] = candidate;
-      currentSumPaise += step;
-    }
-    adjIdx = (adjIdx + 1) % salariesPaise.length;
+    adjIdx = (adjIdx + 1) % salaryPaise.length;
   }
 
   // Payroll disbursement on 30 Aug 2026 starting 09:00 AM IST, spaced strictly 2–11 minutes apart
@@ -379,7 +374,7 @@ function generatePersonalTransactions(): TransactionRecord[] {
       iso: new Date(salaryCursorMs).toISOString(),
       category: 'SALARY',
       description: `Employee Salary Payout — ${empName} (Emp ID #EMP-${String(idx + 101).padStart(3, '0')})`,
-      amount: salariesPaise[idx] / 100,
+      amount: salaryPaise[idx] / 100,
       transactionType: 'DEBIT',
       counterpartyName: empName,
       counterpartyAccount: `•••• •••• ${acctLast4}`,
@@ -395,7 +390,7 @@ function generatePersonalTransactions(): TransactionRecord[] {
     const yyyymm = entry.iso.slice(0, 7).replace('-', '');
     const seq = String(idx + 1).padStart(3, '0');
     return {
-      transactionId: `tx-1${seq}`,
+      transactionId: `tx-2026-${seq}`,
       ownerUid: 'cust-karthick-8829',
       accountId: 'acc-sb-8829',
       category: entry.category,

@@ -316,7 +316,7 @@ export const CardsPage: React.FC = () => {
   const handlePayCreditBill = (e: React.FormEvent) => {
     e.preventDefault();
     const srcId = billSourceAccountId || accounts[0]?.accountId || '';
-    const amt = parseFloat(payBillAmount);
+    const amt = Math.round(parseFloat(payBillAmount) * 100) / 100;
     if (!srcId || isNaN(amt) || amt <= 0) {
       toast.error('Enter a valid payment amount');
       return;
@@ -325,7 +325,8 @@ export const CardsPage: React.FC = () => {
     requestAction({
       title: `Pay ${formatINR(amt)} Card Bill?`,
       message: `Authorize payment of ${formatINR(amt)} towards ${cardTitle} (•••• ${maskedFourDigits}).`,
-      confirmLabel: 'Yes, Authorize Payment',
+      confirmLabel: 'Authorize with MPIN',
+      requireMpin: true,
       onConfirm: async () => {
         const res = await submitTransfer(srcId, {
           recipientName: `${cardTitle} •••• ${maskedFourDigits}`,
@@ -339,7 +340,7 @@ export const CardsPage: React.FC = () => {
         });
         if (!res.success) {
           toast.error(res.error || 'Bill payment failed');
-          return;
+          throw new Error(res.error || 'Bill payment failed');
         }
         updateCardSettings(activeCard.cardId, {
           currentMonthSpent: Math.max(0, (activeCard.currentMonthSpent || 0) - amt),
@@ -768,7 +769,7 @@ export const CardsPage: React.FC = () => {
       <ModalDialog open={showPinModal} onClose={() => setShowPinModal(false)} title="View card PIN" subtitle={`${shortCardLabel} •••• ${maskedFourDigits}`} maxWidthClass="max-w-sm">
         {!pinRevealed ? (
           <form onSubmit={handleVerifyPinForReveal} className="space-y-4">
-            <p className="text-xs text-gray-500 leading-relaxed">Enter your 6-digit App-Lock PIN to reveal your 4-digit card ATM PIN.</p>
+            <p className="text-xs text-gray-500 leading-relaxed">Enter your 6-digit App-Lock PIN (<strong className="text-[#1f1f1f]">002831</strong>) to reveal your 4-digit card ATM PIN.</p>
             <input type="password" inputMode="numeric" maxLength={6} autoFocus required value={pinVerificationInput} onChange={e => setPinVerificationInput(e.target.value.replace(/\D/g, ''))} placeholder="••••••" className="w-full px-4 py-3 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F6F7F9] border border-gray-200 rounded-xl" />
             <button type="submit" className="w-full min-h-[44px] py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs">Verify &amp; Reveal PIN</button>
           </form>
@@ -871,7 +872,7 @@ export const CardsPage: React.FC = () => {
       <ModalDialog open={showCardDetailsModal} onClose={() => setShowCardDetailsModal(false)} title="Card number & CVV" subtitle={`${shortCardLabel} •••• ${maskedFourDigits}`} maxWidthClass="max-w-sm">
         {!detailsRevealed ? (
           <form onSubmit={handleVerifyForCardDetails} className="space-y-4">
-            <p className="text-xs text-gray-500">Enter your 6-digit App-Lock PIN to reveal your 16-digit card number and CVV.</p>
+            <p className="text-xs text-gray-500">Enter your 6-digit App-Lock PIN (<strong>002831</strong>) to reveal your 16-digit card number and CVV.</p>
             <input type="password" inputMode="numeric" maxLength={6} autoFocus required value={pinVerificationInput} onChange={e => setPinVerificationInput(e.target.value.replace(/\D/g, ''))} placeholder="••••••" className="w-full px-4 py-3 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F6F7F9] border border-gray-200 rounded-xl" />
             <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs">Unlock Card Details</button>
           </form>
@@ -959,7 +960,7 @@ export const CardsPage: React.FC = () => {
           <select aria-label="Source account" value={billSourceAccountId || accounts[0]?.accountId || ''} onChange={e => setBillSourceAccountId(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold">
             {accounts.map(acc => <option key={acc.accountId} value={acc.accountId}>{acc.accountType} ({acc.maskedAccountNumber}) — {formatINR(acc.managedBalance)}</option>)}
           </select>
-          <input type="number" min={100} required value={payBillAmount} onChange={e => setPayBillAmount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-bold text-sm" />
+          <input type="number" step="0.01" min={1} required value={payBillAmount} onChange={e => setPayBillAmount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-bold text-sm" />
           <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white font-bold rounded-full transition-all cursor-pointer shadow-xs">Authorize Card Payment</button>
         </form>
       </ModalDialog>

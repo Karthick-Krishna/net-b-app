@@ -505,13 +505,13 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
         {/* OPTIONAL CLEAN BANKING NUMERIC KEYPAD */}
         {showKeypad && (
           <div className="pb-4 pt-1">
-            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 max-w-[270px] mx-auto">
+            <div className="grid grid-cols-3 gap-2 max-w-[280px] mx-auto">
               {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(num => (
                 <button
                   key={num}
                   type="button"
                   onClick={() => handleDigitInput(num)}
-                  className="h-11 rounded-[2px] bg-white hover:bg-[#F5F6F8] active:bg-[#EAECEF] text-[#1f1f1f] text-[18px] font-medium transition-colors flex items-center justify-center border border-[#EAEAEA]"
+                  className="h-11 rounded-[2px] bg-white hover:bg-gray-50 active:bg-gray-100 text-[#1f1f1f] text-base font-semibold transition-colors flex items-center justify-center border border-gray-300 cursor-pointer"
                 >
                   {num}
                 </button>
@@ -519,21 +519,21 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               <button
                 type="button"
                 onClick={() => setPin('')}
-                className="h-11 rounded-[2px] bg-white hover:bg-[#F5F6F8] active:bg-[#EAECEF] text-[12px] font-medium text-[#666666] transition-colors flex items-center justify-center"
+                className="h-11 rounded-[2px] bg-white hover:bg-gray-50 active:bg-gray-100 text-[11px] font-semibold text-[#555555] transition-colors flex items-center justify-center border border-gray-300 cursor-pointer"
               >
                 Clear
               </button>
               <button
                 type="button"
                 onClick={() => handleDigitInput('0')}
-                className="h-11 rounded-[2px] bg-white hover:bg-[#F5F6F8] active:bg-[#EAECEF] text-[#1f1f1f] text-[18px] font-medium transition-colors flex items-center justify-center border border-[#EAEAEA]"
+                className="h-11 rounded-[2px] bg-white hover:bg-gray-50 active:bg-gray-100 text-[#1f1f1f] text-base font-semibold transition-colors flex items-center justify-center border border-gray-300 cursor-pointer"
               >
                 0
               </button>
               <button
                 type="button"
                 onClick={handleDeleteDigit}
-                className="h-11 rounded-[2px] bg-white hover:bg-[#F5F6F8] active:bg-[#EAECEF] text-[#1f1f1f] text-sm font-medium transition-colors flex items-center justify-center"
+                className="h-11 rounded-[2px] bg-white hover:bg-gray-50 active:bg-gray-100 text-[#1f1f1f] text-sm font-semibold transition-colors flex items-center justify-center border border-gray-300 cursor-pointer"
                 aria-label="Backspace"
               >
                 ⌫
@@ -542,13 +542,13 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
           </div>
         )}
 
-        {/* BOTTOM ACTION BUTTONS */}
+        {/* BOTTOM ACTION BUTTONS (Authentic HSBC Sharp Rectangular Box Style) */}
         <div className="pt-2 pb-7 space-y-3.5">
           {/* Primary Action Button: "Log on with Face ID" */}
           <button
             type="button"
             onClick={handleFaceIdTrigger}
-            className="w-full h-12 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.99] text-white text-[15px] font-medium rounded-[2px] tracking-normal transition-colors flex items-center justify-center cursor-pointer"
+            className="w-full h-12 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.99] text-white text-[14px] font-semibold rounded-[2px] tracking-wide transition-colors flex items-center justify-center cursor-pointer"
           >
             Log on with Face ID
           </button>
@@ -574,7 +574,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               setSecurityTimer(30);
               setShowSecurityCodeModal(true);
             }}
-            className="w-full h-12 bg-white hover:bg-[#F5F6F8] active:scale-[0.99] border border-[#333333] text-[#1f1f1f] text-[15px] font-normal rounded-[2px] tracking-normal transition-colors flex items-center justify-center cursor-pointer"
+            className="w-full h-12 bg-white hover:bg-gray-50 active:scale-[0.99] border border-[#333333] text-[#1f1f1f] text-[14px] font-semibold rounded-[2px] tracking-wide transition-colors flex items-center justify-center cursor-pointer"
           >
             Generate a security code
           </button>
@@ -684,7 +684,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.99] text-white text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span>Send Verification Code</span>
                       <ArrowRight className="w-4 h-4" />
@@ -747,7 +747,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.99] text-white text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span>Verify Code</span>
                       <CheckCircle2 className="w-4 h-4" />
@@ -818,7 +818,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.99] text-white text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span>Reset PIN & Log On</span>
                       <ShieldCheck className="w-4 h-4" />
@@ -946,11 +946,11 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                     Enroll Face ID with your 6-digit security PIN for instant biometric logon on this device.
                   </p>
 
-                  <div className="mt-5 w-full space-y-2">
+                  <div className="mt-5 w-full space-y-2.5">
                     <button
                       type="button"
                       onClick={() => setFaceIdStep('ENROLL_PIN')}
-                      className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs"
+                      className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.99] text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
                     >
                       Set Up Face ID
                     </button>
@@ -960,7 +960,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                         setShowBiometricsModal(false);
                         setTimeout(() => inputRef.current?.focus(), 60);
                       }}
-                      className="w-full min-h-[42px] bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] border border-gray-200/80 text-[#1f1f1f] text-xs font-semibold rounded-full transition-all cursor-pointer"
+                      className="w-full min-h-[42px] bg-white hover:bg-gray-50 active:scale-[0.99] border border-[#333333] text-[#1f1f1f] text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
                     >
                       Enter 6-Digit PIN
                     </button>
@@ -1007,7 +1007,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   )}
                   <button
                     type="submit"
-                    className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs"
+                    className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.99] text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
                   >
                     Verify &amp; Enable Face ID
                   </button>

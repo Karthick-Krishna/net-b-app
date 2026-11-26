@@ -138,7 +138,8 @@ export const PaymentsPage: React.FC = () => {
     requestAction({
       title: `Confirm Global Transfer (${globalCountry.currency} ${fxVal})?`,
       message: `Send ${formatCurrency(numAmount, 'INR')} (${globalCountry.currency} ${fxVal}) to ${globalBeneficiaryName} in ${globalCountry.name}?`,
-      confirmLabel: 'Yes, Authorize Wire',
+      confirmLabel: 'Authorize with MPIN',
+      requireMpin: true,
       onConfirm: async () => {
         const res = await submitTransfer(effectiveSourceAccountId, {
           recipientName: globalBeneficiaryName,
@@ -152,7 +153,7 @@ export const PaymentsPage: React.FC = () => {
         });
         if (!res.success) {
           toast.error(res.error || 'Global transfer failed');
-          return;
+          throw new Error(res.error || 'Global transfer failed');
         }
         return {
           title: 'Global Wire Dispatched',
@@ -168,7 +169,7 @@ export const PaymentsPage: React.FC = () => {
   };
 
   const handleExecuteTransfer = () => {
-    const numAmount = parseFloat(amount);
+    const numAmount = Math.round(parseFloat(amount) * 100) / 100;
     if (isNaN(numAmount) || numAmount <= 0 || !effectiveSourceAccountId) {
       toast.error('Please enter a valid transfer amount');
       return;
@@ -181,7 +182,8 @@ export const PaymentsPage: React.FC = () => {
     requestAction({
       title: `Authorize Transfer of ${formatCurrency(numAmount, 'INR')}?`,
       message: `Transfer ${formatCurrency(numAmount, 'INR')} from ${selectedAccount?.accountType} (${selectedAccount?.maskedAccountNumber}) to ${recipientName} (${recipientBank})?`,
-      confirmLabel: 'Yes, Transfer Money',
+      confirmLabel: 'Authorize with MPIN',
+      requireMpin: true,
       onConfirm: async () => {
         const res = await submitTransfer(effectiveSourceAccountId, {
           recipientName,
@@ -195,7 +197,7 @@ export const PaymentsPage: React.FC = () => {
         });
         if (!res.success) {
           toast.error(res.error || 'Payment execution failed');
-          return;
+          throw new Error(res.error || 'Payment execution failed');
         }
         setTransferStep(1);
         const doneRef = reference;
@@ -216,9 +218,13 @@ export const PaymentsPage: React.FC = () => {
 
   const handleExecuteBillPayment = (e: React.FormEvent) => {
     e.preventDefault();
-    const numAmount = parseFloat(billAmount);
+    const numAmount = Math.round(parseFloat(billAmount) * 100) / 100;
     if (isNaN(numAmount) || numAmount <= 0 || !effectiveSourceAccountId) {
       toast.error('Please enter a valid bill amount');
+      return;
+    }
+    if (selectedAccount && selectedAccount.managedBalance < numAmount) {
+      toast.error('Insufficient available balance in selected account');
       return;
     }
     const ref = 'BILL/' + Date.now().toString().slice(-6);
@@ -226,7 +232,8 @@ export const PaymentsPage: React.FC = () => {
     requestAction({
       title: `Pay ${billerProvider} Bill?`,
       message: `Confirm utility payment of ${formatCurrency(numAmount, 'INR')} for Consumer #${consumerNumber}?`,
-      confirmLabel: 'Yes, Pay Bill',
+      confirmLabel: 'Authorize with MPIN',
+      requireMpin: true,
       onConfirm: async () => {
         const res = await submitTransfer(effectiveSourceAccountId, {
           recipientName: billerProvider,
@@ -240,7 +247,7 @@ export const PaymentsPage: React.FC = () => {
         });
         if (!res.success) {
           toast.error(res.error || 'Bill payment failed');
-          return;
+          throw new Error(res.error || 'Bill payment failed');
         }
         return {
           title: 'Bill Payment Processed',
@@ -543,7 +550,7 @@ export const PaymentsPage: React.FC = () => {
                   <h2 className="text-base font-bold text-[#1f1f1f]">Step 4: Amount &amp; Reference</h2>
                   <div>
                     <label htmlFor="pay-amount" className="font-bold text-[#555555] block mb-1.5 text-xs">Amount (INR ₹)</label>
-                    <input id="pay-amount" type="number" required min="1" value={amount} onChange={e => setAmount(e.target.value)} className="w-full p-3.5 bg-[#F6F7F9] border border-gray-200 rounded-xl text-2xl font-bold text-[#1f1f1f]" placeholder="0.00" />
+                    <input id="pay-amount" type="number" step="0.01" required min="0.01" value={amount} onChange={e => setAmount(e.target.value)} className="w-full p-3.5 bg-[#F6F7F9] border border-gray-200 rounded-xl text-2xl font-bold text-[#1f1f1f]" placeholder="0.00" />
                     <span className="text-[11px] text-[#777777] mt-1 block">Available: {formatCurrency(selectedAccount?.managedBalance || 0, 'INR')}</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -594,12 +601,12 @@ export const PaymentsPage: React.FC = () => {
               <form onSubmit={handleExecuteGlobalTransfer} className="space-y-4 text-xs">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                   {[
-                    { code: 'GB', name: 'United Kingdom', currency: 'GBP', rate: 106.40, flag: '🇬🇧' },
-                    { code: 'US', name: 'United States', currency: 'USD', rate: 84.50, flag: '🇺🇸' },
-                    { code: 'AE', name: 'UAE', currency: 'AED', rate: 23.00, flag: '🇦🇪' },
-                    { code: 'SG', name: 'Singapore', currency: 'SGD', rate: 63.10, flag: '🇸🇬' },
-                    { code: 'EU', name: 'Eurozone', currency: 'EUR', rate: 91.20, flag: '🇪🇺' },
-                    { code: 'CA', name: 'Canada', currency: 'CAD', rate: 61.80, flag: '🇨🇦' },
+                    { code: 'GB', name: 'United Kingdom', currency: 'GBP', rate: 118.40, flag: '🇬🇧' },
+                    { code: 'US', name: 'United States', currency: 'USD', rate: 95.43, flag: '🇺🇸' },
+                    { code: 'AE', name: 'UAE', currency: 'AED', rate: 25.98, flag: '🇦🇪' },
+                    { code: 'SG', name: 'Singapore', currency: 'SGD', rate: 71.85, flag: '🇸🇬' },
+                    { code: 'EU', name: 'Eurozone', currency: 'EUR', rate: 103.60, flag: '🇪🇺' },
+                    { code: 'CA', name: 'Canada', currency: 'CAD', rate: 69.20, flag: '🇨🇦' },
                   ].map(c => (
                     <button key={c.code} type="button" onClick={() => setGlobalCountry(c)} className={`p-3 rounded-2xl text-left cursor-pointer border transition-all ${globalCountry.code === c.code ? 'border-[#DB0011] bg-red-50/40 ring-1 ring-[#DB0011]' : 'border-gray-200 bg-white hover:bg-gray-50'}`}>
                       <div className="text-base">{c.flag}</div>
@@ -611,7 +618,7 @@ export const PaymentsPage: React.FC = () => {
                 <div className="p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="global-inr" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">You Send (INR ₹)</label>
-                    <input id="global-inr" type="number" required min="1000" value={globalInrAmount} onChange={e => setGlobalInrAmount(e.target.value)} className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl font-bold text-sm" />
+                    <input id="global-inr" type="number" step="0.01" required min="100" value={globalInrAmount} onChange={e => setGlobalInrAmount(e.target.value)} className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl font-bold text-sm" />
                   </div>
                   <div>
                     <div className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Recipient Gets ({globalCountry.currency})</div>
@@ -653,7 +660,7 @@ export const PaymentsPage: React.FC = () => {
                   <select aria-label="Source Account" value={effectiveSourceAccountId} onChange={e => setSourceAccountId(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold">
                     {accounts.map(acc => <option key={acc.accountId} value={acc.accountId}>{acc.accountType} ({acc.maskedAccountNumber})</option>)}
                   </select>
-                  <input type="number" required min="1" aria-label="Bill Amount" value={billAmount} onChange={e => setBillAmount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-bold" />
+                  <input type="number" step="0.01" required min="0.01" aria-label="Bill Amount" value={billAmount} onChange={e => setBillAmount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-bold" />
                 </div>
                 <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-semibold rounded-full transition-all cursor-pointer shadow-xs">Authorize &amp; Pay Bill</button>
               </form>

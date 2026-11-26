@@ -126,7 +126,7 @@ export const HsbcTopNav: React.FC = () => {
                 {tab.active && (
                   <motion.div
                     layoutId="mobileActiveTabUnderline"
-                    className="absolute -bottom-1 left-0 right-0 h-[3px] bg-[#DB0011]"
+                    className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#DB0011]"
                   />
                 )}
               </button>
@@ -149,7 +149,7 @@ export const HsbcTopNav: React.FC = () => {
                 {tab.active && (
                   <motion.div
                     layoutId="desktopActiveTabUnderline"
-                    className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#DB0011] rounded-t-full"
+                    className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#DB0011]"
                   />
                 )}
               </button>
