@@ -88,11 +88,11 @@ export const HsbcTopNav: React.FC = () => {
               onClick={() => navigate('/')}
               aria-current={isHome ? 'page' : undefined}
               aria-label="Home"
-              className={`min-w-[44px] min-h-[44px] -ml-1.5 flex items-center justify-center rounded-lg transition-colors cursor-pointer ${
+              className={`min-w-[42px] min-h-[42px] flex items-center justify-center transition-colors cursor-pointer ${
                 isHome ? 'text-[#DB0011]' : 'text-[#1f1f1f] hover:text-[#DB0011]'
               }`}
             >
-              <Home className="w-[22px] h-[22px] stroke-[1.8]" aria-hidden="true" />
+              <Home className="w-6 h-6 stroke-[1.5]" aria-hidden="true" />
             </button>
 
             <button
@@ -107,26 +107,26 @@ export const HsbcTopNav: React.FC = () => {
             </button>
 
             {/* Thin vertical separator matching reference UI */}
-            <div className="h-6 w-[1.5px] bg-gray-200 mx-1.5 sm:mx-2.5 md:mx-4" aria-hidden="true" />
+            <div className="h-5 w-[1px] bg-gray-300 mx-2 sm:mx-3 md:mx-4" aria-hidden="true" />
           </div>
 
           {/* Mobile Primary Navigation: Pay | Cards | Invest (Matches Screenshot) */}
-          <nav aria-label="Primary mobile" className="flex md:hidden items-center gap-4 min-[375px]:gap-6 sm:gap-8 flex-1">
+          <nav aria-label="Primary mobile" className="flex md:hidden items-center gap-5 min-[375px]:gap-7 sm:gap-9 flex-1">
             {mobileTabs.map(tab => (
               <button
                 key={tab.path}
                 type="button"
                 onClick={() => navigate(tab.path)}
                 aria-current={tab.active ? 'page' : undefined}
-                className={`relative min-h-[44px] px-1 text-[15px] min-[375px]:text-[16px] font-semibold transition-colors flex items-center justify-center cursor-pointer whitespace-nowrap ${
-                  tab.active ? 'text-[#1f1f1f]' : 'text-[#333333] hover:text-[#DB0011]'
+                className={`relative min-h-[44px] px-0.5 text-[16px] min-[375px]:text-[17px] font-medium transition-colors flex items-center justify-center cursor-pointer whitespace-nowrap ${
+                  tab.active ? 'text-[#1f1f1f]' : 'text-[#444444] hover:text-[#DB0011]'
                 }`}
               >
                 <span>{tab.label}</span>
                 {tab.active && (
                   <motion.div
                     layoutId="mobileActiveTabUnderline"
-                    className="absolute -bottom-[5px] left-0 right-0 h-[3px] bg-[#DB0011] rounded-full"
+                    className="absolute -bottom-1 left-0 right-0 h-[3.5px] bg-[#DB0011] rounded-full"
                   />
                 )}
               </button>
@@ -163,7 +163,7 @@ export const HsbcTopNav: React.FC = () => {
               type="button"
               onClick={() => setIsNotifOpen(true)}
               aria-label={`Open notifications (${unreadNotificationsCount} unread)`}
-              className="relative min-w-[40px] min-h-[40px] flex items-center justify-center rounded-[2px] border border-transparent hover:border-gray-200 hover:bg-[#F8F9FA] text-[#1f1f1f] transition-colors cursor-pointer"
+              className="hidden md:flex relative min-w-[40px] min-h-[40px] items-center justify-center rounded-[2px] border border-transparent hover:border-gray-200 hover:bg-[#F8F9FA] text-[#1f1f1f] transition-colors cursor-pointer"
             >
               <Bell className="w-[19px] h-[19px] stroke-[1.8]" aria-hidden="true" />
               {unreadNotificationsCount > 0 && (

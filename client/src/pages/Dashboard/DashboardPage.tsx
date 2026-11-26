@@ -147,7 +147,7 @@ export const DashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate('/payments')}
-                className="flex-1 sm:flex-initial min-h-[42px] px-5 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-semibold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                className="flex-1 sm:flex-initial min-h-[42px] px-5 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-semibold rounded-full sm:rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap shadow-xs"
               >
                 <Send className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Initiate Transfer</span>
@@ -155,7 +155,7 @@ export const DashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate('/statements')}
-                className="flex-1 sm:flex-initial min-h-[42px] px-4 bg-white hover:bg-[#F8F9FA] border border-[#333333] text-[#1f1f1f] text-xs font-semibold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                className="flex-1 sm:flex-initial min-h-[42px] px-4 bg-white hover:bg-[#F5F6F8] active:scale-[0.98] border border-gray-300 text-[#1f1f1f] text-xs font-semibold rounded-full sm:rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
               >
                 <FileText className="w-3.5 h-3.5 text-[#1f1f1f]" aria-hidden="true" />
                 <span>Certified Statement</span>
@@ -163,7 +163,7 @@ export const DashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate('/security')}
-                className="flex-1 sm:flex-initial min-h-[42px] px-4 bg-white hover:bg-[#F8F9FA] border border-gray-300 text-[#1f1f1f] text-xs font-semibold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                className="flex-1 sm:flex-initial min-h-[42px] px-4 bg-white hover:bg-[#F5F6F8] active:scale-[0.98] border border-gray-300 text-[#1f1f1f] text-xs font-semibold rounded-full sm:rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
               >
                 <KeyRound className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
                 <span>Security</span>
@@ -223,30 +223,95 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* INSTITUTIONAL COMMAND GRID (REPLACES CASUAL ROUND CONSUMER ICONS) */}
-        <div className="px-4 sm:px-6 md:px-8 py-4 bg-[#F8F9FA] border-b border-gray-200">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+        {/* CIRCULAR PRIMARY ACTIONS ROW (MATCHING REFERENCE UI) */}
+        <div className="px-4 sm:px-6 md:px-8 py-5 bg-white border-b border-gray-100">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 max-w-3xl mx-auto">
             {[
-              { label: 'Funds Transfer', sub: 'NEFT / RTGS / IMPS', path: '/payments', icon: Send },
-              { label: 'Card Controls', sub: `${cards.length} Active Cards`, path: '/cards', icon: CreditCard },
-              { label: 'Wealth & Funds', sub: 'No Active Investments', path: '/wealth', icon: TrendingUp },
-              { label: 'Term Deposits', sub: 'Up to 7.80% p.a.', path: '/deposits', icon: PiggyBank },
-              { label: 'e-Statements', sub: 'Ledger & Form 16A', path: '/statements', icon: FileText },
-              { label: 'Security & MPIN', sub: 'App-Lock Shield', path: '/security', icon: ShieldCheck },
-            ].map(cmd => (
+              {
+                label: 'Funds\ntransfer',
+                path: '/payments',
+                icon: (
+                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
+                    <rect x="4" y="6" width="24" height="20" rx="3" fill="#F4F5F7" stroke="#333333" strokeWidth="1.4" />
+                    <path d="M9 13h14M17 9l4 4-4 4" stroke="#DB0011" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="11" cy="20" r="1.5" fill="#1f1f1f" />
+                    <circle cx="16" cy="20" r="1.5" fill="#1f1f1f" />
+                    <circle cx="21" cy="20" r="1.5" fill="#1f1f1f" />
+                  </svg>
+                ),
+              },
+              {
+                label: 'Card\ncontrols',
+                path: '/cards',
+                icon: (
+                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
+                    <rect x="4" y="8" width="24" height="16" rx="2.5" fill="white" stroke="#252525" strokeWidth="1.5" />
+                    <path d="M4 13h24" stroke="#DB0011" strokeWidth="2" />
+                    <rect x="7" y="18" width="6" height="3" rx="0.5" fill="#DB0011" />
+                    <circle cx="23" cy="19.5" r="1.5" fill="#252525" />
+                  </svg>
+                ),
+              },
+              {
+                label: 'Term\ndeposits',
+                path: '/deposits',
+                icon: (
+                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
+                    <circle cx="16" cy="16" r="11" stroke="#252525" strokeWidth="1.5" fill="white" />
+                    <rect x="14" y="9" width="4" height="14" rx="1" fill="#DB0011" />
+                    <circle cx="16" cy="16" r="4.5" fill="#F4F5F7" stroke="#252525" strokeWidth="1.2" />
+                    <text x="16" y="19" textAnchor="middle" fill="#DB0011" fontSize="9" fontWeight="bold">₹</text>
+                  </svg>
+                ),
+              },
+              {
+                label: 'e-Statements\n& tax',
+                path: '/statements',
+                icon: (
+                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
+                    <rect x="7" y="5" width="18" height="22" rx="2.5" fill="white" stroke="#252525" strokeWidth="1.5" />
+                    <path d="M11 11h10M11 15h10M11 19h6" stroke="#DB0011" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                ),
+              },
+              {
+                label: 'App-Lock\nsecurity',
+                path: '/security',
+                icon: (
+                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
+                    <rect x="8" y="13" width="16" height="13" rx="2.5" fill="#DB0011" stroke="#252525" strokeWidth="1.2" />
+                    <path d="M11 13V9a5 5 0 0 1 10 0v4" stroke="#252525" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+                    <circle cx="16" cy="19.5" r="1.5" fill="white" />
+                    <path d="M16 21v2.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+                  </svg>
+                ),
+              },
+              {
+                label: 'Premier\nconcierge',
+                path: '/support',
+                icon: (
+                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
+                    <rect x="5" y="7" width="18" height="14" rx="2.5" fill="white" stroke="#252525" strokeWidth="1.5" />
+                    <path d="M9 19l-3 4V19" fill="white" stroke="#252525" strokeWidth="1.5" />
+                    <circle cx="10" cy="13.5" r="1.2" fill="#DB0011" />
+                    <circle cx="14" cy="13.5" r="1.2" fill="#DB0011" />
+                    <circle cx="18" cy="13.5" r="1.2" fill="#DB0011" />
+                  </svg>
+                ),
+              },
+            ].map((btn, i) => (
               <button
-                key={cmd.path}
+                key={i}
                 type="button"
-                onClick={() => navigate(cmd.path)}
-                className="p-3 bg-white border border-gray-200 hover:border-[#DB0011] rounded-[2px] text-left transition-colors group cursor-pointer flex items-start gap-2.5"
+                onClick={() => navigate(btn.path)}
+                className="flex flex-col items-center group cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-[2px] bg-[#F2F4F7] group-hover:bg-[#DB0011] text-[#1f1f1f] group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
-                  <cmd.icon className="w-4 h-4" aria-hidden="true" />
+                <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
+                  {btn.icon}
                 </div>
-                <div className="min-w-0">
-                  <div className="text-xs font-bold text-[#1f1f1f] truncate">{cmd.label}</div>
-                  <div className="text-[10px] text-[#777777] truncate">{cmd.sub}</div>
-                </div>
+                <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center whitespace-pre-line">
+                  {btn.label}
+                </span>
               </button>
             ))}
           </div>
@@ -277,38 +342,43 @@ export const DashboardPage: React.FC = () => {
                 </button>
               </div>
 
-              <div className="border border-gray-200 rounded-[2px] divide-y divide-gray-100">
+              <div className="border border-gray-200/80 rounded-2xl overflow-hidden divide-y divide-gray-100 bg-white">
                 {accounts.map(account => (
                   <button
                     key={account.accountId}
                     type="button"
                     onClick={() => navigate('/accounts')}
-                    className="w-full p-4 flex items-center justify-between gap-3 hover:bg-[#F8F9FA] transition-colors text-left group cursor-pointer"
+                    className="w-full min-h-[58px] p-4 flex items-center justify-between gap-3 hover:bg-[#F9FAFB] transition-colors text-left group cursor-pointer"
                   >
                     <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="w-10 h-10 rounded-[2px] bg-[#F2F4F7] border border-gray-200 text-[#1f1f1f] flex items-center justify-center shrink-0">
-                        <span className="text-[10px] font-bold tracking-wider">INR</span>
+                      <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
+                        <svg viewBox="0 0 28 28" className="w-6 h-6" fill="none" aria-hidden="true">
+                          <rect x="5" y="7" width="18" height="14" rx="2.5" fill="#DB0011" />
+                          <rect x="8" y="9.5" width="12" height="2" rx="1" fill="white" />
+                          <circle cx="14" cy="15.5" r="1.6" fill="white" />
+                          <line x1="14" y1="16.5" x2="14" y2="18.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
+                        </svg>
                       </div>
                       <div className="min-w-0">
-                        <div className="text-[14px] font-bold text-[#1f1f1f] truncate">
-                          HSBC Premier Savings Account
+                        <div className="text-[15px] font-semibold text-[#1f1f1f] truncate">
+                          Manage account
                         </div>
-                        <div className="text-[11px] text-[#666666] font-mono mt-0.5 truncate">
-                          {account.maskedAccountNumber} · IFSC {account.ifscCode} · {account.branchName}
+                        <div className="text-[12px] text-[#777777] font-mono mt-0.5 truncate">
+                          A/C {account.maskedAccountNumber} · {account.branchName}
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2.5 shrink-0">
+                    <div className="flex items-center gap-3 shrink-0">
                       <div className="text-right">
                         <div className="text-[15px] font-bold text-[#1f1f1f] tabular-nums">
                           {formatCurrency(account.managedBalance, account.currency)}
                         </div>
-                        <div className="text-[10px] font-bold text-[#166534] uppercase tracking-wider">
+                        <div className="text-[10px] font-bold text-[#16864A] uppercase tracking-wider">
                           {account.accountStatus}
                         </div>
                       </div>
-                      <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#DB0011] transition-colors" aria-hidden="true" />
+                      <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
                     </div>
                   </button>
                 ))}

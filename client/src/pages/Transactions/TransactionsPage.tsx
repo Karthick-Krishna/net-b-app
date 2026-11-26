@@ -72,14 +72,14 @@ export const TransactionsPage: React.FC = () => {
           {/* Search & Date Filter Row */}
           <div className="mt-4 flex flex-col md:flex-row gap-3 md:items-center justify-between">
             <div className="relative w-full md:w-80">
-              <Search className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" aria-hidden="true" />
+              <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-gray-400" aria-hidden="true" />
               <input
                 type="text"
                 placeholder="Search payee, description, reference..."
                 aria-label="Search transactions"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                className="w-full h-11 pl-9 pr-3 text-xs bg-white border border-[#333333] rounded-[2px] focus:outline-none focus:border-[#DB0011] transition-colors"
+                className="w-full h-11 pl-10 pr-3.5 text-xs bg-white border border-gray-300 rounded-full focus:outline-none focus:border-[#DB0011] transition-all shadow-xs"
               />
             </div>
 
@@ -94,10 +94,10 @@ export const TransactionsPage: React.FC = () => {
                   key={tab.id}
                   type="button"
                   onClick={() => setDateRangeFilter(tab.id)}
-                  className={`min-h-[36px] px-3 rounded-[2px] text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors ${
+                  className={`min-h-[36px] px-4 rounded-full text-xs font-semibold whitespace-nowrap cursor-pointer transition-all active:scale-[0.98] ${
                     dateRangeFilter === tab.id
-                      ? 'bg-[#DB0011] text-white'
-                      : 'bg-[#F2F4F7] text-[#1f1f1f] hover:bg-gray-200'
+                      ? 'bg-[#DB0011] text-white shadow-xs'
+                      : 'bg-[#F5F6F8] text-[#1f1f1f] hover:bg-[#EBECEF]'
                   }`}
                 >
                   {tab.label}
@@ -151,19 +151,15 @@ export const TransactionsPage: React.FC = () => {
                   className="w-full py-4 hover:bg-gray-50/70 cursor-pointer transition-colors flex items-center justify-between gap-3 text-left group"
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                        isCredit ? 'bg-emerald-50 text-[#16864A]' : 'bg-[#F2F4F7] text-[#DB0011]'
-                      }`}
-                    >
+                    <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
                       {isCredit ? (
-                        <ArrowDownLeft className="w-4 h-4" aria-hidden="true" />
+                        <ArrowDownLeft className="w-5 h-5 text-[#16864A] stroke-[2]" aria-hidden="true" />
                       ) : (
-                        <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+                        <ArrowUpRight className="w-5 h-5 text-[#DB0011] stroke-[2]" aria-hidden="true" />
                       )}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[13px] sm:text-[14px] font-semibold text-[#1f1f1f] truncate">
+                      <div className="text-[14px] font-semibold text-[#1f1f1f] truncate">
                         {tx.description}
                       </div>
                       <div className="text-[11px] text-[#777777] mt-0.5 truncate">
@@ -174,14 +170,14 @@ export const TransactionsPage: React.FC = () => {
 
                   <div className="flex items-center gap-2.5 shrink-0">
                     <div className="text-right">
-                      <div className={`text-[13px] sm:text-sm font-bold ${isCredit ? 'text-[#16864A]' : 'text-[#1f1f1f]'}`}>
+                      <div className={`text-[14px] font-bold font-mono ${isCredit ? 'text-[#16864A]' : 'text-[#1f1f1f]'}`}>
                         {isCredit ? '+' : '-'} {formatCurrency(tx.amount, tx.currency)}
                       </div>
                       <span className="text-[10px] font-semibold text-gray-400 uppercase">
                         {tx.category}
                       </span>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#DB0011] transition-colors" aria-hidden="true" />
+                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors" aria-hidden="true" />
                   </div>
                 </button>
               );
@@ -202,7 +198,7 @@ export const TransactionsPage: React.FC = () => {
           <div className="space-y-4">
             <div className="text-center pb-4 border-b border-gray-100">
               <div
-                className={`w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-2 ${
+                className={`w-12 h-12 rounded-2xl mx-auto flex items-center justify-center mb-2 ${
                   selectedTx.transactionType === 'CREDIT'
                     ? 'bg-emerald-50 text-[#16864A]'
                     : 'bg-red-50 text-[#DB0011]'
@@ -243,7 +239,7 @@ export const TransactionsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => window.print()}
-              className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
             >
               <Download className="w-4 h-4" aria-hidden="true" />
               <span>Print Official Receipt</span>

@@ -110,14 +110,14 @@ export const HsbcChatBar: React.FC = () => {
               }}
               placeholder="Start chat"
               aria-label="Start chat with HSBC Virtual Assistant"
-              className="w-full h-11 pl-3.5 pr-11 bg-white border border-[#333333] rounded-[2px] text-[14px] text-[#222222] placeholder:text-gray-400 focus:outline-none focus:border-[#DB0011] transition-colors"
+              className="w-full h-11 pl-4 pr-11 bg-white border border-gray-300 rounded-lg text-[14px] text-[#1f1f1f] placeholder:text-gray-400 focus:outline-none focus:border-[#DB0011] transition-all shadow-xs"
             />
             <button
               type="button"
               onClick={handleMicClick}
               aria-label="Voice Input"
-              className={`absolute right-0.5 min-w-[40px] min-h-[40px] flex items-center justify-center transition-colors cursor-pointer ${
-                isListening ? 'text-[#DB0011] animate-pulse' : 'text-gray-500 hover:text-[#DB0011]'
+              className={`absolute right-1 min-w-[38px] min-h-[38px] flex items-center justify-center transition-colors cursor-pointer ${
+                isListening ? 'text-[#DB0011] animate-pulse' : 'text-gray-400 hover:text-[#DB0011]'
               }`}
               title="Voice Input"
             >
@@ -132,7 +132,7 @@ export const HsbcChatBar: React.FC = () => {
             className="min-w-[44px] min-h-[44px] -mr-1 flex items-center justify-center text-[#1f1f1f] hover:text-[#DB0011] transition-colors cursor-pointer shrink-0"
             aria-label="Send Message"
           >
-            <ArrowRight className="w-6 h-6 stroke-[2]" aria-hidden="true" />
+            <ArrowRight className="w-6 h-6 stroke-[1.8]" aria-hidden="true" />
           </button>
         </div>
       </footer>
@@ -205,13 +205,13 @@ export const HsbcChatBar: React.FC = () => {
               }}
               placeholder="Ask HSBC assistant..."
               aria-label="Message HSBC assistant"
-              className="flex-1 h-11 px-3.5 bg-[#F2F4F7] border border-transparent rounded-[2px] text-xs text-[#1f1f1f] focus:bg-white focus:border-[#DB0011] focus:outline-none transition-colors"
+              className="flex-1 h-11 px-4 bg-[#F5F6F8] border border-transparent rounded-full text-xs text-[#1f1f1f] focus:bg-white focus:border-[#DB0011] focus:outline-none transition-all"
             />
             <button
               type="button"
               onClick={() => handleSend()}
               aria-label="Send message"
-              className="min-w-[44px] h-11 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] flex items-center justify-center transition-colors cursor-pointer"
+              className="min-w-[44px] h-11 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full flex items-center justify-center transition-all cursor-pointer shadow-xs"
             >
               <Send className="w-4 h-4" aria-hidden="true" />
             </button>

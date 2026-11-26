@@ -291,7 +291,7 @@ export const WealthPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setInvestModalFund(fund)}
-                        className="min-h-[40px] px-4 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] text-xs font-semibold cursor-pointer"
+                        className="min-h-[40px] px-5 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs"
                       >
                         Invest
                       </button>
@@ -299,7 +299,7 @@ export const WealthPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setRedeemModalFund(fund)}
-                          className="min-h-[40px] px-4 bg-[#F2F4F7] hover:bg-gray-200 text-[#1f1f1f] rounded-[2px] text-xs font-semibold cursor-pointer"
+                          className="min-h-[40px] px-5 bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] text-[#1f1f1f] rounded-full text-xs font-semibold transition-all cursor-pointer"
                         >
                           Redeem
                         </button>
@@ -316,7 +316,7 @@ export const WealthPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowRiskModal(true)}
-              className="p-4 bg-[#F6F7F9] hover:bg-gray-100 rounded-xl border border-gray-200/70 flex items-center justify-between text-left transition-colors cursor-pointer group"
+              className="p-4 bg-[#F6F7F9] hover:bg-gray-100 rounded-2xl border border-gray-200/70 flex items-center justify-between text-left transition-colors cursor-pointer group"
             >
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#16864A]">
@@ -335,7 +335,7 @@ export const WealthPage: React.FC = () => {
             <button
               type="button"
               onClick={() => toast.success('HSBC Simply Invest brokerage linked and Relationship Manager consultation scheduled.')}
-              className="p-4 bg-[#F6F7F9] hover:bg-gray-100 rounded-xl border border-gray-200/70 flex items-center justify-between text-left transition-colors cursor-pointer group"
+              className="p-4 bg-[#F6F7F9] hover:bg-gray-100 rounded-2xl border border-gray-200/70 flex items-center justify-between text-left transition-colors cursor-pointer group"
             >
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#DB0011]">
@@ -384,7 +384,7 @@ export const WealthPage: React.FC = () => {
               toast.success(`Investor risk profile updated to ${label}`);
               setShowRiskModal(false);
             }}
-            className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white font-semibold rounded-[2px] cursor-pointer"
+            className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white font-semibold rounded-full transition-all cursor-pointer shadow-xs"
           >
             Save Risk Profile
           </button>
@@ -411,7 +411,7 @@ export const WealthPage: React.FC = () => {
               min="500"
               value={investAmount}
               onChange={e => setInvestAmount(e.target.value)}
-              className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-bold text-sm"
+              className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-bold text-sm"
             />
           </div>
           <div className="grid grid-cols-3 gap-2">
@@ -420,7 +420,7 @@ export const WealthPage: React.FC = () => {
                 key={amt}
                 type="button"
                 onClick={() => setInvestAmount(amt.toString())}
-                className="min-h-[38px] rounded-[2px] bg-[#F2F4F7] hover:bg-gray-200 font-bold text-[#1f1f1f] cursor-pointer"
+                className="min-h-[38px] rounded-full bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] font-bold text-[#1f1f1f] transition-all cursor-pointer"
               >
                 +₹{amt / 1000}k
               </button>
@@ -428,7 +428,7 @@ export const WealthPage: React.FC = () => {
           </div>
           <button
             type="submit"
-            className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer"
+            className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs"
           >
             Confirm Purchase ({formatINR(parseFloat(investAmount || '0'))})
           </button>
@@ -445,13 +445,13 @@ export const WealthPage: React.FC = () => {
       >
         {redeemModalFund && (
           <form onSubmit={handleRedeem} className="space-y-4 text-xs">
-            <div className="p-4 bg-[#F6F7F9] rounded-xl space-y-1.5 border border-gray-200/70">
+            <div className="p-4 bg-[#F6F7F9] rounded-2xl space-y-1.5 border border-gray-200/70">
               <div className="flex justify-between"><span>Available Units:</span><strong>{redeemModalFund.heldUnits}</strong></div>
               <div className="flex justify-between"><span>Estimated Valuation:</span><strong className="text-[#16864A]">{formatINR(redeemModalFund.heldAmount)}</strong></div>
             </div>
             <button
               type="submit"
-              className="w-full min-h-[44px] bg-[#1f1f1f] hover:bg-black text-white rounded-[2px] font-semibold cursor-pointer"
+              className="w-full min-h-[44px] bg-[#1f1f1f] hover:bg-black active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs"
             >
               Confirm Full Redemption to Savings
             </button>

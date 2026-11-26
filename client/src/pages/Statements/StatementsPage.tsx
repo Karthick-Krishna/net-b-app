@@ -96,7 +96,7 @@ export const StatementsPage: React.FC = () => {
                     id="stmt-acc"
                     value={account?.accountId || ''}
                     onChange={e => setSelectedAccount(e.target.value)}
-                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] text-xs font-semibold"
+                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl text-xs font-semibold"
                   >
                     {accounts.map(acc => (
                       <option key={acc.accountId} value={acc.accountId}>
@@ -114,7 +114,7 @@ export const StatementsPage: React.FC = () => {
                     id="stmt-period"
                     value={dateRange}
                     onChange={e => setDateRange(e.target.value)}
-                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] text-xs font-semibold"
+                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl text-xs font-semibold"
                   >
                     <option value="LAST_30_DAYS">Last 30 Days</option>
                     <option value="LAST_90_DAYS">Last Quarter (90 Days)</option>
@@ -127,7 +127,7 @@ export const StatementsPage: React.FC = () => {
                     type="button"
                     onClick={handleDownloadPDF}
                     disabled={isDownloading}
-                    className="flex-1 min-h-[44px] px-3 bg-white border border-[#333333] text-[#1f1f1f] rounded-[2px] text-xs font-semibold hover:bg-gray-50 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="flex-1 min-h-[44px] px-3 bg-white border border-gray-300 text-[#1f1f1f] rounded-full text-xs font-semibold hover:bg-gray-50 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                   >
                     <Download className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
                     <span>PDF</span>
@@ -135,7 +135,7 @@ export const StatementsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={handlePrint}
-                    className="flex-1 min-h-[44px] px-3 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="flex-1 min-h-[44px] px-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                   >
                     <Printer className="w-3.5 h-3.5" aria-hidden="true" />
                     <span>Print</span>
@@ -225,7 +225,7 @@ export const StatementsPage: React.FC = () => {
                     id="cert-type"
                     value={certType}
                     onChange={e => setCertType(e.target.value as any)}
-                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold"
                   >
                     <option value="SAVINGS_INTEREST">Savings Interest (Sec 80TTA)</option>
                     <option value="FD_TDS">FD Interest &amp; TDS (Form 16A)</option>
@@ -237,7 +237,7 @@ export const StatementsPage: React.FC = () => {
                     id="cert-fy"
                     value={finYear}
                     onChange={e => setFinYear(e.target.value)}
-                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold"
                   >
                     <option value="2026-27">FY 2026-27</option>
                     <option value="2025-26">FY 2025-26</option>
@@ -250,7 +250,7 @@ export const StatementsPage: React.FC = () => {
                     id="cert-acc"
                     value={account?.accountId || ''}
                     onChange={e => setSelectedAccount(e.target.value)}
-                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                    className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold"
                   >
                     {accounts.map(acc => (
                       <option key={acc.accountId} value={acc.accountId}>
@@ -261,7 +261,7 @@ export const StatementsPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200 space-y-4">
+              <div className="p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200 space-y-4">
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-3 pb-4 border-b border-gray-200">
                   <div>
                     <div className="font-bold text-sm text-[#1f1f1f]">
@@ -277,7 +277,7 @@ export const StatementsPage: React.FC = () => {
                     type="button"
                     onClick={handleDownloadPDF}
                     disabled={isDownloading}
-                    className="min-h-[40px] px-4 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                    className="min-h-[40px] px-5 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
                   >
                     <Download className="w-3.5 h-3.5" aria-hidden="true" />
                     <span>Download PDF</span>

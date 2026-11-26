@@ -94,13 +94,79 @@ export const SecurityPage: React.FC = () => {
           </p>
         </div>
 
+        {/* 4 CIRCULAR ACTION BUTTONS (MATCHES REFERENCE DESIGN) */}
+        <div className="px-4 sm:px-6 md:px-8 py-4 bg-white border-b border-gray-100">
+          <div className="grid grid-cols-4 gap-2 max-w-md mx-auto sm:max-w-xl">
+            <button
+              type="button"
+              onClick={lockApp}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
+                <Lock className="w-6 h-6 text-[#DB0011] stroke-[1.8]" aria-hidden="true" />
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                Lock app<br />now
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById('sec-new-pin');
+                el?.focus();
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
+                <KeyRound className="w-6 h-6 text-[#1f1f1f] stroke-[1.8]" aria-hidden="true" />
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                Change<br />MPIN
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setBiometricsEnabled(!biometricsEnabled);
+                toast.success(!biometricsEnabled ? 'Biometrics enabled' : 'Biometrics disabled');
+              }}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className={`w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full transition-all flex items-center justify-center shadow-xs active:scale-[0.96] ${
+                biometricsEnabled ? 'bg-red-50 ring-2 ring-[#DB0011]' : 'bg-[#F5F6F8] group-hover:bg-[#EBECEF]'
+              }`}>
+                <Fingerprint className={`w-6 h-6 stroke-[1.8] ${biometricsEnabled ? 'text-[#DB0011]' : 'text-[#1f1f1f]'}`} aria-hidden="true" />
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                Biometric<br />unlock
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleResetAppLock}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
+                <ShieldCheck className="w-6 h-6 text-[#DB0011] stroke-[1.8]" aria-hidden="true" />
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                Reset app<br />lock
+              </span>
+            </button>
+          </div>
+        </div>
+
         <div className="px-4 sm:px-6 md:px-8 py-6 space-y-6">
           {/* App Lock Status Banner */}
-          <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-4">
+          <div className="p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-white text-[#DB0011] border border-gray-200/70 flex items-center justify-center shrink-0">
-                  <Lock className="w-5 h-5" aria-hidden="true" />
+                <div className="w-12 h-12 rounded-2xl bg-white text-[#DB0011] border border-gray-200/70 flex items-center justify-center shrink-0 shadow-xs">
+                  <Lock className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <div>
                   <h2 className="text-sm font-bold text-[#1f1f1f]">App-Lock Keypad Shield</h2>
@@ -108,7 +174,7 @@ export const SecurityPage: React.FC = () => {
                 </div>
               </div>
               <span
-                className={`px-2.5 py-1 self-start sm:self-auto rounded text-[11px] font-bold ${
+                className={`px-3 py-1 self-start sm:self-auto rounded-full text-[11px] font-bold ${
                   appLockEnabled ? 'bg-emerald-50 text-[#16864A] border border-emerald-200' : 'bg-gray-200 text-gray-600'
                 }`}
               >
@@ -122,7 +188,7 @@ export const SecurityPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={lockApp}
-                    className="min-h-[42px] px-5 bg-[#1f1f1f] hover:bg-black text-white rounded-[2px] text-xs font-semibold cursor-pointer"
+                    className="min-h-[42px] px-6 bg-[#1f1f1f] hover:bg-black active:scale-[0.98] text-white rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs"
                   >
                     Lock App Now
                   </button>
@@ -144,7 +210,7 @@ export const SecurityPage: React.FC = () => {
                         },
                       })
                     }
-                    className="min-h-[42px] px-4 bg-white border border-[#333333] text-[#1f1f1f] hover:bg-gray-50 rounded-[2px] text-xs font-semibold cursor-pointer"
+                    className="min-h-[42px] px-5 bg-white border border-gray-300 text-[#1f1f1f] hover:bg-gray-50 active:scale-[0.98] rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs"
                   >
                     Disable App-Lock
                   </button>
@@ -153,7 +219,7 @@ export const SecurityPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleResetAppLock}
-                className="min-h-[42px] px-4 bg-white border border-[#DB0011] text-[#DB0011] hover:bg-red-50 rounded-[2px] text-xs font-semibold cursor-pointer"
+                className="min-h-[42px] px-5 bg-white border border-[#DB0011] text-[#DB0011] hover:bg-red-50 active:scale-[0.98] rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs"
               >
                 Reset App Lock
               </button>
@@ -162,7 +228,7 @@ export const SecurityPage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Update PIN */}
-            <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-4">
+            <div className="p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b border-gray-200/70">
                 <KeyRound className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
                 <h2 className="text-sm font-bold text-[#1f1f1f]">
@@ -182,7 +248,7 @@ export const SecurityPage: React.FC = () => {
                     maxLength={6}
                     value={newPin}
                     onChange={e => setNewPin(e.target.value.replace(/\D/g, ''))}
-                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-[2px] font-mono tracking-widest"
+                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl font-mono tracking-widest"
                     placeholder="••••••"
                   />
                 </div>
@@ -197,13 +263,13 @@ export const SecurityPage: React.FC = () => {
                     maxLength={6}
                     value={confirmPin}
                     onChange={e => setConfirmPin(e.target.value.replace(/\D/g, ''))}
-                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-[2px] font-mono tracking-widest"
+                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl font-mono tracking-widest"
                     placeholder="••••••"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer"
+                  className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs"
                 >
                   Save Security PIN
                 </button>
@@ -211,13 +277,13 @@ export const SecurityPage: React.FC = () => {
             </div>
 
             {/* Biometrics & Emergency Lockdown */}
-            <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-4">
+            <div className="p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b border-gray-200/70">
                 <Fingerprint className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
                 <h2 className="text-sm font-bold text-[#1f1f1f]">Biometrics &amp; Protection</h2>
               </div>
 
-              <div className="p-3.5 bg-white rounded-xl border border-gray-200/70 flex items-center justify-between">
+              <div className="p-3.5 bg-white rounded-2xl border border-gray-200/70 flex items-center justify-between">
                 <div>
                   <div className="text-xs font-bold text-[#1f1f1f]">Face ID / Touch ID</div>
                   <div className="text-[11px] text-[#777777]">Fast biometric unlock</div>
@@ -232,7 +298,7 @@ export const SecurityPage: React.FC = () => {
                 />
               </div>
 
-              <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 flex items-start gap-2.5 text-xs text-[#16864A]">
+              <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200 flex items-start gap-2.5 text-xs text-[#16864A]">
                 <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
                 <span>Two-Factor Authentication (2FA) &amp; Digital Secure Key active.</span>
               </div>
@@ -255,7 +321,7 @@ export const SecurityPage: React.FC = () => {
                     },
                   })
                 }
-                className="w-full min-h-[44px] bg-white hover:bg-red-50 text-[#DB0011] border border-[#DB0011] rounded-[2px] text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full min-h-[44px] bg-white hover:bg-red-50 active:scale-[0.98] text-[#DB0011] border border-[#DB0011] rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
               >
                 <ShieldAlert className="w-4 h-4" aria-hidden="true" />
                 <span>Emergency Session Lockdown</span>
@@ -264,17 +330,17 @@ export const SecurityPage: React.FC = () => {
           </div>
 
           {/* Digital Secure Key (In-App OTC Token) */}
-          <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white text-[#DB0011] border border-gray-200/70 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-5 h-5" aria-hidden="true" />
+              <div className="w-12 h-12 rounded-2xl bg-white text-[#DB0011] border border-gray-200/70 flex items-center justify-center shrink-0 shadow-xs">
+                <ShieldCheck className="w-6 h-6" aria-hidden="true" />
               </div>
               <div>
                 <h2 className="text-sm font-bold text-[#1f1f1f]">Digital Secure Key (OTC)</h2>
                 <p className="text-xs text-[#777777]">Single-use security code for high-value authorization ({otcTimer}s)</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-gray-200">
+            <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-full border border-gray-200 shadow-xs">
               <span className="font-mono text-lg font-extrabold tracking-widest text-[#1f1f1f]">{otcCode}</span>
               <button
                 type="button"
@@ -291,31 +357,37 @@ export const SecurityPage: React.FC = () => {
           </div>
 
           {/* Active Sessions */}
-          <div className="border-t border-gray-100 pt-5 space-y-2">
+          <div className="border-t border-gray-100 pt-5 space-y-3">
             <h2 className="text-sm font-bold text-[#1f1f1f]">Active Devices &amp; Login Activity</h2>
             <div className="divide-y divide-gray-100 text-xs">
               <div className="py-3.5 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <Laptop className="w-4 h-4 text-[#16864A]" aria-hidden="true" />
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
+                    <Laptop className="w-5 h-5 text-[#16864A] stroke-[2]" aria-hidden="true" />
+                  </div>
                   <div>
-                    <div className="font-bold text-[#1f1f1f]">MacBook Pro — HSBC NetBanking Web</div>
+                    <div className="text-[14px] font-semibold text-[#1f1f1f]">MacBook Pro — HSBC NetBanking Web</div>
                     <div className="text-[11px] text-[#777777]">Coimbatore, Tamil Nadu • Current Device (Active now)</div>
                   </div>
                 </div>
-                <span className="text-[#16864A] font-bold">Active</span>
+                <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-[#16864A] border border-emerald-200">
+                  Active
+                </span>
               </div>
               <div className="py-3.5 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <Smartphone className="w-4 h-4 text-[#777777]" aria-hidden="true" />
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
+                    <Smartphone className="w-5 h-5 text-[#DB0011] stroke-[2]" aria-hidden="true" />
+                  </div>
                   <div>
-                    <div className="font-bold text-[#1f1f1f]">Samsung Galaxy S24 Ultra — HSBC India Mobile App</div>
+                    <div className="text-[14px] font-semibold text-[#1f1f1f]">Samsung Galaxy S24 Ultra — HSBC India Mobile App</div>
                     <div className="text-[11px] text-[#777777]">Coimbatore, Tamil Nadu • Active 2h ago</div>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => toast.success('Revoked Samsung Galaxy S24 Ultra mobile session')}
-                  className="text-[#DB0011] hover:underline font-bold cursor-pointer min-h-[32px]"
+                  className="min-h-[32px] px-4 py-1.5 rounded-full bg-red-50 hover:bg-red-100 text-[#DB0011] font-semibold cursor-pointer active:scale-[0.98] transition-all"
                 >
                   Revoke
                 </button>

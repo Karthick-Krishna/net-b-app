@@ -277,14 +277,75 @@ export const PaymentsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowAddPayeeModal(true)}
-              className="self-start sm:self-auto min-h-[36px] px-3 bg-[#F2F4F7] hover:bg-gray-200 text-[#1f1f1f] rounded-[2px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+              className="self-start sm:self-auto min-h-[38px] px-4 bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] text-[#1f1f1f] rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
             >
               <UserPlus className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
               <span>Add Payee</span>
             </button>
           </div>
 
-          <div className="mt-4 flex items-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar">
+          {/* 4 CIRCULAR ACTION BUTTONS (MATCHES REFERENCE DESIGN) */}
+          <div className="pt-5 pb-3 grid grid-cols-4 gap-2 max-w-md mx-auto sm:max-w-xl">
+            <button
+              type="button"
+              onClick={() => { setActiveTab('TRANSFER'); setTransferStep(1); }}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className={`w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full transition-all flex items-center justify-center shadow-xs active:scale-[0.96] ${
+                activeTab === 'TRANSFER' ? 'bg-red-50 ring-2 ring-[#DB0011]' : 'bg-[#F5F6F8] group-hover:bg-[#EBECEF]'
+              }`}>
+                <ArrowLeftRight className={`w-6 h-6 stroke-[1.8] ${activeTab === 'TRANSFER' ? 'text-[#DB0011]' : 'text-[#1f1f1f]'}`} aria-hidden="true" />
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                Domestic<br />transfer
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('GLOBAL')}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className={`w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full transition-all flex items-center justify-center shadow-xs active:scale-[0.96] ${
+                activeTab === 'GLOBAL' ? 'bg-red-50 ring-2 ring-[#DB0011]' : 'bg-[#F5F6F8] group-hover:bg-[#EBECEF]'
+              }`}>
+                <Globe2 className={`w-6 h-6 stroke-[1.8] ${activeTab === 'GLOBAL' ? 'text-[#DB0011]' : 'text-[#1f1f1f]'}`} aria-hidden="true" />
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                Global<br />money
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('BILL_PAY')}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className={`w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full transition-all flex items-center justify-center shadow-xs active:scale-[0.96] ${
+                activeTab === 'BILL_PAY' ? 'bg-red-50 ring-2 ring-[#DB0011]' : 'bg-[#F5F6F8] group-hover:bg-[#EBECEF]'
+              }`}>
+                <Zap className={`w-6 h-6 stroke-[1.8] ${activeTab === 'BILL_PAY' ? 'text-[#DB0011]' : 'text-[#1f1f1f]'}`} aria-hidden="true" />
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                Pay<br />bills
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowAddPayeeModal(true)}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] transition-all flex items-center justify-center shadow-xs active:scale-[0.96]">
+                <UserPlus className="w-6 h-6 text-[#DB0011] stroke-[1.8]" aria-hidden="true" />
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                Add<br />payee
+              </span>
+            </button>
+          </div>
+
+          <div className="mt-2 flex items-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar">
             {[
               { id: 'TRANSFER' as const, label: 'Domestic Transfer' },
               { id: 'GLOBAL' as const, label: 'Global Money' },
@@ -301,7 +362,7 @@ export const PaymentsPage: React.FC = () => {
                   }`}
                 >
                   {tab.label}
-                  {active && <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#DB0011] rounded-t-full" />}
+                  {active && <span className="absolute bottom-0 left-0 right-0 h-[3.5px] bg-[#DB0011] rounded-full" />}
                 </button>
               );
             })}
@@ -332,7 +393,7 @@ export const PaymentsPage: React.FC = () => {
               {transferStep === 1 && (
                 <div className="space-y-4">
                   <h2 className="text-base font-bold text-[#1f1f1f]">Step 1: Select Transfer Type</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="divide-y divide-gray-100 border border-gray-200/80 rounded-2xl overflow-hidden bg-white">
                     {[
                       { id: 'SAVED' as const, title: 'Registered Beneficiary', desc: 'Send to saved payee accounts', icon: Users },
                       { id: 'OWN' as const, title: 'Between Own Accounts', desc: 'Instant transfer between your HSBC accounts', icon: ArrowLeftRight },
@@ -346,22 +407,32 @@ export const PaymentsPage: React.FC = () => {
                           key={item.id}
                           type="button"
                           onClick={() => handleSelectTransferType(item.id)}
-                          className={`p-4 rounded-xl border text-left cursor-pointer transition-all ${
-                            isSelected ? 'border-[#DB0011] bg-red-50/30 ring-1 ring-[#DB0011]' : 'border-gray-200 hover:border-gray-300 bg-white'
+                          className={`w-full min-h-[58px] p-4 flex items-center justify-between gap-3 text-left transition-colors cursor-pointer group ${
+                            isSelected ? 'bg-red-50/40' : 'hover:bg-gray-50/80'
                           }`}
                         >
-                          <div className="w-9 h-9 rounded-full bg-[#F2F4F7] flex items-center justify-center mb-2.5">
-                            <Icon className={`w-4 h-4 ${isSelected ? 'text-[#DB0011]' : 'text-[#1f1f1f]'}`} aria-hidden="true" />
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
+                              <Icon className={`w-5 h-5 stroke-[1.8] ${isSelected ? 'text-[#DB0011]' : 'text-[#1f1f1f]'}`} aria-hidden="true" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-[15px] font-semibold text-[#1f1f1f]">{item.title}</div>
+                              <div className="text-[12px] text-[#777777] mt-0.5">{item.desc}</div>
+                            </div>
                           </div>
-                          <div className="text-xs font-bold text-[#1f1f1f]">{item.title}</div>
-                          <div className="text-[11px] text-[#777777] mt-0.5">{item.desc}</div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {isSelected && (
+                              <span className="w-2.5 h-2.5 rounded-full bg-[#DB0011]" />
+                            )}
+                            <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors" aria-hidden="true" />
+                          </div>
                         </button>
                       );
                     })}
                   </div>
 
                   {/* Standing Instructions */}
-                  <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-2 text-xs">
+                  <div className="p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 space-y-2 text-xs">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-[#1f1f1f] flex items-center gap-1.5">
                         <CalendarClock className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
@@ -410,7 +481,7 @@ export const PaymentsPage: React.FC = () => {
                         if (transferType === 'INTERNATIONAL') setActiveTab('GLOBAL');
                         else setTransferStep(2);
                       }}
-                      className="min-h-[44px] px-6 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] text-xs font-semibold flex items-center gap-2 cursor-pointer"
+                      className="min-h-[44px] px-6 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-xs"
                     >
                       <span>Continue</span>
                       <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -422,7 +493,7 @@ export const PaymentsPage: React.FC = () => {
               {transferStep === 2 && (
                 <div className="space-y-4">
                   <h2 className="text-base font-bold text-[#1f1f1f]">Step 2: Select Source Account</h2>
-                  <div className="divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden">
+                  <div className="divide-y divide-gray-100 border border-gray-200 rounded-2xl overflow-hidden">
                     {accounts.map(acc => {
                       const isSelected = acc.accountId === effectiveSourceAccountId;
                       return (
@@ -450,8 +521,8 @@ export const PaymentsPage: React.FC = () => {
                     })}
                   </div>
                   <div className="flex justify-between pt-2">
-                    <button type="button" onClick={() => setTransferStep(1)} className="min-h-[44px] px-5 bg-[#F2F4F7] text-[#1f1f1f] rounded-[2px] text-xs font-semibold hover:bg-gray-200 cursor-pointer">Back</button>
-                    <button type="button" onClick={() => setTransferStep(3)} className="min-h-[44px] px-6 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] text-xs font-semibold flex items-center gap-2 cursor-pointer"><span>Continue</span><ArrowRight className="w-4 h-4" aria-hidden="true" /></button>
+                    <button type="button" onClick={() => setTransferStep(1)} className="min-h-[44px] px-5 bg-[#F5F6F8] hover:bg-[#EBECEF] text-[#1f1f1f] rounded-full text-xs font-semibold active:scale-[0.98] transition-all cursor-pointer">Back</button>
+                    <button type="button" onClick={() => setTransferStep(3)} className="min-h-[44px] px-6 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-xs"><span>Continue</span><ArrowRight className="w-4 h-4" aria-hidden="true" /></button>
                   </div>
                 </div>
               )}
@@ -466,8 +537,8 @@ export const PaymentsPage: React.FC = () => {
                           key={b.account}
                           type="button"
                           onClick={() => { setRecipientName(b.name); setRecipientAccount(b.account); setRecipientBank(b.bank); setIfscCode(b.ifsc); }}
-                          className={`px-3 py-1.5 rounded-full text-xs font-semibold border cursor-pointer ${
-                            recipientAccount === b.account ? 'bg-[#1f1f1f] text-white border-[#1f1f1f]' : 'bg-[#F2F4F7] text-[#1f1f1f] border-transparent hover:bg-gray-200'
+                          className={`px-4 py-2 rounded-full text-xs font-semibold border cursor-pointer transition-all ${
+                            recipientAccount === b.account ? 'bg-[#1f1f1f] text-white border-[#1f1f1f]' : 'bg-[#F5F6F8] text-[#1f1f1f] border-transparent hover:bg-gray-200'
                           }`}
                         >
                           {b.name} ({b.bank.split(' ')[0]})
@@ -482,8 +553,8 @@ export const PaymentsPage: React.FC = () => {
                           key={acc.accountId}
                           type="button"
                           onClick={() => { setRecipientName(acc.customerName || 'Karthick Krishna'); setRecipientAccount(acc.accountNumber); setRecipientBank(`HSBC India (${acc.accountType})`); setIfscCode(acc.ifscCode); }}
-                          className={`px-3 py-1.5 rounded-full text-xs font-semibold border cursor-pointer ${
-                            recipientAccount === acc.accountNumber ? 'bg-[#1f1f1f] text-white border-[#1f1f1f]' : 'bg-[#F2F4F7] text-[#1f1f1f] border-transparent hover:bg-gray-200'
+                          className={`px-4 py-2 rounded-full text-xs font-semibold border cursor-pointer transition-all ${
+                            recipientAccount === acc.accountNumber ? 'bg-[#1f1f1f] text-white border-[#1f1f1f]' : 'bg-[#F5F6F8] text-[#1f1f1f] border-transparent hover:bg-gray-200'
                           }`}
                         >
                           {acc.accountType} ({acc.maskedAccountNumber.slice(-4)})
@@ -494,24 +565,24 @@ export const PaymentsPage: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                     <div>
                       <label htmlFor="pay-rec-name" className="font-bold text-[#555555] block mb-1.5">Beneficiary Name</label>
-                      <input id="pay-rec-name" type="text" required value={recipientName} onChange={e => setRecipientName(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
+                      <input id="pay-rec-name" type="text" required value={recipientName} onChange={e => setRecipientName(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
                     </div>
                     <div>
                       <label htmlFor="pay-rec-acc" className="font-bold text-[#555555] block mb-1.5">Account Number</label>
-                      <input id="pay-rec-acc" type="text" required value={recipientAccount} onChange={e => setRecipientAccount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono" />
+                      <input id="pay-rec-acc" type="text" required value={recipientAccount} onChange={e => setRecipientAccount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono" />
                     </div>
                     <div>
                       <label htmlFor="pay-rec-bank" className="font-bold text-[#555555] block mb-1.5">Bank Name</label>
-                      <input id="pay-rec-bank" type="text" required value={recipientBank} onChange={e => setRecipientBank(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
+                      <input id="pay-rec-bank" type="text" required value={recipientBank} onChange={e => setRecipientBank(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
                     </div>
                     <div>
                       <label htmlFor="pay-rec-ifsc" className="font-bold text-[#555555] block mb-1.5">IFSC Code</label>
-                      <input id="pay-rec-ifsc" type="text" required value={ifscCode} onChange={e => setIfscCode(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono uppercase" />
+                      <input id="pay-rec-ifsc" type="text" required value={ifscCode} onChange={e => setIfscCode(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono uppercase" />
                     </div>
                   </div>
                   <div className="flex justify-between pt-2">
-                    <button type="button" onClick={() => setTransferStep(2)} className="min-h-[44px] px-5 bg-[#F2F4F7] text-[#1f1f1f] rounded-[2px] text-xs font-semibold cursor-pointer">Back</button>
-                    <button type="button" onClick={() => { if (!recipientName.trim() || !recipientAccount.trim()) { toast.error('Enter beneficiary details'); return; } setTransferStep(4); }} className="min-h-[44px] px-6 bg-[#DB0011] text-white rounded-[2px] text-xs font-semibold flex items-center gap-2 cursor-pointer"><span>Continue</span><ArrowRight className="w-4 h-4" aria-hidden="true" /></button>
+                    <button type="button" onClick={() => setTransferStep(2)} className="min-h-[44px] px-5 bg-[#F5F6F8] hover:bg-[#EBECEF] text-[#1f1f1f] rounded-full text-xs font-semibold active:scale-[0.98] transition-all cursor-pointer">Back</button>
+                    <button type="button" onClick={() => { if (!recipientName.trim() || !recipientAccount.trim()) { toast.error('Enter beneficiary details'); return; } setTransferStep(4); }} className="min-h-[44px] px-6 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-xs"><span>Continue</span><ArrowRight className="w-4 h-4" aria-hidden="true" /></button>
                   </div>
                 </div>
               )}
@@ -521,22 +592,22 @@ export const PaymentsPage: React.FC = () => {
                   <h2 className="text-base font-bold text-[#1f1f1f]">Step 4: Amount &amp; Reference</h2>
                   <div>
                     <label htmlFor="pay-amount" className="font-bold text-[#555555] block mb-1.5 text-xs">Amount (INR ₹)</label>
-                    <input id="pay-amount" type="number" required min="1" value={amount} onChange={e => setAmount(e.target.value)} className="w-full p-3.5 bg-[#F6F7F9] border border-gray-200 rounded-[2px] text-2xl font-bold text-[#1f1f1f]" placeholder="0.00" />
+                    <input id="pay-amount" type="number" required min="1" value={amount} onChange={e => setAmount(e.target.value)} className="w-full p-3.5 bg-[#F6F7F9] border border-gray-200 rounded-xl text-2xl font-bold text-[#1f1f1f]" placeholder="0.00" />
                     <span className="text-[11px] text-[#777777] mt-1 block">Available: {formatCurrency(selectedAccount?.managedBalance || 0, 'INR')}</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                     <div>
                       <label htmlFor="pay-ref" className="font-bold text-[#555555] block mb-1.5">Reference</label>
-                      <input id="pay-ref" type="text" value={reference} onChange={e => setReference(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono" />
+                      <input id="pay-ref" type="text" value={reference} onChange={e => setReference(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono" />
                     </div>
                     <div>
                       <label htmlFor="pay-desc" className="font-bold text-[#555555] block mb-1.5">Remarks</label>
-                      <input id="pay-desc" type="text" value={description} onChange={e => setDescription(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
+                      <input id="pay-desc" type="text" value={description} onChange={e => setDescription(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
                     </div>
                   </div>
                   <div className="flex justify-between pt-2">
-                    <button type="button" onClick={() => setTransferStep(3)} className="min-h-[44px] px-5 bg-[#F2F4F7] text-[#1f1f1f] rounded-[2px] text-xs font-semibold cursor-pointer">Back</button>
-                    <button type="button" onClick={() => setTransferStep(5)} className="min-h-[44px] px-6 bg-[#DB0011] text-white rounded-[2px] text-xs font-semibold flex items-center gap-2 cursor-pointer"><span>Review</span><ArrowRight className="w-4 h-4" aria-hidden="true" /></button>
+                    <button type="button" onClick={() => setTransferStep(3)} className="min-h-[44px] px-5 bg-[#F5F6F8] hover:bg-[#EBECEF] text-[#1f1f1f] rounded-full text-xs font-semibold active:scale-[0.98] transition-all cursor-pointer">Back</button>
+                    <button type="button" onClick={() => setTransferStep(5)} className="min-h-[44px] px-6 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-xs"><span>Review</span><ArrowRight className="w-4 h-4" aria-hidden="true" /></button>
                   </div>
                 </div>
               )}
@@ -544,15 +615,15 @@ export const PaymentsPage: React.FC = () => {
               {transferStep === 5 && (
                 <div className="space-y-4">
                   <h2 className="text-base font-bold text-[#1f1f1f]">Step 5: Review Authorization</h2>
-                  <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200 space-y-3 text-xs">
+                  <div className="p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200 space-y-3 text-xs">
                     <div className="flex justify-between gap-2"><span className="text-[#777777]">From</span><span className="font-bold">{selectedAccount?.accountType} ({selectedAccount?.maskedAccountNumber})</span></div>
                     <div className="flex justify-between gap-2"><span className="text-[#777777]">To</span><span className="font-bold">{recipientName}</span></div>
                     <div className="flex justify-between gap-2"><span className="text-[#777777]">Bank</span><span className="font-mono">{recipientBank} ({ifscCode})</span></div>
                     <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-200"><span>Total Amount</span><span className="text-[#DB0011]">{formatCurrency(parseFloat(amount) || 0, 'INR')}</span></div>
                   </div>
                   <div className="flex justify-between pt-2">
-                    <button type="button" onClick={() => setTransferStep(4)} className="min-h-[44px] px-5 bg-[#F2F4F7] text-[#1f1f1f] rounded-[2px] text-xs font-semibold cursor-pointer">Back</button>
-                    <button type="button" onClick={handleExecuteTransfer} className="min-h-[44px] px-7 bg-[#DB0011] text-white rounded-[2px] text-xs font-semibold cursor-pointer">Confirm &amp; Pay</button>
+                    <button type="button" onClick={() => setTransferStep(4)} className="min-h-[44px] px-5 bg-[#F5F6F8] hover:bg-[#EBECEF] text-[#1f1f1f] rounded-full text-xs font-semibold active:scale-[0.98] transition-all cursor-pointer">Back</button>
+                    <button type="button" onClick={handleExecuteTransfer} className="min-h-[44px] px-7 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs">Confirm &amp; Pay</button>
                   </div>
                 </div>
               )}
@@ -564,8 +635,8 @@ export const PaymentsPage: React.FC = () => {
             <div className="max-w-2xl mx-auto space-y-5">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#DB0011] text-white uppercase">HSBC Global Money</span>
-                  <span className="text-[10px] font-bold text-[#16864A] bg-emerald-50 px-2 py-0.5 rounded">Zero FX Fee for Premier</span>
+                  <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#DB0011] text-white uppercase">HSBC Global Money</span>
+                  <span className="text-[10px] font-bold text-[#16864A] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Zero FX Fee for Premier</span>
                 </div>
                 <h2 className="text-base sm:text-lg font-bold text-[#1f1f1f] mt-2">International Remittance</h2>
               </div>
@@ -579,35 +650,35 @@ export const PaymentsPage: React.FC = () => {
                     { code: 'EU', name: 'Eurozone', currency: 'EUR', rate: 91.20, flag: '🇪🇺' },
                     { code: 'CA', name: 'Canada', currency: 'CAD', rate: 61.80, flag: '🇨🇦' },
                   ].map(c => (
-                    <button key={c.code} type="button" onClick={() => setGlobalCountry(c)} className={`p-3 rounded-xl text-left cursor-pointer border ${globalCountry.code === c.code ? 'border-[#DB0011] bg-red-50/40 ring-1 ring-[#DB0011]' : 'border-gray-200 bg-white'}`}>
+                    <button key={c.code} type="button" onClick={() => setGlobalCountry(c)} className={`p-3 rounded-2xl text-left cursor-pointer border transition-all ${globalCountry.code === c.code ? 'border-[#DB0011] bg-red-50/40 ring-1 ring-[#DB0011]' : 'border-gray-200 bg-white hover:bg-gray-50'}`}>
                       <div className="text-base">{c.flag}</div>
                       <div className="font-bold text-[#1f1f1f] mt-1">{c.name}</div>
                       <div className="text-[10px] text-gray-500 font-mono">1 {c.currency} = ₹{c.rate.toFixed(2)}</div>
                     </button>
                   ))}
                 </div>
-                <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="global-inr" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">You Send (INR ₹)</label>
-                    <input id="global-inr" type="number" required min="1000" value={globalInrAmount} onChange={e => setGlobalInrAmount(e.target.value)} className="w-full h-11 px-3 bg-white border border-gray-200 rounded-[2px] font-bold text-sm" />
+                    <input id="global-inr" type="number" required min="1000" value={globalInrAmount} onChange={e => setGlobalInrAmount(e.target.value)} className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl font-bold text-sm" />
                   </div>
                   <div>
                     <div className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Recipient Gets ({globalCountry.currency})</div>
-                    <div className="h-11 px-3 bg-white border border-gray-200 rounded-[2px] font-bold text-sm font-mono text-[#16864A] flex items-center">{globalCountry.currency} {(parseFloat(globalInrAmount || '0') / globalCountry.rate).toFixed(2)}</div>
+                    <div className="h-11 px-3 bg-white border border-gray-200 rounded-xl font-bold text-sm font-mono text-[#16864A] flex items-center">{globalCountry.currency} {(parseFloat(globalInrAmount || '0') / globalCountry.rate).toFixed(2)}</div>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input type="text" required aria-label="Beneficiary Name" value={globalBeneficiaryName} onChange={e => setGlobalBeneficiaryName(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
-                  <select aria-label="Purpose" value={globalPurpose} onChange={e => setGlobalPurpose(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold">
+                  <input type="text" required aria-label="Beneficiary Name" value={globalBeneficiaryName} onChange={e => setGlobalBeneficiaryName(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
+                  <select aria-label="Purpose" value={globalPurpose} onChange={e => setGlobalPurpose(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold">
                     <option>Education &amp; University Fees</option>
                     <option>Family Maintenance</option>
                     <option>Medical Treatment</option>
                     <option>Overseas Travel</option>
                   </select>
-                  <input type="text" required aria-label="IBAN" value={globalIban} onChange={e => setGlobalIban(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono uppercase" />
-                  <input type="text" required aria-label="SWIFT" value={globalSwift} onChange={e => setGlobalSwift(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono uppercase" />
+                  <input type="text" required aria-label="IBAN" value={globalIban} onChange={e => setGlobalIban(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono uppercase" />
+                  <input type="text" required aria-label="SWIFT" value={globalSwift} onChange={e => setGlobalSwift(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono uppercase" />
                 </div>
-                <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer">Authorize Global Transfer</button>
+                <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">Authorize Global Transfer</button>
               </form>
             </div>
           )}
@@ -617,7 +688,7 @@ export const PaymentsPage: React.FC = () => {
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                 {BILL_CATEGORIES.map(b => (
-                  <button key={b.id} type="button" onClick={() => { setSelectedBillCategory(b.id); setBillerProvider(b.billerExample.split(' / ')[0]); }} className={`p-3 rounded-xl border text-center flex flex-col items-center justify-center gap-1.5 cursor-pointer ${selectedBillCategory === b.id ? 'bg-red-50/40 border-[#DB0011] text-[#DB0011]' : 'bg-[#F6F7F9] border-transparent text-[#1f1f1f]'}`}>
+                  <button key={b.id} type="button" onClick={() => { setSelectedBillCategory(b.id); setBillerProvider(b.billerExample.split(' / ')[0]); }} className={`p-3 rounded-2xl border text-center flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${selectedBillCategory === b.id ? 'bg-red-50/40 border-[#DB0011] text-[#DB0011]' : 'bg-[#F6F7F9] border-transparent text-[#1f1f1f] hover:bg-gray-100'}`}>
                     <Zap className="w-4 h-4" aria-hidden="true" />
                     <span className="text-[10px] font-semibold truncate max-w-full">{b.name}</span>
                   </button>
@@ -625,15 +696,15 @@ export const PaymentsPage: React.FC = () => {
               </div>
               <form onSubmit={handleExecuteBillPayment} className="space-y-4 text-xs border-t border-gray-100 pt-5">
                 <h2 className="text-base font-bold text-[#1f1f1f]">Pay {selectedBillCategory} Bill</h2>
-                <input type="text" required aria-label="Service Provider" value={billerProvider} onChange={e => setBillerProvider(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
-                <input type="text" required aria-label="Consumer Number" value={consumerNumber} onChange={e => setConsumerNumber(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono" />
+                <input type="text" required aria-label="Service Provider" value={billerProvider} onChange={e => setBillerProvider(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
+                <input type="text" required aria-label="Consumer Number" value={consumerNumber} onChange={e => setConsumerNumber(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <select aria-label="Source Account" value={effectiveSourceAccountId} onChange={e => setSourceAccountId(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold">
+                  <select aria-label="Source Account" value={effectiveSourceAccountId} onChange={e => setSourceAccountId(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold">
                     {accounts.map(acc => <option key={acc.accountId} value={acc.accountId}>{acc.accountType} ({acc.maskedAccountNumber})</option>)}
                   </select>
-                  <input type="number" required min="1" aria-label="Bill Amount" value={billAmount} onChange={e => setBillAmount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-bold" />
+                  <input type="number" required min="1" aria-label="Bill Amount" value={billAmount} onChange={e => setBillAmount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-bold" />
                 </div>
-                <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] text-white text-xs font-semibold rounded-[2px] cursor-pointer">Authorize &amp; Pay Bill</button>
+                <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-semibold rounded-full transition-all cursor-pointer shadow-xs">Authorize &amp; Pay Bill</button>
               </form>
             </div>
           )}
@@ -643,11 +714,11 @@ export const PaymentsPage: React.FC = () => {
       {/* Add Beneficiary Dialog */}
       <ModalDialog open={showAddPayeeModal} onClose={() => setShowAddPayeeModal(false)} title="Add New Beneficiary" maxWidthClass="max-w-sm">
         <form onSubmit={handleAddBeneficiary} className="space-y-3 text-xs">
-          <input type="text" required placeholder="Full Legal Name" value={newPayeeName} onChange={e => setNewPayeeName(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
-          <input type="text" required placeholder="Account Number" value={newPayeeAcc} onChange={e => setNewPayeeAcc(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono" />
-          <input type="text" required placeholder="Bank Name" value={newPayeeBank} onChange={e => setNewPayeeBank(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
-          <input type="text" required placeholder="IFSC Code (e.g. HDFC0000060)" value={newPayeeIfsc} onChange={e => setNewPayeeIfsc(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono uppercase" />
-          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white font-semibold rounded-[2px] cursor-pointer">
+          <input type="text" required placeholder="Full Legal Name" value={newPayeeName} onChange={e => setNewPayeeName(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
+          <input type="text" required placeholder="Account Number" value={newPayeeAcc} onChange={e => setNewPayeeAcc(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono" />
+          <input type="text" required placeholder="Bank Name" value={newPayeeBank} onChange={e => setNewPayeeBank(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
+          <input type="text" required placeholder="IFSC Code (e.g. HDFC0000060)" value={newPayeeIfsc} onChange={e => setNewPayeeIfsc(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono uppercase" />
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white font-semibold rounded-full transition-all cursor-pointer shadow-xs">
             Verify &amp; Save Payee
           </button>
         </form>

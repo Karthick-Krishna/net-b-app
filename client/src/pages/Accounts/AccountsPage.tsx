@@ -58,7 +58,7 @@ export const AccountsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowReactivateModal(true)}
-                className="min-h-[40px] flex items-center gap-1.5 px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-[2px] text-xs font-semibold transition-colors cursor-pointer"
+                className="min-h-[40px] flex items-center gap-1.5 px-4 py-2 bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs"
               >
                 <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Reactivate Account</span>
@@ -67,7 +67,7 @@ export const AccountsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate('/statements')}
-              className="min-h-[40px] flex items-center gap-2 px-4 py-2 bg-white border border-[#333333] rounded-[2px] text-xs font-semibold text-[#1f1f1f] hover:bg-gray-50 transition-colors cursor-pointer"
+              className="min-h-[40px] flex items-center gap-2 px-4 py-2 bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] border border-gray-200/80 rounded-full text-xs font-semibold text-[#1f1f1f] transition-all cursor-pointer shadow-xs"
             >
               <FileText className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
               <span>e-Statement</span>
@@ -75,8 +75,78 @@ export const AccountsPage: React.FC = () => {
           </div>
         </div>
 
+        {/* 4 CIRCULAR ACTION BUTTONS (MATCHES REFERENCE DESIGN) */}
+        <div className="px-4 sm:px-6 md:px-8 py-4 bg-white border-b border-gray-100">
+          <div className="grid grid-cols-4 gap-2 max-w-md mx-auto sm:max-w-xl">
+            <button
+              type="button"
+              onClick={() => navigate('/payments')}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
+                <Send className="w-6 h-6 text-[#DB0011] stroke-[1.8]" aria-hidden="true" />
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                Funds<br />transfer
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/statements')}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
+                <FileText className="w-6 h-6 text-[#1f1f1f] stroke-[1.8]" aria-hidden="true" />
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                e-Statements<br />&amp; tax
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById('account-details-anchor');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
+                <svg viewBox="0 0 28 28" className="w-6 h-6" fill="none" aria-hidden="true">
+                  <rect x="5" y="7" width="18" height="14" rx="2.5" fill="#DB0011" />
+                  <rect x="8" y="9.5" width="12" height="2" rx="1" fill="white" />
+                  <circle cx="14" cy="15.5" r="1.6" fill="white" />
+                  <line x1="14" y1="16.5" x2="14" y2="18.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
+                </svg>
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                Account<br />details
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/cards')}
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
+                <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
+                  <rect x="4" y="8" width="24" height="16" rx="2.5" fill="white" stroke="#252525" strokeWidth="1.5" />
+                  <path d="M4 13h24" stroke="#DB0011" strokeWidth="2" />
+                  <rect x="7" y="18" width="6" height="3" rx="0.5" fill="#DB0011" />
+                  <circle cx="23" cy="19.5" r="1.5" fill="#252525" />
+                </svg>
+              </div>
+              <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
+                Linked<br />cards
+              </span>
+            </button>
+          </div>
+        </div>
+
         {/* Account Card Container */}
-        <div className="px-4 sm:px-6 md:px-8 py-5 border-b border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div id="account-details-anchor" className="px-4 sm:px-6 md:px-8 py-5 border-b border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-3">
           {accounts.map(acc => {
             const isSelected = acc.accountId === activeAccount?.accountId;
             const accDormant = acc.accountStatus === 'DORMANT' || acc.accountStatus === 'INOPERATIVE';
@@ -86,18 +156,18 @@ export const AccountsPage: React.FC = () => {
                 key={acc.accountId}
                 type="button"
                 onClick={() => setSelectedAccountId(acc.accountId)}
-                className={`p-4 sm:p-5 rounded-xl text-left cursor-pointer transition-all border ${
+                className={`p-4 sm:p-5 rounded-2xl text-left cursor-pointer transition-all border ${
                   isSelected
                     ? 'bg-white border-[#DB0011] ring-1 ring-[#DB0011] shadow-xs'
                     : 'bg-[#F6F7F9] border-gray-200/70 hover:bg-white hover:border-gray-300'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white text-[#DB0011] border border-red-100">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white text-[#DB0011] border border-red-100">
                     {acc.accountType}
                   </span>
                   <span
-                    className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
+                    className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full ${
                       accDormant ? 'bg-amber-100 text-amber-800' : 'bg-emerald-50 text-[#16864A]'
                     }`}
                   >
@@ -148,7 +218,7 @@ export const AccountsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate('/payments')}
-                className="min-h-[44px] px-5 py-2.5 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer self-start sm:self-auto"
+                className="min-h-[44px] px-6 py-2.5 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer self-start sm:self-auto shadow-xs"
               >
                 <Send className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Transfer From This Account</span>
@@ -156,7 +226,7 @@ export const AccountsPage: React.FC = () => {
             </div>
 
             {isDormant && (
-              <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-amber-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
                   <AlertTriangle className="w-5 h-5 shrink-0 text-amber-600" aria-hidden="true" />
                   <div>
@@ -167,7 +237,7 @@ export const AccountsPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowReactivateModal(true)}
-                  className="min-h-[40px] px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-[2px] font-bold whitespace-nowrap cursor-pointer"
+                  className="min-h-[40px] px-5 py-2 bg-amber-600 hover:bg-amber-700 active:scale-[0.98] text-white rounded-full font-bold whitespace-nowrap transition-all cursor-pointer shadow-xs"
                 >
                   Submit Reactivation
                 </button>
@@ -176,21 +246,21 @@ export const AccountsPage: React.FC = () => {
 
             {/* Metrics */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200/70">
+              <div className="p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200/70">
                 <div className="text-[11px] text-[#777777] font-medium">Available Balance</div>
                 <div className="text-lg font-bold text-[#1f1f1f] mt-1">
                   {formatCurrency(activeAccount.managedBalance, activeAccount.currency)}
                 </div>
                 <div className="text-[10px] text-[#16864A] mt-0.5 font-semibold">Real-Time Core Balance</div>
               </div>
-              <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200/70">
+              <div className="p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200/70">
                 <div className="text-[11px] text-[#777777] font-medium">General Ledger Balance</div>
                 <div className="text-lg font-bold text-[#1f1f1f] mt-1">
                   {formatCurrency(activeAccount.ledgerBalance, activeAccount.currency)}
                 </div>
                 <div className="text-[10px] text-gray-500 mt-0.5 font-semibold">Cleared Funds</div>
               </div>
-              <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200/70">
+              <div className="p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200/70">
                 <div className="text-[11px] text-[#777777] font-medium">Branch &amp; Routing</div>
                 <div className="text-sm font-bold text-[#1f1f1f] mt-1 font-mono">{activeAccount.ifscCode}</div>
                 <div className="text-[10px] text-gray-500 mt-0.5 truncate">{activeAccount.branchName}</div>
@@ -215,22 +285,18 @@ export const AccountsPage: React.FC = () => {
                         key={tx.transactionId}
                         type="button"
                         onClick={() => navigate('/transactions')}
-                        className="w-full py-3.5 flex items-center justify-between gap-3 hover:bg-gray-50/70 transition-colors text-left cursor-pointer"
+                        className="w-full py-3.5 flex items-center justify-between gap-3 hover:bg-gray-50/70 transition-colors text-left cursor-pointer group"
                       >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div
-                            className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-                              isCredit ? 'bg-emerald-50 text-[#16864A]' : 'bg-[#F2F4F7] text-[#DB0011]'
-                            }`}
-                          >
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
                             {isCredit ? (
-                              <ArrowDownLeft className="w-4 h-4" aria-hidden="true" />
+                              <ArrowDownLeft className="w-5 h-5 text-[#16864A] stroke-[2]" aria-hidden="true" />
                             ) : (
-                              <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+                              <ArrowUpRight className="w-5 h-5 text-[#DB0011] stroke-[2]" aria-hidden="true" />
                             )}
                           </div>
                           <div className="min-w-0">
-                            <div className="text-[13px] font-semibold text-[#1f1f1f] truncate">{tx.description}</div>
+                            <div className="text-[14px] font-semibold text-[#1f1f1f] truncate">{tx.description}</div>
                             <div className="text-[11px] text-[#777777] mt-0.5 truncate">
                               {tx.transactionDate} • {tx.reference}
                             </div>
@@ -238,12 +304,12 @@ export const AccountsPage: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           <div className="text-right">
-                            <div className={`text-[13px] font-bold font-mono ${isCredit ? 'text-[#16864A]' : 'text-[#1f1f1f]'}`}>
+                            <div className={`text-[14px] font-bold font-mono ${isCredit ? 'text-[#16864A]' : 'text-[#1f1f1f]'}`}>
                               {isCredit ? '+' : '-'} {formatINR(tx.amount)}
                             </div>
                             <span className="text-[10px] text-gray-400 uppercase">{tx.category}</span>
                           </div>
-                          <ArrowRight className="w-4 h-4 text-gray-300" aria-hidden="true" />
+                          <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors" aria-hidden="true" />
                         </div>
                       </button>
                     );
@@ -317,7 +383,7 @@ export const AccountsPage: React.FC = () => {
             <label htmlFor="reactivate-reason" className="font-bold text-[#777777] uppercase text-[10px] block mb-1.5">
               Reactivation Reason
             </label>
-            <select id="reactivate-reason" className="w-full p-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold">
+            <select id="reactivate-reason" className="w-full p-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold">
               <option>Resuming regular personal transactions</option>
               <option>Domestic / International remittance receipt</option>
               <option>Fixed Deposit investment linkage</option>
@@ -328,13 +394,13 @@ export const AccountsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowReactivateModal(false)}
-              className="min-h-[44px] px-4 border border-gray-300 rounded-[2px] font-semibold text-[#555555] cursor-pointer"
+              className="min-h-[44px] px-5 border border-gray-300 hover:bg-gray-50 active:scale-[0.98] rounded-full font-semibold text-[#555555] transition-all cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="min-h-[44px] px-5 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer"
+              className="min-h-[44px] px-6 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs"
             >
               Submit Request
             </button>

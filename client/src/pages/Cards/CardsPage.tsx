@@ -391,10 +391,10 @@ export const CardsPage: React.FC = () => {
               />
             </div>
 
-            {/* 4 CIRCULAR ACTION BUTTONS */}
+            {/* 4 CIRCULAR ACTION BUTTONS (MATCHES REFERENCE UI EXACTLY) */}
             <div className="px-2 sm:px-3 py-4 grid grid-cols-4 gap-1.5 sm:gap-3 max-w-md mx-auto">
               <button type="button" onClick={() => setShowReportIssueModal(true)} className="flex flex-col items-center group cursor-pointer">
-                <div className="w-12 h-12 min-[360px]:w-14 min-[360px]:h-14 rounded-full bg-[#F2F4F7] group-hover:bg-[#E5E7EB] transition-colors flex items-center justify-center">
+                <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
                   <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
                     <rect x="4" y="8" width="24" height="16" rx="2.5" fill="white" stroke="#252525" strokeWidth="1.5" />
                     <path d="M4 12.5h24" stroke="#DB0011" strokeWidth="2" />
@@ -417,7 +417,7 @@ export const CardsPage: React.FC = () => {
                 }}
                 className="flex flex-col items-center group cursor-pointer"
               >
-                <div className="w-12 h-12 min-[360px]:w-14 min-[360px]:h-14 rounded-full bg-[#F2F4F7] group-hover:bg-[#E5E7EB] transition-colors flex items-center justify-center">
+                <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
                   <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
                     <rect x="10" y="6" width="18" height="13" rx="2" fill="white" stroke="#555555" strokeWidth="1.3" />
                     <rect x="4" y="11" width="19" height="14" rx="2" fill="white" stroke="#DB0011" strokeWidth="1.5" />
@@ -435,8 +435,8 @@ export const CardsPage: React.FC = () => {
 
               <button type="button" onClick={handleToggleFreeze} aria-pressed={isFrozen} className="flex flex-col items-center group cursor-pointer">
                 <div
-                  className={`w-12 h-12 min-[360px]:w-14 min-[360px]:h-14 rounded-full transition-colors flex items-center justify-center ${
-                    isFrozen ? 'bg-red-100 ring-2 ring-[#DB0011]' : 'bg-[#F2F4F7] group-hover:bg-[#E5E7EB]'
+                  className={`w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full active:scale-[0.96] transition-all flex items-center justify-center shadow-xs ${
+                    isFrozen ? 'bg-red-100 ring-2 ring-[#DB0011]' : 'bg-[#F5F6F8] group-hover:bg-[#EBECEF]'
                   }`}
                 >
                   <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
@@ -455,7 +455,7 @@ export const CardsPage: React.FC = () => {
               </button>
 
               <button type="button" onClick={() => setShowGamblingModal(true)} className="flex flex-col items-center group cursor-pointer">
-                <div className="w-12 h-12 min-[360px]:w-14 min-[360px]:h-14 rounded-full bg-[#F2F4F7] group-hover:bg-[#E5E7EB] transition-colors flex items-center justify-center relative">
+                <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center relative shadow-xs">
                   <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
                     <circle cx="16" cy="16" r="11" stroke="#252525" strokeWidth="1.5" fill="white" />
                     <circle cx="16" cy="16" r="9" stroke="#DB0011" strokeWidth="2.2" strokeDasharray="3.8 3.2" fill="none" />
@@ -473,9 +473,107 @@ export const CardsPage: React.FC = () => {
               </button>
             </div>
 
+            {/* MOBILE ONLY: List Navigation Actions (Matches Screenshot: directly below circular buttons) */}
+            <div className="lg:hidden px-2 max-w-md mx-auto divide-y divide-gray-100 border-t border-gray-100">
+              <button type="button" onClick={() => setShowManageModal(true)} className="w-full min-h-[58px] py-3 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
+                    <svg viewBox="0 0 28 28" className="w-6 h-6" fill="none" aria-hidden="true">
+                      <rect x="5" y="7" width="18" height="14" rx="2.5" fill="#DB0011" />
+                      <rect x="8" y="9.5" width="12" height="2" rx="1" fill="white" />
+                      <circle cx="14" cy="15.5" r="1.6" fill="white" />
+                      <line x1="14" y1="16.5" x2="14" y2="18.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-[15px] font-semibold text-[#1f1f1f] block">Manage account</span>
+                    <span className="text-[11px] text-[#777777] block">ATM, POS, online, contactless &amp; international limits</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
+              </button>
+
+              <button type="button" onClick={() => setShowExploreModal(true)} className="w-full min-h-[58px] py-3 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
+                    <svg viewBox="0 0 28 28" className="w-6 h-6" fill="none" aria-hidden="true">
+                      <rect x="8" y="6" width="15" height="11" rx="2" fill="#99000A" />
+                      <rect x="5" y="10" width="16" height="12" rx="2" fill="#DB0011" stroke="white" strokeWidth="0.8" />
+                      <line x1="5" y1="13.5" x2="21" y2="13.5" stroke="white" strokeWidth="1.2" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-[15px] font-semibold text-[#1f1f1f] block">Explore more products</span>
+                    <span className="text-[11px] text-[#777777] block">Taj Credit Card &amp; Global Money multi-currency</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setPinVerificationInput('');
+                  setDetailsRevealed(false);
+                  setShowCardDetailsModal(true);
+                }}
+                className="w-full min-h-[58px] py-3 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer"
+              >
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0 text-[#DB0011]">
+                    <Eye className="w-5 h-5 stroke-[2]" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <span className="text-[15px] font-semibold text-[#1f1f1f] block">View card number &amp; CVV</span>
+                    <span className="text-[11px] text-[#777777] block">Reveal full 16-digit PAN and expiry safely</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
+              </button>
+
+              <button type="button" onClick={() => setShowResetPinModal(true)} className="w-full min-h-[58px] py-3 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0 text-[#DB0011]">
+                    <KeyRound className="w-5 h-5 stroke-[2]" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <span className="text-[15px] font-semibold text-[#1f1f1f] block">Reset card ATM PIN</span>
+                    <span className="text-[11px] text-[#777777] block">Instant 4-digit PIN update without branch visit</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
+              </button>
+
+              <button type="button" onClick={() => setShowActivateModal(true)} className="w-full min-h-[58px] py-3 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0 text-[#DB0011]">
+                    <PlusCircle className="w-5 h-5 stroke-[2]" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <span className="text-[15px] font-semibold text-[#1f1f1f] block">Activate physical card</span>
+                    <span className="text-[11px] text-[#777777] block">Enable newly delivered replacement or debit card</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
+              </button>
+
+              <button type="button" onClick={() => setShowEmiModal(true)} className="w-full min-h-[58px] py-3 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0 text-[#DB0011]">
+                    <Calculator className="w-5 h-5 stroke-[2]" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <span className="text-[15px] font-semibold text-[#1f1f1f] block">Convert to EMI &amp; Cash on EMI</span>
+                    <span className="text-[11px] text-[#777777] block">Split high-value purchases into 3 to 24 installments</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
+              </button>
+            </div>
+
             {/* Card Spend & Limit Strip */}
             <div className="px-4 md:px-0 pt-2 max-w-md mx-auto">
-              <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-2.5">
+              <div className="p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 space-y-2.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-[#1f1f1f]">
                     {activeCard.cardType === 'CREDIT' ? 'Credit Utilization' : 'Daily Limit & Monthly Spend'}
@@ -512,7 +610,7 @@ export const CardsPage: React.FC = () => {
                         setPayBillAmount(String(activeCard.minDue || 2500));
                         setShowPayBillModal(true);
                       }}
-                      className="min-h-[34px] px-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-[11px] font-semibold rounded-[2px] cursor-pointer"
+                      className="min-h-[36px] px-4 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-semibold rounded-full cursor-pointer shadow-xs"
                     >
                       Pay Bill
                     </button>
@@ -522,12 +620,12 @@ export const CardsPage: React.FC = () => {
             </div>
           </div>
 
-          {/* RIGHT COLUMN */}
-          <div className="lg:col-span-6 space-y-5 px-4 md:px-0 pt-3 lg:pt-0 max-w-md mx-auto lg:max-w-none w-full">
-            <div className="divide-y divide-gray-100">
+          {/* DESKTOP RIGHT COLUMN */}
+          <div className="hidden lg:block lg:col-span-6 space-y-5 px-4 md:px-0 pt-3 lg:pt-0 max-w-md mx-auto lg:max-w-none w-full">
+            <div className="divide-y divide-gray-100 border-b border-gray-100">
               <button type="button" onClick={() => setShowManageModal(true)} className="w-full min-h-[60px] py-3.5 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-full bg-[#F2F4F7] flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
                     <svg viewBox="0 0 28 28" className="w-6 h-6" fill="none" aria-hidden="true">
                       <rect x="5" y="7" width="18" height="14" rx="2.5" fill="#DB0011" />
                       <rect x="8" y="9.5" width="12" height="2" rx="1" fill="white" />
@@ -540,7 +638,24 @@ export const CardsPage: React.FC = () => {
                     <span className="text-[11px] text-[#777777] block">ATM, POS, online, contactless &amp; international limits</span>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#DB0011] transition-colors shrink-0" aria-hidden="true" />
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
+              </button>
+
+              <button type="button" onClick={() => setShowExploreModal(true)} className="w-full min-h-[60px] py-3.5 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
+                    <svg viewBox="0 0 28 28" className="w-6 h-6" fill="none" aria-hidden="true">
+                      <rect x="8" y="6" width="15" height="11" rx="2" fill="#99000A" />
+                      <rect x="5" y="10" width="16" height="12" rx="2" fill="#DB0011" stroke="white" strokeWidth="0.8" />
+                      <line x1="5" y1="13.5" x2="21" y2="13.5" stroke="white" strokeWidth="1.2" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-[15px] font-semibold text-[#1f1f1f] block">Explore more products</span>
+                    <span className="text-[11px] text-[#777777] block">Taj Credit Card &amp; Global Money multi-currency</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
               </button>
 
               <button
@@ -553,63 +668,54 @@ export const CardsPage: React.FC = () => {
                 className="w-full min-h-[60px] py-3.5 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer"
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-full bg-[#F2F4F7] flex items-center justify-center shrink-0 text-[#DB0011]"><Eye className="w-5 h-5" aria-hidden="true" /></div>
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0 text-[#DB0011]">
+                    <Eye className="w-5 h-5 stroke-[2]" aria-hidden="true" />
+                  </div>
                   <div>
                     <span className="text-[15px] font-semibold text-[#1f1f1f] block">View card number &amp; CVV</span>
                     <span className="text-[11px] text-[#777777] block">Reveal full 16-digit PAN and expiry safely</span>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#DB0011] transition-colors shrink-0" aria-hidden="true" />
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
               </button>
 
               <button type="button" onClick={() => setShowResetPinModal(true)} className="w-full min-h-[60px] py-3.5 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-full bg-[#F2F4F7] flex items-center justify-center shrink-0 text-[#1f1f1f]"><KeyRound className="w-5 h-5" aria-hidden="true" /></div>
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0 text-[#DB0011]">
+                    <KeyRound className="w-5 h-5 stroke-[2]" aria-hidden="true" />
+                  </div>
                   <div>
                     <span className="text-[15px] font-semibold text-[#1f1f1f] block">Reset card ATM PIN</span>
                     <span className="text-[11px] text-[#777777] block">Instant 4-digit PIN update without branch visit</span>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#DB0011] transition-colors shrink-0" aria-hidden="true" />
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
               </button>
 
               <button type="button" onClick={() => setShowActivateModal(true)} className="w-full min-h-[60px] py-3.5 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-full bg-[#F2F4F7] flex items-center justify-center shrink-0 text-[#DB0011]"><PlusCircle className="w-5 h-5" aria-hidden="true" /></div>
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0 text-[#DB0011]">
+                    <PlusCircle className="w-5 h-5 stroke-[2]" aria-hidden="true" />
+                  </div>
                   <div>
                     <span className="text-[15px] font-semibold text-[#1f1f1f] block">Activate physical card</span>
                     <span className="text-[11px] text-[#777777] block">Enable newly delivered replacement or debit card</span>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#DB0011] transition-colors shrink-0" aria-hidden="true" />
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
               </button>
 
               <button type="button" onClick={() => setShowEmiModal(true)} className="w-full min-h-[60px] py-3.5 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-full bg-[#F2F4F7] flex items-center justify-center shrink-0 text-[#1f1f1f]"><Calculator className="w-5 h-5" aria-hidden="true" /></div>
+                  <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0 text-[#DB0011]">
+                    <Calculator className="w-5 h-5 stroke-[2]" aria-hidden="true" />
+                  </div>
                   <div>
                     <span className="text-[15px] font-semibold text-[#1f1f1f] block">Convert to EMI &amp; Cash on EMI</span>
                     <span className="text-[11px] text-[#777777] block">Split high-value purchases into 3 to 24 installments</span>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#DB0011] transition-colors shrink-0" aria-hidden="true" />
-              </button>
-
-              <button type="button" onClick={() => setShowExploreModal(true)} className="w-full min-h-[60px] py-3.5 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-full bg-[#F2F4F7] flex items-center justify-center shrink-0">
-                    <svg viewBox="0 0 28 28" className="w-6 h-6" fill="none" aria-hidden="true">
-                      <rect x="8" y="6" width="15" height="11" rx="2" fill="#99000A" />
-                      <rect x="5" y="10" width="16" height="12" rx="2" fill="#DB0011" stroke="white" strokeWidth="0.8" />
-                      <line x1="5" y1="13.5" x2="21" y2="13.5" stroke="white" strokeWidth="1.2" />
-                    </svg>
-                  </div>
-                  <div>
-                    <span className="text-[15px] font-semibold text-[#1f1f1f] block">Explore more products</span>
-                    <span className="text-[11px] text-[#777777] block">Taj Credit Card &amp; Global Money multi-currency</span>
-                  </div>
-                </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#DB0011] transition-colors shrink-0" aria-hidden="true" />
+                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
               </button>
             </div>
 
@@ -663,17 +769,17 @@ export const CardsPage: React.FC = () => {
         {!pinRevealed ? (
           <form onSubmit={handleVerifyPinForReveal} className="space-y-4">
             <p className="text-xs text-gray-500 leading-relaxed">Enter your 6-digit App-Lock PIN (<strong className="text-[#1f1f1f]">002831</strong>) to reveal your 4-digit card ATM PIN.</p>
-            <input type="password" inputMode="numeric" maxLength={6} autoFocus required value={pinVerificationInput} onChange={e => setPinVerificationInput(e.target.value.replace(/\D/g, ''))} placeholder="••••••" className="w-full px-4 py-3 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
-            <button type="submit" className="w-full min-h-[44px] py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] cursor-pointer">Verify &amp; Reveal PIN</button>
+            <input type="password" inputMode="numeric" maxLength={6} autoFocus required value={pinVerificationInput} onChange={e => setPinVerificationInput(e.target.value.replace(/\D/g, ''))} placeholder="••••••" className="w-full px-4 py-3 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F6F7F9] border border-gray-200 rounded-xl" />
+            <button type="submit" className="w-full min-h-[44px] py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs">Verify &amp; Reveal PIN</button>
           </form>
         ) : (
           <div className="space-y-4 text-center">
             <p className="text-xs text-gray-500">4-digit ATM PIN for card ending in <strong>{maskedFourDigits}</strong>:</p>
-            <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200 flex items-center justify-center gap-3">
+            <div className="p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200 flex items-center justify-center gap-3">
               <span className="text-3xl font-extrabold font-mono tracking-[0.3em] text-[#1f1f1f]">{revealedCardPin}</span>
               <button type="button" aria-label="Copy PIN" onClick={() => { navigator.clipboard?.writeText(revealedCardPin); toast.success('Card PIN copied'); }} className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg text-gray-500 hover:text-[#DB0011] cursor-pointer"><Copy className="w-4 h-4" aria-hidden="true" /></button>
             </div>
-            <button type="button" onClick={() => setShowPinModal(false)} className="w-full min-h-[44px] py-2.5 bg-[#1f1f1f] text-white text-xs font-bold rounded-[2px] cursor-pointer">Hide PIN</button>
+            <button type="button" onClick={() => setShowPinModal(false)} className="w-full min-h-[44px] py-2.5 bg-[#1f1f1f] hover:bg-black active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer">Hide PIN</button>
           </div>
         )}
       </ModalDialog>
@@ -681,7 +787,7 @@ export const CardsPage: React.FC = () => {
       {/* 3. GAMBLING RESTRICTION */}
       <ModalDialog open={showGamblingModal} onClose={() => setShowGamblingModal(false)} title="Gambling restriction" subtitle={`${shortCardLabel} •••• ${maskedFourDigits}`} maxWidthClass="max-w-sm">
         <p className="text-xs text-gray-500 leading-relaxed">Block transactions categorized as betting, casinos, lottery tickets, and online gambling (MCC 7995).</p>
-        <div className="my-5 p-4 bg-[#F6F7F9] rounded-xl border border-gray-200 flex items-center justify-between gap-3">
+        <div className="my-5 p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200 flex items-center justify-between gap-3">
           <div>
             <span className="font-bold text-xs text-[#1f1f1f] block">Block Gambling Merchants</span>
             <span className="text-[11px] text-gray-500">{gamblingBlocked ? 'Currently active & protected' : 'Restriction disabled'}</span>
@@ -692,13 +798,13 @@ export const CardsPage: React.FC = () => {
           <ShieldCheck className="w-4 h-4 text-[#16864A] shrink-0 mt-0.5" aria-hidden="true" />
           <span>Changes require confirmation and take effect immediately across all global terminals.</span>
         </div>
-        <button type="button" onClick={() => setShowGamblingModal(false)} className="w-full min-h-[44px] py-2.5 bg-[#1f1f1f] text-white text-xs font-bold rounded-[2px] cursor-pointer">Done</button>
+        <button type="button" onClick={() => setShowGamblingModal(false)} className="w-full min-h-[44px] py-2.5 bg-[#1f1f1f] hover:bg-black active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer">Done</button>
       </ModalDialog>
 
       {/* 4. MANAGE ACCOUNT & CHANNEL LIMITS */}
       <ModalDialog open={showManageModal} onClose={() => setShowManageModal(false)} title="Manage account & limits" subtitle={`${shortCardLabel} •••• ${maskedFourDigits}`} maxWidthClass="max-w-md">
         <div className="space-y-4">
-          <div className="p-3.5 bg-[#F6F7F9] rounded-xl border border-gray-200 flex items-center justify-between gap-3">
+          <div className="p-3.5 bg-[#F6F7F9] rounded-2xl border border-gray-200 flex items-center justify-between gap-3">
             <div>
               <div className="font-bold text-xs text-[#1f1f1f]">Temporary Card Freeze</div>
               <div className="text-[11px] text-gray-500">{isFrozen ? 'Card frozen — unblock anytime' : 'Card active for spending'}</div>
@@ -714,7 +820,7 @@ export const CardsPage: React.FC = () => {
             />
           </div>
 
-          <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200 space-y-2.5">
+          <div className="p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200 space-y-2.5">
             <div className="flex items-center justify-between text-xs">
               <label htmlFor="card-limit-slider" className="font-bold text-[#1f1f1f]">Daily Spending Limit</label>
               <span className="font-mono font-extrabold text-[#DB0011]">{formatINR(activeCard.spendingLimit || 250000)}</span>
@@ -754,7 +860,7 @@ export const CardsPage: React.FC = () => {
                 ],
               });
             }}
-            className="w-full min-h-[44px] py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] cursor-pointer"
+            className="w-full min-h-[44px] py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs"
           >
             Save Preferences
           </button>
@@ -766,12 +872,12 @@ export const CardsPage: React.FC = () => {
         {!detailsRevealed ? (
           <form onSubmit={handleVerifyForCardDetails} className="space-y-4">
             <p className="text-xs text-gray-500">Enter your 6-digit App-Lock PIN (<strong>002831</strong>) to reveal your 16-digit card number and CVV.</p>
-            <input type="password" inputMode="numeric" maxLength={6} autoFocus required value={pinVerificationInput} onChange={e => setPinVerificationInput(e.target.value.replace(/\D/g, ''))} placeholder="••••••" className="w-full px-4 py-3 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
-            <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] text-white text-xs font-bold rounded-[2px] cursor-pointer">Unlock Card Details</button>
+            <input type="password" inputMode="numeric" maxLength={6} autoFocus required value={pinVerificationInput} onChange={e => setPinVerificationInput(e.target.value.replace(/\D/g, ''))} placeholder="••••••" className="w-full px-4 py-3 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F6F7F9] border border-gray-200 rounded-xl" />
+            <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs">Unlock Card Details</button>
           </form>
         ) : (
           <div className="space-y-4 text-xs">
-            <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200 space-y-3">
+            <div className="p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[#777777]">Card Number</span>
                 <button type="button" onClick={() => { navigator.clipboard?.writeText(fullVirtualNumber.replace(/\s+/g, '')); toast.success('Card number copied'); }} className="text-[#DB0011] font-semibold flex items-center gap-1 cursor-pointer"><Copy className="w-3.5 h-3.5" aria-hidden="true" /><span>Copy</span></button>
@@ -783,7 +889,7 @@ export const CardsPage: React.FC = () => {
                 <div><span className="text-[#777777] block">CVV / Security Code</span><span className="font-mono font-bold text-[#1f1f1f]">{activeCard.cardType === 'CREDIT' ? '742' : '318'}</span></div>
               </div>
             </div>
-            <button type="button" onClick={() => setShowCardDetailsModal(false)} className="w-full min-h-[44px] bg-[#1f1f1f] text-white font-bold rounded-[2px] cursor-pointer">Hide Details</button>
+            <button type="button" onClick={() => setShowCardDetailsModal(false)} className="w-full min-h-[44px] bg-[#1f1f1f] hover:bg-black active:scale-[0.98] text-white font-bold rounded-full transition-all cursor-pointer">Hide Details</button>
           </div>
         )}
       </ModalDialog>
@@ -791,18 +897,18 @@ export const CardsPage: React.FC = () => {
       {/* 6. RESET 4-DIGIT CARD ATM PIN */}
       <ModalDialog open={showResetPinModal} onClose={() => setShowResetPinModal(false)} title="Reset card ATM PIN" subtitle={`${shortCardLabel} •••• ${maskedFourDigits}`} maxWidthClass="max-w-sm">
         <form onSubmit={handleSaveNewCardPin} className="space-y-3.5 text-xs">
-          <input type="password" inputMode="numeric" maxLength={4} required value={newCardPin} onChange={e => setNewCardPin(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 text-center tracking-[0.4em] font-mono font-bold bg-[#F6F7F9] border border-gray-200 rounded-[2px]" placeholder="New 4-Digit PIN" />
-          <input type="password" inputMode="numeric" maxLength={4} required value={confirmCardPin} onChange={e => setConfirmCardPin(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 text-center tracking-[0.4em] font-mono font-bold bg-[#F6F7F9] border border-gray-200 rounded-[2px]" placeholder="Confirm 4-Digit PIN" />
-          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] text-white font-bold rounded-[2px] cursor-pointer">Update Card PIN</button>
+          <input type="password" inputMode="numeric" maxLength={4} required value={newCardPin} onChange={e => setNewCardPin(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 text-center tracking-[0.4em] font-mono font-bold bg-[#F6F7F9] border border-gray-200 rounded-xl" placeholder="New 4-Digit PIN" />
+          <input type="password" inputMode="numeric" maxLength={4} required value={confirmCardPin} onChange={e => setConfirmCardPin(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 text-center tracking-[0.4em] font-mono font-bold bg-[#F6F7F9] border border-gray-200 rounded-xl" placeholder="Confirm 4-Digit PIN" />
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white font-bold rounded-full transition-all cursor-pointer shadow-xs">Update Card PIN</button>
         </form>
       </ModalDialog>
 
       {/* 7. ACTIVATE NEW PHYSICAL CARD */}
       <ModalDialog open={showActivateModal} onClose={() => setShowActivateModal(false)} title="Activate physical card" maxWidthClass="max-w-sm">
         <form onSubmit={handleActivateCard} className="space-y-3.5 text-xs">
-          <input type="text" inputMode="numeric" maxLength={4} required value={activateLast4} onChange={e => setActivateLast4(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 font-mono font-bold bg-[#F6F7F9] border border-gray-200 rounded-[2px]" placeholder="Last 4 Digits (e.g. 4281)" />
-          <input type="text" maxLength={5} required value={activateExpiry} onChange={e => setActivateExpiry(e.target.value)} className="w-full h-11 px-3 font-mono bg-[#F6F7F9] border border-gray-200 rounded-[2px]" placeholder="Expiry MM/YY (e.g. 08/29)" />
-          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] text-white font-bold rounded-[2px] cursor-pointer">Activate Card Instantly</button>
+          <input type="text" inputMode="numeric" maxLength={4} required value={activateLast4} onChange={e => setActivateLast4(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 font-mono font-bold bg-[#F6F7F9] border border-gray-200 rounded-xl" placeholder="Last 4 Digits (e.g. 4281)" />
+          <input type="text" maxLength={5} required value={activateExpiry} onChange={e => setActivateExpiry(e.target.value)} className="w-full h-11 px-3 font-mono bg-[#F6F7F9] border border-gray-200 rounded-xl" placeholder="Expiry MM/YY (e.g. 08/29)" />
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white font-bold rounded-full transition-all cursor-pointer shadow-xs">Activate Card Instantly</button>
         </form>
       </ModalDialog>
 
@@ -815,10 +921,10 @@ export const CardsPage: React.FC = () => {
           </div>
           <div className="grid grid-cols-4 gap-2">
             {[3, 6, 12, 24].map(m => (
-              <button key={m} type="button" onClick={() => setEmiTenure(m)} className={`min-h-[36px] rounded-[2px] font-bold border cursor-pointer ${emiTenure === m ? 'bg-[#1f1f1f] text-white border-[#1f1f1f]' : 'bg-[#F6F7F9] border-gray-200 text-[#1f1f1f]'}`}>{m}M</button>
+              <button key={m} type="button" onClick={() => setEmiTenure(m)} className={`min-h-[36px] rounded-full font-bold border cursor-pointer transition-all ${emiTenure === m ? 'bg-[#1f1f1f] text-white border-[#1f1f1f]' : 'bg-[#F6F7F9] border-gray-200 text-[#1f1f1f]'}`}>{m}M</button>
             ))}
           </div>
-          <div className="p-4 bg-[#F6F7F9] rounded-xl border border-gray-200 flex justify-between items-center">
+          <div className="p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200 flex justify-between items-center">
             <span className="text-[#555555]">Estimated EMI (14% p.a.)</span>
             <span className="text-base font-bold text-[#1f1f1f]">{formatINR(monthlyEmi)}/mo</span>
           </div>
@@ -840,7 +946,7 @@ export const CardsPage: React.FC = () => {
                 }),
               });
             }}
-            className="w-full min-h-[44px] bg-[#DB0011] text-white font-bold rounded-[2px] cursor-pointer"
+            className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white font-bold rounded-full transition-all cursor-pointer shadow-xs"
           >
             Confirm EMI Conversion
           </button>
@@ -850,11 +956,11 @@ export const CardsPage: React.FC = () => {
       {/* 9. PAY CREDIT CARD BILL */}
       <ModalDialog open={showPayBillModal} onClose={() => setShowPayBillModal(false)} title="Pay Credit Card Bill" subtitle={`${cardTitle} •••• ${maskedFourDigits}`} maxWidthClass="max-w-sm">
         <form onSubmit={handlePayCreditBill} className="space-y-3.5 text-xs">
-          <select aria-label="Source account" value={billSourceAccountId || accounts[0]?.accountId || ''} onChange={e => setBillSourceAccountId(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold">
+          <select aria-label="Source account" value={billSourceAccountId || accounts[0]?.accountId || ''} onChange={e => setBillSourceAccountId(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold">
             {accounts.map(acc => <option key={acc.accountId} value={acc.accountId}>{acc.accountType} ({acc.maskedAccountNumber}) — {formatINR(acc.managedBalance)}</option>)}
           </select>
-          <input type="number" min={100} required value={payBillAmount} onChange={e => setPayBillAmount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-bold text-sm" />
-          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] text-white font-bold rounded-[2px] cursor-pointer">Authorize Card Payment</button>
+          <input type="number" min={100} required value={payBillAmount} onChange={e => setPayBillAmount(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-bold text-sm" />
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white font-bold rounded-full transition-all cursor-pointer shadow-xs">Authorize Card Payment</button>
         </form>
       </ModalDialog>
 

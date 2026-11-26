@@ -60,8 +60,8 @@ export const DepositsPage: React.FC = () => {
               <div key={dep.depositId} className="py-5 first:pt-0 space-y-3">
                 <div className="flex justify-between items-center gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-full bg-[#F2F4F7] text-[#DB0011] flex items-center justify-center shrink-0">
-                      <PiggyBank className="w-5 h-5" aria-hidden="true" />
+                    <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] text-[#DB0011] flex items-center justify-center shrink-0">
+                      <PiggyBank className="w-6 h-6 stroke-[1.8]" aria-hidden="true" />
                     </div>
                     <div>
                       <h2 className="text-sm font-bold text-[#1f1f1f]">
@@ -98,7 +98,7 @@ export const DepositsPage: React.FC = () => {
           </div>
 
           {/* Interactive Calculator + Instant Open */}
-          <div className="lg:col-span-5 p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-4 self-start">
+          <div className="lg:col-span-5 p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 space-y-4 self-start">
             <div className="flex items-center gap-2">
               <Calculator className="w-5 h-5 text-[#DB0011]" aria-hidden="true" />
               <h2 className="text-sm font-bold text-[#1f1f1f]">Open Term Deposit</h2>
@@ -138,7 +138,7 @@ export const DepositsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-4 bg-white rounded-xl border border-gray-200/70 space-y-2 text-xs">
+            <div className="p-4 bg-white rounded-2xl border border-gray-200/70 space-y-2 text-xs">
               <div className="flex justify-between">
                 <span className="text-[#777777]">Interest Rate</span>
                 <span className="font-bold text-[#16864A]">{rate}% p.a.</span>
@@ -156,7 +156,7 @@ export const DepositsPage: React.FC = () => {
             <button
               type="button"
               onClick={handleOpenDeposit}
-              className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
+              className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-semibold rounded-full transition-all cursor-pointer shadow-xs"
             >
               Open Instant Fixed Deposit (₹{calcPrincipal.toLocaleString('en-IN')})
             </button>
