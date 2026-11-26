@@ -66,23 +66,6 @@ export const DashboardPage: React.FC = () => {
   return (
     <AnimatedPageTransition className="pb-10">
       <div className="bg-white md:rounded-[2px] border border-gray-200 shadow-xs overflow-hidden">
-        {/* TOP INSTITUTIONAL BAR (LIGHT CORPORATE BANKING THEME) */}
-        <div className="px-4 sm:px-6 md:px-8 py-2.5 bg-[#F8F9FA] text-[#555555] border-b border-gray-200 flex flex-wrap items-center justify-between gap-2 text-[10px] font-bold tracking-[0.12em] uppercase">
-          <div className="flex items-center gap-2">
-            <span className="text-[#666666] font-mono"></span>
-          </div>
-          <div className="flex items-center gap-3 ml-auto">
-            <button
-              type="button"
-              onClick={lockApp}
-              className="hidden sm:inline-flex items-center gap-1 px-3 py-1 bg-white border border-gray-300 hover:border-gray-400 text-[#1f1f1f] rounded-full transition-colors cursor-pointer shadow-xs"
-            >
-              <Lock className="w-3 h-3 text-[#DB0011]" aria-hidden="true" />
-              <span>Lock Session</span>
-            </button>
-          </div>
-        </div>
-
         {/* EXECUTIVE LIQUIDITY & BALANCE HERO PANEL (CLEAN LIGHT HSBC THEME) */}
         <div className="bg-white text-[#1f1f1f] px-4 sm:px-6 md:px-8 py-6 sm:py-7 border-b border-gray-200 relative">
 
