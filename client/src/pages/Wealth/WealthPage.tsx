@@ -35,10 +35,10 @@ const INITIAL_FUNDS: FundItem[] = [
     oneYearReturn: '+19.4%',
     threeYearReturn: '+16.8%',
     rating: '5 Star',
-    heldAmount: 1850000,
-    heldUnits: '5,396.73',
-    sipMonthly: 50000,
-    sipActive: true,
+    heldAmount: 0,
+    heldUnits: '0.00',
+    sipMonthly: 0,
+    sipActive: false,
     sipDate: '5th of every month',
   },
   {
@@ -51,10 +51,10 @@ const INITIAL_FUNDS: FundItem[] = [
     oneYearReturn: '+26.2%',
     threeYearReturn: '+21.5%',
     rating: '5 Star',
-    heldAmount: 1420000,
-    heldUnits: '11,054.88',
-    sipMonthly: 25000,
-    sipActive: true,
+    heldAmount: 0,
+    heldUnits: '0.00',
+    sipMonthly: 0,
+    sipActive: false,
     sipDate: '10th of every month',
   },
   {
@@ -67,8 +67,8 @@ const INITIAL_FUNDS: FundItem[] = [
     oneYearReturn: '+14.1%',
     threeYearReturn: '+13.2%',
     rating: '4 Star',
-    heldAmount: 890000,
-    heldUnits: '18,200.40',
+    heldAmount: 0,
+    heldUnits: '0.00',
   },
   {
     id: 'hsbc-liquid',
@@ -80,8 +80,8 @@ const INITIAL_FUNDS: FundItem[] = [
     oneYearReturn: '+7.8%',
     threeYearReturn: '+7.4%',
     rating: 'AAA Safe',
-    heldAmount: 400000,
-    heldUnits: '321.26',
+    heldAmount: 0,
+    heldUnits: '0.00',
   },
   {
     id: 'hsbc-global-tech',
@@ -204,23 +204,23 @@ export const WealthPage: React.FC = () => {
               <div className="text-2xl sm:text-3xl font-bold text-[#1f1f1f] mt-1">
                 {formatINR(totalInvestedDynamic)}
               </div>
-              <div className="text-xs text-[#16864A] font-semibold mt-0.5">
-                Overall Returns: +18.42% unrealized gain
+              <div className="text-xs text-[#777777] font-semibold mt-0.5">
+                {totalInvestedDynamic > 0 ? 'Overall Returns: +18.42% unrealized gain' : 'No Active Investment Holdings'}
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-2 w-full sm:w-auto text-center">
               <div className="bg-white px-4 py-2.5 rounded-lg border border-gray-200/70">
                 <div className="text-[10px] text-[#777777] uppercase font-bold">Equity</div>
-                <div className="text-sm font-bold text-[#1f1f1f] mt-0.5">{wealth?.equityAllocation || 60}%</div>
+                <div className="text-sm font-bold text-[#1f1f1f] mt-0.5">{totalInvestedDynamic > 0 ? (wealth?.equityAllocation || 60) : 0}%</div>
               </div>
               <div className="bg-white px-4 py-2.5 rounded-lg border border-gray-200/70">
                 <div className="text-[10px] text-[#777777] uppercase font-bold">Debt</div>
-                <div className="text-sm font-bold text-[#1f1f1f] mt-0.5">{wealth?.debtAllocation || 30}%</div>
+                <div className="text-sm font-bold text-[#1f1f1f] mt-0.5">{totalInvestedDynamic > 0 ? (wealth?.debtAllocation || 30) : 0}%</div>
               </div>
               <div className="bg-white px-4 py-2.5 rounded-lg border border-gray-200/70">
                 <div className="text-[10px] text-[#777777] uppercase font-bold">Gold</div>
-                <div className="text-sm font-bold text-[#1f1f1f] mt-0.5">{wealth?.goldAllocation || 10}%</div>
+                <div className="text-sm font-bold text-[#1f1f1f] mt-0.5">{totalInvestedDynamic > 0 ? (wealth?.goldAllocation || 10) : 0}%</div>
               </div>
             </div>
           </div>

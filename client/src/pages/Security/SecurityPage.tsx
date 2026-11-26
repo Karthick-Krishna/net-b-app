@@ -292,14 +292,14 @@ export const SecurityPage: React.FC = () => {
 
           {/* Active Sessions */}
           <div className="border-t border-gray-100 pt-5 space-y-2">
-            <h2 className="text-sm font-bold text-[#1f1f1f]">Active Devices &amp; Sessions</h2>
+            <h2 className="text-sm font-bold text-[#1f1f1f]">Active Devices &amp; Login Activity</h2>
             <div className="divide-y divide-gray-100 text-xs">
               <div className="py-3.5 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <Laptop className="w-4 h-4 text-[#777777]" aria-hidden="true" />
+                  <Laptop className="w-4 h-4 text-[#16864A]" aria-hidden="true" />
                   <div>
-                    <div className="font-bold text-[#1f1f1f]">Web Browser Session — Current Device</div>
-                    <div className="text-[11px] text-[#777777]">Mumbai, India • Active now</div>
+                    <div className="font-bold text-[#1f1f1f]">MacBook Pro — HSBC NetBanking Web</div>
+                    <div className="text-[11px] text-[#777777]">Coimbatore, Tamil Nadu • Current Device (Active now)</div>
                   </div>
                 </div>
                 <span className="text-[#16864A] font-bold">Active</span>
@@ -308,13 +308,13 @@ export const SecurityPage: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <Smartphone className="w-4 h-4 text-[#777777]" aria-hidden="true" />
                   <div>
-                    <div className="font-bold text-[#1f1f1f]">iPhone 15 Pro — HSBC Mobile App</div>
-                    <div className="text-[11px] text-[#777777]">Mumbai, India • 2h ago</div>
+                    <div className="font-bold text-[#1f1f1f]">Samsung Galaxy S24 Ultra — HSBC India Mobile App</div>
+                    <div className="text-[11px] text-[#777777]">Coimbatore, Tamil Nadu • Active 2h ago</div>
                   </div>
                 </div>
                 <button
                   type="button"
-                  onClick={() => toast.success('Revoked mobile session token')}
+                  onClick={() => toast.success('Revoked Samsung Galaxy S24 Ultra mobile session')}
                   className="text-[#DB0011] hover:underline font-bold cursor-pointer min-h-[32px]"
                 >
                   Revoke

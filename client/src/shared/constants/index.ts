@@ -24,10 +24,10 @@ export const BANK_CONFIG = {
     error: '#D92D20',
   },
   defaultBranch: {
-    name: 'Mumbai Main Branch, Fort',
-    ifsc: 'HSBC0400002',
+    name: 'Coimbatore Branch, Race Course Road',
+    ifsc: 'HSBC0641002',
     swift: 'HBUKINBB',
-    city: 'Mumbai',
+    city: 'Coimbatore',
     country: 'India',
   },
 };

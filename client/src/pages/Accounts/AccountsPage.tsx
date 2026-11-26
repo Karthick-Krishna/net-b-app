@@ -309,7 +309,7 @@ export const AccountsPage: React.FC = () => {
             </label>
             <label className="flex items-center gap-2.5 cursor-pointer text-gray-600 min-h-[32px]">
               <input type="checkbox" defaultChecked className="accent-[#DB0011]" />
-              <span>Registered Fort, Mumbai address reaffirmed</span>
+              <span>Registered Race Course Road, Coimbatore address reaffirmed</span>
             </label>
           </div>
 

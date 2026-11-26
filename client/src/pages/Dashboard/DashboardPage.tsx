@@ -49,7 +49,7 @@ export const DashboardPage: React.FC = () => {
   const primaryAccount = accounts[0];
 
   const totalDepositsValue = deposits.reduce((s, d) => s + (d.principalAmount || 0), 0);
-  const totalWealthValue = wealth?.totalPortfolioValue || 4560000;
+  const totalWealthValue = wealth?.totalPortfolioValue ?? 0;
   const totalRelationshipAssets = totalBalanceGbpOrInr + totalWealthValue + totalDepositsValue;
   const totalAvailableCredit = cards
     .filter(c => c.cardType === 'CREDIT')
@@ -130,7 +130,7 @@ export const DashboardPage: React.FC = () => {
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#666666]">
                 <span className="font-mono">
                   A/C {primaryAccount?.maskedAccountNumber || '•••• •••• •••• 4101'} · IFSC{' '}
-                  {primaryAccount?.ifscCode || 'HSBC0400002'}
+                  {primaryAccount?.ifscCode || 'HSBC0641002'}
                 </span>
                 <button
                   type="button"
@@ -183,7 +183,7 @@ export const DashboardPage: React.FC = () => {
                 {formatCurrency(totalRelationshipAssets, 'INR')}
               </div>
               <div className="text-[10px] text-[#777777] mt-0.5">
-                Cash + Wealth + Deposits
+                Savings ({formatCurrency(totalBalanceGbpOrInr, 'INR')}) + Deposits ({formatCurrency(totalDepositsValue, 'INR')})
               </div>
             </div>
 
@@ -194,8 +194,8 @@ export const DashboardPage: React.FC = () => {
               <div className="text-base sm:text-lg font-bold text-[#1f1f1f] mt-1 tabular-nums">
                 {formatCurrency(totalWealthValue, 'INR')}
               </div>
-              <div className="text-[10px] text-[#166534] font-semibold mt-0.5">
-                +18.42% Portfolio Yield
+              <div className="text-[10px] text-[#777777] font-medium mt-0.5">
+                No Active Holdings
               </div>
             </div>
 
@@ -231,7 +231,7 @@ export const DashboardPage: React.FC = () => {
             {[
               { label: 'Funds Transfer', sub: 'NEFT / RTGS / IMPS', path: '/payments', icon: Send },
               { label: 'Card Controls', sub: `${cards.length} Active Cards`, path: '/cards', icon: CreditCard },
-              { label: 'Wealth & Funds', sub: 'Asset Allocation', path: '/wealth', icon: TrendingUp },
+              { label: 'Wealth & Funds', sub: 'No Active Investments', path: '/wealth', icon: TrendingUp },
               { label: 'Term Deposits', sub: 'Up to 7.80% p.a.', path: '/deposits', icon: PiggyBank },
               { label: 'e-Statements', sub: 'Ledger & Form 16A', path: '/statements', icon: FileText },
               { label: 'Security & MPIN', sub: 'App-Lock Shield', path: '/security', icon: ShieldCheck },

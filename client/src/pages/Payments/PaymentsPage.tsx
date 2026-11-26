@@ -26,7 +26,7 @@ interface Beneficiary {
 
 const INITIAL_BENEFICIARIES: Beneficiary[] = [
   { name: 'Rajesh Kumar', account: '50100492819201', bank: 'HDFC Bank Ltd', ifsc: 'HDFC0000060' },
-  { name: 'Ananya Deshmukh', account: '50200099124501', bank: 'HSBC India', ifsc: 'HSBC0400002' },
+  { name: 'Ananya Deshmukh', account: '06410099124501', bank: 'HSBC India', ifsc: 'HSBC0641002' },
   { name: 'Vikram Singhania', account: '00040152839100', bank: 'ICICI Bank Ltd', ifsc: 'ICIC0000004' },
 ];
 
@@ -238,7 +238,7 @@ export const PaymentsPage: React.FC = () => {
           recipientName: billerProvider,
           recipientAccount: consumerNumber,
           recipientBank: 'Utility Aggregator Gateway',
-          ifscCode: 'HSBC0400002',
+          ifscCode: 'HSBC0641002',
           amount: numAmount,
           reference: ref,
           category: 'UTILITIES',

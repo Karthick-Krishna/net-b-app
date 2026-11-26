@@ -331,7 +331,7 @@ export const CardsPage: React.FC = () => {
           recipientName: `${cardTitle} •••• ${maskedFourDigits}`,
           recipientAccount: activeCard.maskedCardNumber,
           recipientBank: 'HSBC Card Services India',
-          ifscCode: 'HSBC0400002',
+          ifscCode: 'HSBC0641002',
           amount: amt,
           reference: 'CCBILL/' + Date.now().toString().slice(-6),
           category: 'TRANSFER',

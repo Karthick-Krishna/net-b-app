@@ -26,7 +26,7 @@ import {
   INITIAL_AUDIT_LOGS,
 } from './seedData';
 
-const STORE_KEY_PREFIX = 'hsbc_india_banking_store_v9_';
+const STORE_KEY_PREFIX = 'hsbc_india_banking_store_v10_';
 const CHANNEL_NAME = 'hsbc_india_sync_bus';
 
 export type SyncEventType =
@@ -183,8 +183,8 @@ export const RealtimeStore = {
       managedBalance: customer.initialBalance ?? 50000,
       ledgerBalance: customer.initialBalance ?? 50000,
       accountStatus: 'ACTIVE',
-      branchName: 'Mumbai Main Branch, Fort',
-      ifscCode: 'HSBC0400002',
+      branchName: 'Coimbatore Branch, Race Course Road',
+      ifscCode: 'HSBC0641002',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
