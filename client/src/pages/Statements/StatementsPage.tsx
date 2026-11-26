@@ -9,6 +9,11 @@ import { useBanking } from '../../context/BankingContext';
 import { useAuth } from '../../context/AuthContext';
 import { formatINR } from '@shared/utils/formatters';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
+import {
+  downloadInterestCertificateHtml,
+  downloadStatementCsv,
+  downloadStatementHtml,
+} from '../../utils/downloadHelper';
 import toast from 'react-hot-toast';
 
 export const StatementsPage: React.FC = () => {
@@ -32,19 +37,38 @@ export const StatementsPage: React.FC = () => {
     window.print();
   };
 
-  const handleDownloadPDF = () => {
+  const handleDownloadStatement = (format: 'HTML' | 'CSV' = 'HTML') => {
     setIsDownloading(true);
-    toast.loading(
-      activeTab === 'STATEMENTS' ? 'Generating e-Statement PDF...' : 'Generating Interest Certificate PDF...',
-      { id: 'pdf-toast' }
-    );
-    setTimeout(() => {
+    try {
+      if (activeTab === 'STATEMENTS') {
+        if (format === 'CSV') {
+          downloadStatementCsv(account, accountTxs);
+          toast.success('Statement CSV downloaded');
+        } else {
+          downloadStatementHtml({
+            customerName: currentUser?.displayName || 'Karthick Krishna',
+            customerId: currentUser?.customerId || 'HSBC-882941',
+            account,
+            dateRangeLabel: dateRange.replace(/_/g, ' '),
+            txs: accountTxs,
+            totalCredits,
+            totalDebits,
+          });
+          toast.success('Certified e-Statement downloaded');
+        }
+      } else {
+        downloadInterestCertificateHtml({
+          customerName: currentUser?.displayName || 'Karthick Krishna',
+          customerId: currentUser?.customerId || 'HSBC-882941',
+          certType,
+          finYear,
+          account,
+        });
+        toast.success('Interest Certificate downloaded');
+      }
+    } finally {
       setIsDownloading(false);
-      toast.success(
-        activeTab === 'STATEMENTS' ? 'Certified e-Statement PDF downloaded.' : 'Interest Certificate PDF downloaded.',
-        { id: 'pdf-toast' }
-      );
-    }, 900);
+    }
   };
 
   return (
@@ -125,17 +149,25 @@ export const StatementsPage: React.FC = () => {
                 <div className="md:col-span-3 flex gap-2">
                   <button
                     type="button"
-                    onClick={handleDownloadPDF}
+                    onClick={() => handleDownloadStatement('HTML')}
                     disabled={isDownloading}
                     className="flex-1 min-h-[44px] px-3 bg-white border border-gray-300 text-[#1f1f1f] rounded-full text-xs font-semibold hover:bg-gray-50 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                   >
                     <Download className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
-                    <span>PDF</span>
+                    <span>Statement</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadStatement('CSV')}
+                    disabled={isDownloading}
+                    className="min-h-[44px] px-3.5 bg-[#F5F6F8] hover:bg-[#EBECEF] text-[#1f1f1f] rounded-full text-xs font-semibold active:scale-[0.98] transition-all flex items-center justify-center cursor-pointer"
+                  >
+                    CSV
                   </button>
                   <button
                     type="button"
                     onClick={handlePrint}
-                    className="flex-1 min-h-[44px] px-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                    className="min-h-[44px] px-4 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                   >
                     <Printer className="w-3.5 h-3.5" aria-hidden="true" />
                     <span>Print</span>
@@ -275,12 +307,12 @@ export const StatementsPage: React.FC = () => {
                   </div>
                   <button
                     type="button"
-                    onClick={handleDownloadPDF}
+                    onClick={() => handleDownloadStatement('HTML')}
                     disabled={isDownloading}
                     className="min-h-[40px] px-5 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
                   >
                     <Download className="w-3.5 h-3.5" aria-hidden="true" />
-                    <span>Download PDF</span>
+                    <span>Download Certificate</span>
                   </button>
                 </div>
 

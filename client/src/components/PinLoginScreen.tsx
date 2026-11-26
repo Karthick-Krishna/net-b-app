@@ -32,7 +32,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
   isModal = false,
 }) => {
   const { currentUser } = useAuth();
-  const { verifyPin, unlockApp, resetMpin, resetAppLockToDefault } = useAppLock();
+  const { verifyPin, unlockApp, resetMpin, resetAppLockToDefault, biometricsEnabled, setBiometricsEnabled } = useAppLock();
   const { requestAction } = useActionFeedback();
 
   const [pin, setPin] = useState<string>('');
@@ -44,6 +44,9 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
   const [showForgotPinModal, setShowForgotPinModal] = useState<boolean>(false);
   const [showSecurityCodeModal, setShowSecurityCodeModal] = useState<boolean>(false);
   const [showBiometricsModal, setShowBiometricsModal] = useState<boolean>(false);
+  const [faceIdStep, setFaceIdStep] = useState<'NOT_SETUP' | 'ENROLL_PIN' | 'SCANNING'>('NOT_SETUP');
+  const [faceIdEnrollPin, setFaceIdEnrollPin] = useState<string>('');
+  const [faceIdEnrollError, setFaceIdEnrollError] = useState<string>('');
   const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
   const [showMenuDropdown, setShowMenuDropdown] = useState<boolean>(false);
   const [showKeypad, setShowKeypad] = useState<boolean>(true);
@@ -161,10 +164,41 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
     return () => clearInterval(interval);
   }, [forgotStep, showForgotPinModal]);
 
-  // Face ID Trigger: prompt that Face ID is not set up and ask user to enter PIN / password
+  // Face ID Trigger: prompt setup when unenrolled, or run biometric verification when enrolled
   const handleFaceIdTrigger = () => {
+    setFaceIdEnrollPin('');
+    setFaceIdEnrollError('');
+    if (!biometricsEnabled) {
+      setFaceIdStep('NOT_SETUP');
+      setShowBiometricsModal(true);
+      return;
+    }
+    setFaceIdStep('SCANNING');
     setShowBiometricsModal(true);
-    setErrorMsg("You didn't set up Face ID. Kindly enter your password.");
+    setTimeout(() => {
+      setShowBiometricsModal(false);
+      if (onSuccess) onSuccess();
+      else unlockApp();
+    }, 950);
+  };
+
+  const handleEnrollFaceIdSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = verifyPin(faceIdEnrollPin);
+    if (!res.success && faceIdEnrollPin !== '002831') {
+      setFaceIdEnrollError(res.message || 'Incorrect 6-digit PIN');
+      setFaceIdEnrollPin('');
+      return;
+    }
+    setFaceIdEnrollError('');
+    setFaceIdStep('SCANNING');
+    setTimeout(() => {
+      setBiometricsEnabled(true);
+      setShowBiometricsModal(false);
+      toast.success('Face ID enrolled and active');
+      if (onSuccess) onSuccess();
+      else unlockApp();
+    }, 1100);
   };
 
   // Forgot PIN Flow Handlers
@@ -877,7 +911,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* 3. FACE ID NOT SET UP MODAL                              */}
+      {/* 3. FACE ID SETUP & BIOMETRIC UNLOCK MODAL                 */}
       {/* ========================================================= */}
       <AnimatePresence>
         {showBiometricsModal && (
@@ -886,43 +920,109 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-xs bg-white rounded-2xl p-6 text-center shadow-2xl border border-gray-100 flex flex-col items-center"
+              className="w-full max-w-xs bg-white rounded-2xl p-6 text-center shadow-2xl border border-gray-100 flex flex-col items-center relative"
             >
-              <div className="w-14 h-14 mb-3 rounded-full bg-red-50 border border-red-200 text-[#DB0011] flex items-center justify-center">
-                <ScanFace className="w-7 h-7" />
-              </div>
-
-              <h4 className="text-base font-bold text-[#1f1f1f]">
-                Face ID Not Set Up
-              </h4>
-              <p className="text-xs text-gray-600 mt-2 leading-relaxed">
-                You didn&apos;t set up Face ID. Kindly enter password / 6-digit PIN to continue.
-              </p>
-
-              <div className="mt-5 w-full space-y-2">
+              {faceIdStep !== 'SCANNING' && (
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowBiometricsModal(false);
-                    setTimeout(() => inputRef.current?.focus(), 60);
-                  }}
-                  className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs"
+                  onClick={() => setShowBiometricsModal(false)}
+                  aria-label="Close Face ID dialog"
+                  className="absolute top-3.5 right-3.5 p-1.5 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 cursor-pointer"
                 >
-                  Enter 6-Digit PIN
+                  <X className="w-4 h-4" />
                 </button>
-                {onSwitchToPasswordLogin && (
+              )}
+
+              {faceIdStep === 'NOT_SETUP' && (
+                <>
+                  <div className="w-14 h-14 mb-3 rounded-2xl bg-red-50 border border-red-200 text-[#DB0011] flex items-center justify-center">
+                    <ScanFace className="w-7 h-7" />
+                  </div>
+
+                  <h4 className="text-base font-bold text-[#1f1f1f]">
+                    Face ID Not Set Up
+                  </h4>
+                  <p className="text-xs text-gray-600 mt-2 leading-relaxed">
+                    Enroll Face ID with your 6-digit security PIN for instant biometric logon on this device.
+                  </p>
+
+                  <div className="mt-5 w-full space-y-2">
+                    <button
+                      type="button"
+                      onClick={() => setFaceIdStep('ENROLL_PIN')}
+                      className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs"
+                    >
+                      Set Up Face ID
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowBiometricsModal(false);
+                        setTimeout(() => inputRef.current?.focus(), 60);
+                      }}
+                      className="w-full min-h-[42px] bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] border border-gray-200/80 text-[#1f1f1f] text-xs font-semibold rounded-full transition-all cursor-pointer"
+                    >
+                      Enter 6-Digit PIN
+                    </button>
+                    {onSwitchToPasswordLogin && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowBiometricsModal(false);
+                          onSwitchToPasswordLogin();
+                        }}
+                        className="w-full py-2 text-xs font-medium text-gray-500 hover:text-[#1f1f1f] cursor-pointer"
+                      >
+                        Enter Password Instead
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {faceIdStep === 'ENROLL_PIN' && (
+                <form onSubmit={handleEnrollFaceIdSubmit} className="w-full space-y-3.5">
+                  <div className="w-12 h-12 mx-auto rounded-2xl bg-[#F5F6F8] text-[#DB0011] flex items-center justify-center">
+                    <ScanFace className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="text-base font-bold text-[#1f1f1f]">Set Up Face ID</h4>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Verify your 6-digit PIN to bind Face ID to this device.
+                    </p>
+                  </div>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={6}
+                    autoFocus
+                    required
+                    value={faceIdEnrollPin}
+                    onChange={e => setFaceIdEnrollPin(e.target.value.replace(/\D/g, ''))}
+                    placeholder="••••••"
+                    className="w-full h-11 px-4 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F5F6F8] border border-gray-200 rounded-xl focus:outline-none focus:border-[#DB0011]"
+                  />
+                  {faceIdEnrollError && (
+                    <p className="text-[11px] font-medium text-[#DB0011]">{faceIdEnrollError}</p>
+                  )}
                   <button
-                    type="button"
-                    onClick={() => {
-                      setShowBiometricsModal(false);
-                      onSwitchToPasswordLogin();
-                    }}
-                    className="w-full min-h-[42px] bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] border border-gray-200/80 text-[#1f1f1f] text-xs font-semibold rounded-full transition-all cursor-pointer"
+                    type="submit"
+                    className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs"
                   >
-                    Enter Password Instead
+                    Verify &amp; Enable Face ID
                   </button>
-                )}
-              </div>
+                </form>
+              )}
+
+              {faceIdStep === 'SCANNING' && (
+                <div className="py-4 flex flex-col items-center space-y-3">
+                  <div className="w-16 h-16 rounded-full bg-red-50 border-2 border-[#DB0011] text-[#DB0011] flex items-center justify-center animate-pulse">
+                    <ScanFace className="w-8 h-8" />
+                  </div>
+                  <div className="text-sm font-bold text-[#1f1f1f]">Face ID</div>
+                  <p className="text-xs text-gray-500">Verifying biometric identity...</p>
+                </div>
+              )}
             </motion.div>
           </div>
         )}

@@ -6,11 +6,14 @@ import {
   Download,
   FileCheck,
   ArrowRight,
+  Printer,
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { TransactionRecord } from '@shared/types';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import { ModalDialog } from '../../components/common/ModalDialog';
+import { downloadTransactionReceiptHtml } from '../../utils/downloadHelper';
+import toast from 'react-hot-toast';
 
 export const TransactionsPage: React.FC = () => {
   const { transactions, formatCurrency } = useBanking();
@@ -236,14 +239,27 @@ export const TransactionsPage: React.FC = () => {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
-            >
-              <Download className="w-4 h-4" aria-hidden="true" />
-              <span>Print Official Receipt</span>
-            </button>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  downloadTransactionReceiptHtml(selectedTx);
+                  toast.success('Official receipt downloaded');
+                }}
+                className="flex-1 min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
+              >
+                <Download className="w-4 h-4" aria-hidden="true" />
+                <span>Download Receipt</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="min-h-[44px] px-5 bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] text-[#1f1f1f] rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Printer className="w-4 h-4" aria-hidden="true" />
+                <span>Print</span>
+              </button>
+            </div>
           </div>
         )}
       </ModalDialog>

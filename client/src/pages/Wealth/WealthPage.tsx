@@ -110,6 +110,10 @@ export const WealthPage: React.FC = () => {
   const [showRiskModal, setShowRiskModal] = useState(false);
   const [riskScore, setRiskScore] = useState(3);
   const [riskProfileLabel, setRiskProfileLabel] = useState('Balanced Growth');
+  const [showRmModal, setShowRmModal] = useState(false);
+  const [rmDate, setRmDate] = useState('2026-12-01');
+  const [rmSlot, setRmSlot] = useState('11:00 AM IST');
+  const [rmTopic, setRmTopic] = useState('Portfolio Rebalancing & Mutual Funds');
 
   const totalInvestedDynamic = funds.reduce((acc, f) => acc + f.heldAmount, 0);
 
@@ -334,7 +338,7 @@ export const WealthPage: React.FC = () => {
 
             <button
               type="button"
-              onClick={() => toast.success('HSBC Simply Invest brokerage linked and Relationship Manager consultation scheduled.')}
+              onClick={() => setShowRmModal(true)}
               className="p-4 bg-[#F6F7F9] hover:bg-gray-100 rounded-2xl border border-gray-200/70 flex items-center justify-between text-left transition-colors cursor-pointer group"
             >
               <div>
@@ -457,6 +461,43 @@ export const WealthPage: React.FC = () => {
             </button>
           </form>
         )}
+      </ModalDialog>
+      {/* Schedule RM Consultation Dialog */}
+      <ModalDialog open={showRmModal} onClose={() => setShowRmModal(false)} title="Consult Relationship Manager" subtitle="Vikram Singhania · VP Premier Wealth" maxWidthClass="max-w-sm">
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            toast.success(`Consultation confirmed for ${rmDate} at ${rmSlot}`);
+            setShowRmModal(false);
+          }}
+          className="space-y-3.5 text-xs"
+        >
+          <div>
+            <label htmlFor="rm-topic" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Topic</label>
+            <select id="rm-topic" value={rmTopic} onChange={e => setRmTopic(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold">
+              <option>Portfolio Rebalancing &amp; Mutual Funds</option>
+              <option>Tax-Saving ELSS &amp; Capital Gains</option>
+              <option>Fixed Deposit &amp; Global Wealth</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-2.5">
+            <div>
+              <label htmlFor="rm-date" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Preferred Date</label>
+              <input id="rm-date" type="date" required value={rmDate} onChange={e => setRmDate(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
+            </div>
+            <div>
+              <label htmlFor="rm-slot" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Time Slot</label>
+              <select id="rm-slot" value={rmSlot} onChange={e => setRmSlot(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold">
+                <option>11:00 AM IST</option>
+                <option>02:30 PM IST</option>
+                <option>05:00 PM IST</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">
+            Book Video / Call Appointment
+          </button>
+        </form>
       </ModalDialog>
     </AnimatedPageTransition>
   );

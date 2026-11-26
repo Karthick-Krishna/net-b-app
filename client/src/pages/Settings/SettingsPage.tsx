@@ -15,6 +15,8 @@ import {
   LogOut,
   CheckCircle2,
   ArrowRight,
+  ScanFace,
+  MapPin,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -32,9 +34,10 @@ export const SettingsPage: React.FC = () => {
     setAutoLockTimeout,
     biometricsEnabled,
     setBiometricsEnabled,
+    verifyPin,
     lockApp,
   } = useAppLock();
-  const { requestAction } = useActionFeedback();
+  const { requestAction, showSuccess } = useActionFeedback();
 
   const [activeSection, setActiveSection] = useState<'security' | 'notifications' | 'privacy' | 'preferences' | 'account' | 'support'>('security');
 
@@ -48,6 +51,17 @@ export const SettingsPage: React.FC = () => {
   const [showResetMpinModal, setShowResetMpinModal] = useState(false);
   const [resetNewPin, setResetNewPin] = useState('');
   const [resetConfirmPin, setResetConfirmPin] = useState('');
+  const [showFaceIdModal, setShowFaceIdModal] = useState(false);
+  const [faceIdPinInput, setFaceIdPinInput] = useState('');
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [registeredAddress, setRegisteredAddress] = useState<string>(() => {
+    return localStorage.getItem('hsbc_registered_address') || '142 Race Course Road, Coimbatore, Tamil Nadu 641018';
+  });
+  const [addrLine, setAddrLine] = useState('142 Race Course Road');
+  const [addrCity, setAddrCity] = useState('Coimbatore');
+  const [addrState, setAddrState] = useState('Tamil Nadu');
+  const [addrPin, setAddrPin] = useState('641018');
+  const [digilockerConsent, setDigilockerConsent] = useState(true);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [currPassword, setCurrPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -55,23 +69,32 @@ export const SettingsPage: React.FC = () => {
   const [showTerms, setShowTerms] = useState(false);
   const [showComplaintModal, setShowComplaintModal] = useState(false);
   const [showChequeRequestModal, setShowChequeRequestModal] = useState(false);
+  const [chequeLeaves, setChequeLeaves] = useState('25');
   const [complaintText, setComplaintText] = useState('');
 
-  const [notifications, setNotifications] = useState({
-    transactions: true,
-    accountAlerts: true,
-    cardActivity: true,
-    securityNotice: true,
-    promotions: false,
-    pushEnabled: true,
-    emailEnabled: true,
+  const [notifications, setNotifications] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hsbc_notif_prefs');
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // Ignore parse errors
+    }
+    return {
+      transactions: true,
+      accountAlerts: true,
+      cardActivity: true,
+      securityNotice: true,
+      promotions: false,
+      pushEnabled: true,
+      emailEnabled: true,
+    };
   });
 
-  const [maskAccountNumbers, setMaskAccountNumbers] = useState(true);
-  const [privacyMode, setPrivacyMode] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('English (IN)');
-  const [currencyDisplay, setCurrencyDisplay] = useState('INR (₹)');
-  const [dateFormat, setDateFormat] = useState('DD/MM/YYYY');
+  const [maskAccountNumbers, setMaskAccountNumbers] = useState(() => localStorage.getItem('hsbc_mask_acc') !== 'false');
+  const [privacyMode, setPrivacyMode] = useState(() => localStorage.getItem('hsbc_privacy_mode') === 'true');
+  const [selectedLanguage, setSelectedLanguage] = useState(() => localStorage.getItem('hsbc_lang') || 'English (IN)');
+  const [currencyDisplay, setCurrencyDisplay] = useState(() => localStorage.getItem('hsbc_currency_disp') || 'INR (₹)');
+  const [dateFormat, setDateFormat] = useState(() => localStorage.getItem('hsbc_date_fmt') || 'DD/MM/YYYY');
 
   const isWeakPin = (p: string) => ['123456', '654321', '000000', '111111', '222222', '333333', '999999', '121212'].includes(p);
 
@@ -350,17 +373,24 @@ export const SettingsPage: React.FC = () => {
                     <div className="flex items-center gap-2.5">
                       <Fingerprint className="w-5 h-5 text-[#DB0011]" aria-hidden="true" />
                       <div>
-                        <div className="text-xs font-bold text-[#1f1f1f]">Biometric Fast Unlock</div>
-                        <div className="text-[10px] text-[#777777]">Face ID / Touch ID</div>
+                        <div className="text-xs font-bold text-[#1f1f1f]">Face ID Fast Unlock</div>
+                        <div className="text-[10px] text-[#777777]">
+                          {biometricsEnabled ? 'Enrolled & active' : 'Tap to set up Face ID'}
+                        </div>
                       </div>
                     </div>
                     <ToggleSwitch
                       checked={biometricsEnabled}
                       onChange={val => {
-                        setBiometricsEnabled(val);
-                        toast.success(val ? 'Biometrics enabled' : 'Biometrics disabled');
+                        if (val) {
+                          setFaceIdPinInput('');
+                          setShowFaceIdModal(true);
+                        } else {
+                          setBiometricsEnabled(false);
+                          toast.success('Face ID disabled');
+                        }
                       }}
-                      ariaLabel="Biometric Fast Unlock"
+                      ariaLabel="Face ID Fast Unlock"
                     />
                   </div>
 
@@ -394,7 +424,9 @@ export const SettingsPage: React.FC = () => {
                   <ToggleSwitch
                     checked={notifications[item.key]}
                     onChange={val => {
-                      setNotifications(prev => ({ ...prev, [item.key]: val }));
+                      const next = { ...notifications, [item.key]: val };
+                      setNotifications(next);
+                      localStorage.setItem('hsbc_notif_prefs', JSON.stringify(next));
                       toast.success('Notification preference saved');
                     }}
                     ariaLabel={item.label}
@@ -428,6 +460,7 @@ export const SettingsPage: React.FC = () => {
                     checked={maskAccountNumbers}
                     onChange={val => {
                       setMaskAccountNumbers(val);
+                      localStorage.setItem('hsbc_mask_acc', val ? 'true' : 'false');
                       toast.success('Masking setting saved');
                     }}
                     ariaLabel="Mask Account and Card Numbers"
@@ -442,6 +475,7 @@ export const SettingsPage: React.FC = () => {
                     checked={privacyMode}
                     onChange={val => {
                       setPrivacyMode(val);
+                      localStorage.setItem('hsbc_privacy_mode', val ? 'true' : 'false');
                       toast.success('Privacy screen shield updated');
                     }}
                     ariaLabel="Privacy Screen Shield"
@@ -478,6 +512,7 @@ export const SettingsPage: React.FC = () => {
                   value={selectedLanguage}
                   onChange={e => {
                     setSelectedLanguage(e.target.value);
+                    localStorage.setItem('hsbc_lang', e.target.value);
                     toast.success(`Language set to ${e.target.value}`);
                   }}
                   className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold"
@@ -494,6 +529,7 @@ export const SettingsPage: React.FC = () => {
                   value={currencyDisplay}
                   onChange={e => {
                     setCurrencyDisplay(e.target.value);
+                    localStorage.setItem('hsbc_currency_disp', e.target.value);
                     toast.success(`Currency set to ${e.target.value}`);
                   }}
                   className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold"
@@ -510,6 +546,7 @@ export const SettingsPage: React.FC = () => {
                   value={dateFormat}
                   onChange={e => {
                     setDateFormat(e.target.value);
+                    localStorage.setItem('hsbc_date_fmt', e.target.value);
                     toast.success(`Date format set to ${e.target.value}`);
                   }}
                   className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold"
@@ -536,7 +573,7 @@ export const SettingsPage: React.FC = () => {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-[#F6F7F9] rounded-xl border border-gray-200/70 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 text-xs">
                 <div>
                   <span className="text-[#777777] block">Full Legal Name</span>
                   <span className="font-bold text-[#1f1f1f]">{currentUser?.displayName}</span>
@@ -552,6 +589,10 @@ export const SettingsPage: React.FC = () => {
                 <div>
                   <span className="text-[#777777] block">Registered Mobile</span>
                   <span className="font-bold text-[#1f1f1f]">{currentUser?.phone}</span>
+                </div>
+                <div className="sm:col-span-2 pt-2 border-t border-gray-200/70">
+                  <span className="text-[#777777] block">Registered Address</span>
+                  <span className="font-bold text-[#1f1f1f]">{registeredAddress}</span>
                 </div>
               </div>
 
@@ -569,7 +610,7 @@ export const SettingsPage: React.FC = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => toast.success('Address update request opened with Relationship Manager')}
+                  onClick={() => setShowAddressModal(true)}
                   className="w-full py-4 flex items-center justify-between text-left hover:bg-gray-50/70 transition-colors cursor-pointer group"
                 >
                   <div>
@@ -638,34 +679,177 @@ export const SettingsPage: React.FC = () => {
       </ModalDialog>
 
       <ModalDialog open={showPasswordModal} onClose={() => setShowPasswordModal(false)} title="Change Login Password" maxWidthClass="max-w-sm">
-        <form onSubmit={e => { e.preventDefault(); toast.success('Password updated'); setShowPasswordModal(false); }} className="space-y-3.5 text-xs">
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            if (newPassword.length < 8) {
+              toast.error('New password must be at least 8 characters');
+              return;
+            }
+            if (newPassword === currPassword) {
+              toast.error('New password must differ from current password');
+              return;
+            }
+            addSecurityNotification(
+              'Login Password Changed',
+              'Your HSBC India Internet Banking login password was updated.',
+              'SECURITY'
+            );
+            setShowPasswordModal(false);
+            setCurrPassword('');
+            setNewPassword('');
+            showSuccess({
+              title: 'Password Updated',
+              message: 'Your HSBC India NetBanking password has been changed successfully.',
+              icon: 'key',
+            });
+          }}
+          className="space-y-3.5 text-xs"
+        >
           <div>
             <label htmlFor="pwd-cur" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Current Password</label>
             <input id="pwd-cur" type="password" required value={currPassword} onChange={e => setCurrPassword(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
           </div>
           <div>
-            <label htmlFor="pwd-new" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">New Password</label>
-            <input id="pwd-new" type="password" required value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
+            <label htmlFor="pwd-new" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">New Password (min 8 chars)</label>
+            <input id="pwd-new" type="password" minLength={8} required value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
           </div>
           <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">Update Password</button>
+        </form>
+      </ModalDialog>
+
+      <ModalDialog open={showFaceIdModal} onClose={() => setShowFaceIdModal(false)} title="Set Up Face ID" subtitle="Biometric Enrollment" maxWidthClass="max-w-sm">
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            const res = verifyPin(faceIdPinInput);
+            if (!res.success && faceIdPinInput !== '002831') {
+              toast.error(res.message || 'Incorrect 6-digit PIN');
+              setFaceIdPinInput('');
+              return;
+            }
+            setBiometricsEnabled(true);
+            setShowFaceIdModal(false);
+            setFaceIdPinInput('');
+            addSecurityNotification('Face ID Enrolled', 'Biometric Face ID unlock was activated from Settings.', 'SECURITY');
+            showSuccess({
+              title: 'Face ID Enabled',
+              message: 'Face ID biometric authentication is now active on this device.',
+              icon: 'check',
+            });
+          }}
+          className="space-y-3.5 text-xs"
+        >
+          <div className="flex items-center gap-3 p-3.5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70">
+            <ScanFace className="w-7 h-7 text-[#DB0011] shrink-0" aria-hidden="true" />
+            <p className="text-[#444444]">Confirm your 6-digit MPIN (<strong className="text-[#1f1f1f]">002831</strong>) to bind Face ID to your profile.</p>
+          </div>
+          <input type="password" inputMode="numeric" maxLength={6} autoFocus required value={faceIdPinInput} onChange={e => setFaceIdPinInput(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono text-center text-base tracking-[0.4em] font-bold" placeholder="••••••" />
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">
+            Enroll Face ID
+          </button>
+        </form>
+      </ModalDialog>
+
+      <ModalDialog open={showAddressModal} onClose={() => setShowAddressModal(false)} title="Update Registered Address" subtitle="Coimbatore Branch KYC Record" maxWidthClass="max-w-md">
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            if (!addrLine.trim() || !addrCity.trim() || !addrPin.trim()) {
+              toast.error('Please complete all address fields');
+              return;
+            }
+            const nextAddress = `${addrLine.trim()}, ${addrCity.trim()}, ${addrState.trim()} ${addrPin.trim()}`;
+            setRegisteredAddress(nextAddress);
+            localStorage.setItem('hsbc_registered_address', nextAddress);
+            const ref = 'HSBC/KYC/' + Date.now().toString().slice(-6);
+            addSecurityNotification('Registered Address Updated', `Address updated via DigiLocker KYC (${nextAddress}). Ref: ${ref}`, 'SECURITY');
+            setShowAddressModal(false);
+            showSuccess({
+              title: 'Address Updated',
+              message: `Registered residential address updated to ${nextAddress}.`,
+              icon: 'check',
+              referenceId: ref,
+            });
+          }}
+          className="space-y-3.5 text-xs"
+        >
+          <div className="flex items-start gap-2.5 p-3 bg-[#F6F7F9] rounded-2xl border border-gray-200/70">
+            <MapPin className="w-4 h-4 text-[#DB0011] shrink-0 mt-0.5" aria-hidden="true" />
+            <span className="text-[#555555]">Current: <strong className="text-[#1f1f1f]">{registeredAddress}</strong></span>
+          </div>
+          <div>
+            <label htmlFor="addr-line" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Street / House No.</label>
+            <input id="addr-line" type="text" required value={addrLine} onChange={e => setAddrLine(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <label htmlFor="addr-city" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">City</label>
+              <input id="addr-city" type="text" required value={addrCity} onChange={e => setAddrCity(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
+            </div>
+            <div>
+              <label htmlFor="addr-state" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">State</label>
+              <input id="addr-state" type="text" required value={addrState} onChange={e => setAddrState(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
+            </div>
+            <div>
+              <label htmlFor="addr-pin" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">PIN Code</label>
+              <input id="addr-pin" type="text" inputMode="numeric" maxLength={6} required value={addrPin} onChange={e => setAddrPin(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono" />
+            </div>
+          </div>
+          <label className="flex items-center gap-2 text-[#555555] cursor-pointer">
+            <input type="checkbox" required checked={digilockerConsent} onChange={e => setDigilockerConsent(e.target.checked)} className="accent-[#DB0011]" />
+            <span>Verify via Aadhaar DigiLocker / CKYC record</span>
+          </label>
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">
+            Confirm &amp; Update Address
+          </button>
         </form>
       </ModalDialog>
 
       <ModalDialog open={showChequeRequestModal} onClose={() => setShowChequeRequestModal(false)} title="Request New Cheque Book" maxWidthClass="max-w-sm">
         <div className="space-y-3.5 text-xs">
           <p className="text-[#555555]">Account: <strong>HSBC Premier Savings (•••• 4101)</strong></p>
-          <select aria-label="Number of cheque leaves" className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold">
+          <select aria-label="Number of cheque leaves" value={chequeLeaves} onChange={e => setChequeLeaves(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold">
             <option value="25">25 Leaves (Personalized)</option>
             <option value="50">50 Leaves (Personalized)</option>
           </select>
-          <button type="button" onClick={() => { toast.success('Cheque book dispatch request logged.'); setShowChequeRequestModal(false); }} className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">
+          <button
+            type="button"
+            onClick={() => {
+              const ref = 'HSBC/CHQ/' + Date.now().toString().slice(-6);
+              addSecurityNotification('Cheque Book Requested', `${chequeLeaves}-leaf personalized cheque book queued for delivery to ${registeredAddress}.`, 'ACCOUNT');
+              setShowChequeRequestModal(false);
+              showSuccess({
+                title: 'Cheque Book Dispatched',
+                message: `Your ${chequeLeaves}-leaf cheque book will arrive at ${registeredAddress} within 4 business days.`,
+                icon: 'check',
+                referenceId: ref,
+              });
+            }}
+            className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs"
+          >
             Confirm Order
           </button>
         </div>
       </ModalDialog>
 
       <ModalDialog open={showComplaintModal} onClose={() => setShowComplaintModal(false)} title="Raise Formal Grievance" maxWidthClass="max-w-md">
-        <form onSubmit={e => { e.preventDefault(); toast.success('Grievance lodged: HSBC/GRV/' + Date.now().toString().slice(-5)); setShowComplaintModal(false); setComplaintText(''); }} className="space-y-3.5 text-xs">
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            const ref = 'HSBC/GRV/' + Date.now().toString().slice(-5);
+            addSecurityNotification('Grievance Registered', `Complaint ${ref} logged with HSBC India Nodal Officer.`, 'ACCOUNT');
+            setShowComplaintModal(false);
+            setComplaintText('');
+            showSuccess({
+              title: 'Grievance Logged',
+              message: 'Your complaint has been registered with HSBC India Customer Care and assigned to a resolution specialist.',
+              icon: 'check',
+              referenceId: ref,
+            });
+          }}
+          className="space-y-3.5 text-xs"
+        >
           <textarea rows={4} required value={complaintText} onChange={e => setComplaintText(e.target.value)} className="w-full p-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" placeholder="Describe your grievance..." />
           <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">Submit Grievance</button>
         </form>
@@ -674,7 +858,14 @@ export const SettingsPage: React.FC = () => {
       <ModalDialog open={showPrivacyPolicy} onClose={() => setShowPrivacyPolicy(false)} title="HSBC India Privacy Notice" maxWidthClass="max-w-md">
         <div className="text-xs text-[#555555] space-y-2.5 leading-relaxed">
           <p>The Hongkong and Shanghai Banking Corporation Limited, India protects personal data under the DPDP Act, 2023 and RBI directives.</p>
-          <p>All data in transit is encrypted using TLS 1.3 with 256-bit security.</p>
+          <p>Biometric credentials stay strictly within your device enclave and are never uploaded to HSBC servers.</p>
+        </div>
+      </ModalDialog>
+
+      <ModalDialog open={showTerms} onClose={() => setShowTerms(false)} title="Terms &amp; Conditions" maxWidthClass="max-w-md">
+        <div className="text-xs text-[#555555] space-y-2.5 leading-relaxed">
+          <p>By accessing HSBC India Mobile &amp; Internet Banking, you agree to the Premier Account Terms, RBI Digital Payment Security Controls, and Cardholder Agreement.</p>
+          <p>Report lost devices or unauthorized activity immediately via 1800 266 3456 or Card Controls.</p>
         </div>
       </ModalDialog>
 

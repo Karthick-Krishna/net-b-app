@@ -4,9 +4,12 @@ import { useBanking } from '../../context/BankingContext';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import { ModalDialog } from '../../components/common/ModalDialog';
 import { InsuranceRecord } from '@shared/types';
+import { useAuth } from '../../context/AuthContext';
+import { downloadPolicyDocumentHtml } from '../../utils/downloadHelper';
 import toast from 'react-hot-toast';
 
 export const InsurancePage: React.FC = () => {
+  const { currentUser } = useAuth();
   const { insurance, formatCurrency } = useBanking();
   const [selectedPolicy, setSelectedPolicy] = useState<InsuranceRecord | null>(null);
 
@@ -89,7 +92,8 @@ export const InsurancePage: React.FC = () => {
             <button
               type="button"
               onClick={() => {
-                toast.success(`Policy schedule downloaded for ${selectedPolicy.policyNumber}`);
+                downloadPolicyDocumentHtml(selectedPolicy, currentUser?.displayName || 'Karthick Krishna');
+                toast.success(`Policy schedule downloaded (${selectedPolicy.policyNumber})`);
                 setSelectedPolicy(null);
               }}
               className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white font-semibold rounded-full transition-all cursor-pointer shadow-xs"

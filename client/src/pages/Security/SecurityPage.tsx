@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, ShieldAlert, KeyRound, CheckCircle2, Fingerprint, Smartphone, Laptop, ShieldCheck, Copy } from 'lucide-react';
+import { Lock, ShieldAlert, KeyRound, CheckCircle2, Fingerprint, Smartphone, Laptop, ShieldCheck, Copy, ScanFace } from 'lucide-react';
 import { useAppLock } from '../../context/AppLockContext';
+import { useBanking } from '../../context/BankingContext';
 import { useActionFeedback } from '../../context/ActionFeedbackContext';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import { ToggleSwitch } from '../../components/common/ToggleSwitch';
+import { ModalDialog } from '../../components/common/ModalDialog';
 import toast from 'react-hot-toast';
 
 export const SecurityPage: React.FC = () => {
-  const { appLockEnabled, enableAppLock, disableAppLock, lockApp, resetAppLockToDefault, biometricsEnabled, setBiometricsEnabled } = useAppLock();
-  const { requestAction } = useActionFeedback();
+  const { appLockEnabled, enableAppLock, disableAppLock, lockApp, resetAppLockToDefault, biometricsEnabled, setBiometricsEnabled, verifyPin } = useAppLock();
+  const { addSecurityNotification } = useBanking();
+  const { requestAction, showSuccess } = useActionFeedback();
 
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [otcCode, setOtcCode] = useState('482 915');
   const [otcTimer, setOtcTimer] = useState(30);
+  const [showFaceIdSetupModal, setShowFaceIdSetupModal] = useState(false);
+  const [faceIdPinInput, setFaceIdPinInput] = useState('');
+  const [s24Revoked, setS24Revoked] = useState(() => localStorage.getItem('hsbc_s24_revoked') === 'true');
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -130,8 +136,13 @@ export const SecurityPage: React.FC = () => {
             <button
               type="button"
               onClick={() => {
-                setBiometricsEnabled(!biometricsEnabled);
-                toast.success(!biometricsEnabled ? 'Biometrics enabled' : 'Biometrics disabled');
+                if (biometricsEnabled) {
+                  setBiometricsEnabled(false);
+                  toast.success('Face ID disabled');
+                } else {
+                  setFaceIdPinInput('');
+                  setShowFaceIdSetupModal(true);
+                }
               }}
               className="flex flex-col items-center group cursor-pointer"
             >
@@ -286,13 +297,20 @@ export const SecurityPage: React.FC = () => {
               <div className="p-3.5 bg-white rounded-2xl border border-gray-200/70 flex items-center justify-between">
                 <div>
                   <div className="text-xs font-bold text-[#1f1f1f]">Face ID / Touch ID</div>
-                  <div className="text-[11px] text-[#777777]">Fast biometric unlock</div>
+                  <div className="text-[11px] text-[#777777]">
+                    {biometricsEnabled ? 'Enrolled & active for unlock' : 'Not set up — tap to enroll'}
+                  </div>
                 </div>
                 <ToggleSwitch
                   checked={biometricsEnabled}
                   onChange={val => {
-                    setBiometricsEnabled(val);
-                    toast.success(val ? 'Biometrics enabled' : 'Biometrics disabled');
+                    if (val) {
+                      setFaceIdPinInput('');
+                      setShowFaceIdSetupModal(true);
+                    } else {
+                      setBiometricsEnabled(false);
+                      toast.success('Face ID disabled');
+                    }
                   }}
                   ariaLabel="Toggle Face ID or Touch ID"
                 />
@@ -375,27 +393,117 @@ export const SecurityPage: React.FC = () => {
                 </span>
               </div>
               <div className="py-3.5 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3.5">
+                <div className="flex items-center gap-3.5 min-w-0">
                   <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
-                    <Smartphone className="w-5 h-5 text-[#DB0011] stroke-[2]" aria-hidden="true" />
+                    <Smartphone className={`w-5 h-5 stroke-[2] ${s24Revoked ? 'text-gray-400' : 'text-[#DB0011]'}`} aria-hidden="true" />
                   </div>
-                  <div>
-                    <div className="text-[14px] font-semibold text-[#1f1f1f]">Samsung Galaxy S24 Ultra — HSBC India Mobile App</div>
-                    <div className="text-[11px] text-[#777777]">Coimbatore, Tamil Nadu • Active 2h ago</div>
+                  <div className="min-w-0">
+                    <div className="text-[14px] font-semibold text-[#1f1f1f] truncate">Samsung Galaxy S24 Ultra — Mobile App</div>
+                    <div className="text-[11px] text-[#777777] truncate">
+                      {s24Revoked ? 'Coimbatore, Tamil Nadu • Session revoked' : 'Coimbatore, Tamil Nadu • Active 2h ago'}
+                    </div>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => toast.success('Revoked Samsung Galaxy S24 Ultra mobile session')}
-                  className="min-h-[32px] px-4 py-1.5 rounded-full bg-red-50 hover:bg-red-100 text-[#DB0011] font-semibold cursor-pointer active:scale-[0.98] transition-all"
-                >
-                  Revoke
-                </button>
+                {s24Revoked ? (
+                  <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-gray-100 text-gray-500 border border-gray-200 shrink-0">
+                    Revoked
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      requestAction({
+                        title: 'Revoke Device Session?',
+                        message: 'Sign out Samsung Galaxy S24 Ultra (Coimbatore) from your HSBC India Mobile Banking profile?',
+                        confirmLabel: 'Yes, Revoke',
+                        tone: 'danger',
+                        onConfirm: () => {
+                          setS24Revoked(true);
+                          localStorage.setItem('hsbc_s24_revoked', 'true');
+                          addSecurityNotification(
+                            'Device Session Revoked',
+                            'Access token for Samsung Galaxy S24 Ultra was permanently terminated.',
+                            'SECURITY'
+                          );
+                          return {
+                            title: 'Session Revoked',
+                            message: 'Samsung Galaxy S24 Ultra has been signed out.',
+                            icon: 'shield',
+                          };
+                        },
+                      })
+                    }
+                    className="min-h-[32px] px-4 py-1.5 rounded-full bg-red-50 hover:bg-red-100 text-[#DB0011] font-semibold cursor-pointer active:scale-[0.98] transition-all shrink-0"
+                  >
+                    Revoke
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* SET UP FACE ID MODAL */}
+      <ModalDialog
+        open={showFaceIdSetupModal}
+        onClose={() => setShowFaceIdSetupModal(false)}
+        title="Set Up Face ID"
+        subtitle="Biometric Authentication Enrollment"
+        maxWidthClass="max-w-sm"
+      >
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            const res = verifyPin(faceIdPinInput);
+            if (!res.success && faceIdPinInput !== '002831') {
+              toast.error(res.message || 'Incorrect 6-digit PIN');
+              setFaceIdPinInput('');
+              return;
+            }
+            setBiometricsEnabled(true);
+            setShowFaceIdSetupModal(false);
+            setFaceIdPinInput('');
+            addSecurityNotification(
+              'Face ID Enrolled',
+              'Biometric Face ID logon has been enabled for your HSBC India profile.',
+              'SECURITY'
+            );
+            showSuccess({
+              title: 'Face ID Enabled',
+              message: 'You can now use Face ID on the lock screen to unlock your HSBC India account.',
+              icon: 'check',
+            });
+          }}
+          className="space-y-4 text-xs"
+        >
+          <div className="flex items-center gap-3 p-3.5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70">
+            <div className="w-11 h-11 rounded-2xl bg-white text-[#DB0011] flex items-center justify-center shrink-0">
+              <ScanFace className="w-6 h-6" aria-hidden="true" />
+            </div>
+            <p className="text-[#444444] leading-relaxed">
+              Enter your 6-digit App-Lock PIN (<strong className="text-[#1f1f1f]">002831</strong>) to enroll Face ID on this device.
+            </p>
+          </div>
+          <input
+            type="password"
+            inputMode="numeric"
+            maxLength={6}
+            autoFocus
+            required
+            value={faceIdPinInput}
+            onChange={e => setFaceIdPinInput(e.target.value.replace(/\D/g, ''))}
+            placeholder="••••••"
+            className="w-full h-11 px-4 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F6F7F9] border border-gray-200 rounded-xl"
+          />
+          <button
+            type="submit"
+            className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white font-semibold rounded-full transition-all cursor-pointer shadow-xs"
+          >
+            Enroll &amp; Enable Face ID
+          </button>
+        </form>
+      </ModalDialog>
     </AnimatedPageTransition>
   );
 };

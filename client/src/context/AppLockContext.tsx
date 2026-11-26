@@ -35,7 +35,7 @@ export const AppLockProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return parseInt(localStorage.getItem('hsbc_autolock_timeout') || '3', 10);
   });
   const [biometricsEnabled, setBiometricsEnabledState] = useState<boolean>(() => {
-    return localStorage.getItem('hsbc_biometrics_enabled') !== 'false';
+    return localStorage.getItem('hsbc_biometrics_enabled') === 'true';
   });
 
   const setAutoLockTimeout = (mins: number) => {

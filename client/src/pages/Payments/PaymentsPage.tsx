@@ -8,7 +8,6 @@ import {
   Zap,
   ArrowRight,
   UserPlus,
-  CalendarClock,
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { useActionFeedback } from '../../context/ActionFeedbackContext';
@@ -45,11 +44,6 @@ export const PaymentsPage: React.FC = () => {
   const [newPayeeAcc, setNewPayeeAcc] = useState('');
   const [newPayeeBank, setNewPayeeBank] = useState('');
   const [newPayeeIfsc, setNewPayeeIfsc] = useState('');
-
-  // Standing Instructions
-  const [scheduledPayments, setScheduledPayments] = useState([
-    { id: 'si-1', to: 'Ananya Deshmukh', amount: 35000, freq: 'Monthly • 1st', nextDate: '01 Dec 2026' },
-  ]);
 
   // Global Transfer State
   const [globalCountry, setGlobalCountry] = useState({ code: 'GB', name: 'United Kingdom', currency: 'GBP', rate: 106.40, flag: '🇬🇧' });
@@ -429,49 +423,6 @@ export const PaymentsPage: React.FC = () => {
                         </button>
                       );
                     })}
-                  </div>
-
-                  {/* Standing Instructions */}
-                  <div className="p-4 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 space-y-2 text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-[#1f1f1f] flex items-center gap-1.5">
-                        <CalendarClock className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
-                        Standing Instructions ({scheduledPayments.length})
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          requestAction({
-                            title: 'Schedule Recurring Transfer?',
-                            message: `Create a monthly recurring payment of ₹15,000 to ${recipientName || 'Rajesh Kumar'}?`,
-                            confirmLabel: 'Yes, Schedule',
-                            onConfirm: () => {
-                              setScheduledPayments(prev => [
-                                ...prev,
-                                { id: 'si-' + Date.now(), to: recipientName || 'Rajesh Kumar', amount: 15000, freq: 'Monthly • 15th', nextDate: '15 Dec 2026' },
-                              ]);
-                              return {
-                                title: 'Standing Instruction Active',
-                                message: `Monthly ₹15,000 transfer scheduled for ${recipientName || 'Rajesh Kumar'}.`,
-                                icon: 'check',
-                              };
-                            },
-                          });
-                        }}
-                        className="text-[#DB0011] font-semibold hover:underline cursor-pointer"
-                      >
-                        + Schedule Recurring
-                      </button>
-                    </div>
-                    {scheduledPayments.map(si => (
-                      <div key={si.id} className="flex items-center justify-between py-1.5 border-t border-gray-200/60">
-                        <div>
-                          <span className="font-semibold text-[#1f1f1f]">{si.to}</span>
-                          <span className="block text-[10px] text-[#777777]">{si.freq} • Next: {si.nextDate}</span>
-                        </div>
-                        <span className="font-bold text-[#1f1f1f]">{formatCurrency(si.amount, 'INR')}</span>
-                      </div>
-                    ))}
                   </div>
 
                   <div className="flex justify-end pt-2">
