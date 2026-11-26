@@ -163,11 +163,11 @@ export const HsbcTopNav: React.FC = () => {
               type="button"
               onClick={() => setIsNotifOpen(true)}
               aria-label={`Open notifications (${unreadNotificationsCount} unread)`}
-              className="hidden md:flex relative min-w-[40px] min-h-[40px] items-center justify-center rounded-[2px] border border-transparent hover:border-gray-200 hover:bg-[#F8F9FA] text-[#1f1f1f] transition-colors cursor-pointer"
+              className="hidden md:flex relative min-w-[40px] min-h-[40px] items-center justify-center rounded-full border border-transparent hover:border-gray-200 hover:bg-[#F5F6F8] text-[#1f1f1f] transition-colors cursor-pointer"
             >
               <Bell className="w-[19px] h-[19px] stroke-[1.8]" aria-hidden="true" />
               {unreadNotificationsCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-[2px] bg-[#DB0011] text-white text-[9px] font-bold flex items-center justify-center leading-none">
+                <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-[#DB0011] text-white text-[9px] font-bold flex items-center justify-center leading-none">
                   {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
                 </span>
               )}
@@ -178,7 +178,7 @@ export const HsbcTopNav: React.FC = () => {
               onClick={lockApp}
               title="Lock Session (MPIN Shield)"
               aria-label="Lock Session"
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-[2px] bg-[#F2F4F7] hover:bg-gray-200 border border-gray-200 text-xs font-semibold text-[#1f1f1f] transition-colors cursor-pointer"
+              className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full bg-[#F5F6F8] hover:bg-[#EBECEF] border border-gray-200/80 text-xs font-semibold text-[#1f1f1f] transition-all active:scale-[0.98] cursor-pointer"
             >
               <Lock className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
               <span>Lock</span>
@@ -187,9 +187,9 @@ export const HsbcTopNav: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate('/settings')}
-              className="hidden lg:flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-[2px] border border-gray-200 hover:border-gray-300 text-xs font-semibold text-[#1f1f1f] transition-colors cursor-pointer"
+              className="hidden lg:flex items-center gap-2 pl-1.5 pr-3.5 py-1 rounded-full border border-gray-200 hover:border-gray-300 text-xs font-semibold text-[#1f1f1f] transition-colors cursor-pointer"
             >
-              <span className="w-6 h-6 rounded-[2px] bg-[#1f1f1f] text-white flex items-center justify-center text-[11px] font-bold">
+              <span className="w-6 h-6 rounded-full bg-[#1f1f1f] text-white flex items-center justify-center text-[11px] font-bold">
                 {currentUser?.displayName?.[0] || 'K'}
               </span>
               <span className="max-w-[110px] truncate">{currentUser?.displayName?.split(' ')[0] || 'Karthick'}</span>
@@ -198,7 +198,7 @@ export const HsbcTopNav: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsMenuOpen(true)}
-              className="min-w-[44px] min-h-[44px] -mr-1.5 flex items-center justify-center rounded-[2px] text-[#1f1f1f] hover:text-[#DB0011] transition-colors cursor-pointer"
+              className="min-w-[44px] min-h-[44px] -mr-1.5 flex items-center justify-center rounded-full text-[#1f1f1f] hover:text-[#DB0011] hover:bg-[#F5F6F8] transition-colors cursor-pointer"
               aria-label="Open HSBC Menu"
             >
               <Menu className="w-6 h-6 stroke-[1.8]" aria-hidden="true" />
@@ -315,7 +315,7 @@ export const HsbcTopNav: React.FC = () => {
                     setIsMenuOpen(false);
                     lockApp();
                   }}
-                  className="w-full min-h-[44px] py-2.5 px-4 bg-[#F2F4F7] hover:bg-gray-200 text-[#1f1f1f] text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full min-h-[44px] py-2.5 px-4 bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] text-[#1f1f1f] text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Lock className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
                   <span>Lock Session (MPIN Shield)</span>
@@ -343,7 +343,7 @@ export const HsbcTopNav: React.FC = () => {
                       },
                     });
                   }}
-                  className="w-full min-h-[44px] py-2.5 px-4 bg-white border border-[#333333] hover:bg-gray-50 text-[#1f1f1f] text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full min-h-[44px] py-2.5 px-4 bg-white border border-gray-300 hover:bg-gray-50 active:scale-[0.98] text-[#1f1f1f] text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <RotateCcw className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
                   <span>Reset App Lock</span>
@@ -356,7 +356,7 @@ export const HsbcTopNav: React.FC = () => {
                     logout();
                     navigate('/login');
                   }}
-                  className="w-full min-h-[44px] py-2.5 px-4 text-[#D92D20] hover:bg-red-50 text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full min-h-[44px] py-2.5 px-4 text-[#D92D20] hover:bg-red-50 active:scale-[0.98] text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" aria-hidden="true" />
                   <span>Log Off HSBC India</span>
@@ -399,7 +399,7 @@ export const HsbcTopNav: React.FC = () => {
                   type="button"
                   onClick={() => setIsNotifOpen(false)}
                   aria-label="Close Notifications"
-                  className="min-w-[40px] min-h-[40px] -mr-2 flex items-center justify-center text-gray-500 hover:text-[#1f1f1f] rounded-[2px] cursor-pointer"
+                  className="min-w-[40px] min-h-[40px] -mr-2 flex items-center justify-center text-gray-500 hover:text-[#1f1f1f] hover:bg-[#F5F6F8] rounded-full cursor-pointer"
                 >
                   <X className="w-5 h-5" aria-hidden="true" />
                 </button>
@@ -481,7 +481,7 @@ export const HsbcTopNav: React.FC = () => {
                     setIsNotifOpen(false);
                     navigate('/security');
                   }}
-                  className="w-full min-h-[42px] bg-[#1f1f1f] hover:bg-black text-white text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
+                  className="w-full min-h-[44px] bg-[#1f1f1f] hover:bg-black active:scale-[0.98] text-white text-xs font-semibold rounded-full transition-all cursor-pointer shadow-xs"
                 >
                   Open Security &amp; Audit Controls
                 </button>

@@ -24,18 +24,18 @@ export const InsurancePage: React.FC = () => {
 
         <div className="px-4 sm:px-6 md:px-8 py-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           {insurance.map(policy => (
-            <div key={policy.policyId} className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-4">
+            <div key={policy.policyId} className="p-4 sm:p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 space-y-4">
               <div className="flex justify-between items-start gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-white text-[#DB0011] border border-gray-200/80 flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-11 h-11 rounded-2xl bg-white text-[#DB0011] border border-gray-200/80 flex items-center justify-center shrink-0 shadow-2xs">
                     <Shield className="w-5 h-5" aria-hidden="true" />
                   </div>
-                  <div>
-                    <h2 className="text-sm font-bold text-[#1f1f1f]">{policy.providerName}</h2>
+                  <div className="min-w-0">
+                    <h2 className="text-sm font-bold text-[#1f1f1f] truncate">{policy.providerName}</h2>
                     <div className="text-[11px] text-[#777777] font-mono">{policy.policyNumber}</div>
                   </div>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-[#16864A] border border-emerald-200">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-[#16864A] border border-emerald-200 shrink-0">
                   {policy.policyStatus}
                 </span>
               </div>
@@ -62,7 +62,7 @@ export const InsurancePage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedPolicy(policy)}
-                className="w-full min-h-[40px] bg-white hover:bg-gray-50 border border-[#333333] text-[#1f1f1f] text-xs font-semibold rounded-[2px] flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full min-h-[42px] bg-white hover:bg-gray-50 active:scale-[0.98] border border-gray-300 text-[#1f1f1f] text-xs font-semibold rounded-full flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs"
               >
                 <span>Policy Certificate &amp; Claims</span>
                 <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -81,7 +81,7 @@ export const InsurancePage: React.FC = () => {
       >
         {selectedPolicy && (
           <div className="space-y-4 text-xs">
-            <div className="p-4 bg-[#F6F7F9] rounded-xl space-y-2 border border-gray-200/70">
+            <div className="p-4 bg-[#F6F7F9] rounded-2xl space-y-2 border border-gray-200/70">
               <div className="flex justify-between"><span>Sum Insured:</span><strong>{formatCurrency(selectedPolicy.coverageAmount, 'INR')}</strong></div>
               <div className="flex justify-between"><span>Annual Premium:</span><strong>{formatCurrency(selectedPolicy.annualPremium, 'INR')}</strong></div>
               <div className="flex justify-between"><span>Next Due Date:</span><strong>{selectedPolicy.dueDate}</strong></div>
@@ -92,7 +92,7 @@ export const InsurancePage: React.FC = () => {
                 toast.success(`Policy schedule downloaded for ${selectedPolicy.policyNumber}`);
                 setSelectedPolicy(null);
               }}
-              className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white font-semibold rounded-[2px] cursor-pointer"
+              className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white font-semibold rounded-full transition-all cursor-pointer shadow-xs"
             >
               Download Policy Document
             </button>

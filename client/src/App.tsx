@@ -93,7 +93,7 @@ export const App: React.FC = () => {
         <BankingProvider>
           <AppLockProvider>
             <ActionFeedbackProvider>
-              <Toaster position="top-right" gutter={8} toastOptions={{ duration: 3500 }}>
+              <Toaster position="top-center" gutter={8} toastOptions={{ duration: 3000 }}>
                 {(t) => {
                   const accentClass =
                     t.type === 'error'
@@ -106,14 +106,14 @@ export const App: React.FC = () => {
                       ? 'Security & Validation Notice'
                       : t.type === 'loading'
                       ? 'Processing Request'
-                      : 'HSBC India Notification';
+                      : 'HSBC India';
                   return (
                     <div
                       role="status"
                       aria-live="polite"
                       className={`${
                         t.visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1'
-                      } transition-all duration-150 max-w-sm w-full bg-white text-[#1f1f1f] border border-gray-200 border-l-[3px] ${accentClass} shadow-lg rounded-[2px] px-4 py-3 flex items-start gap-3 pointer-events-auto`}
+                      } transition-all duration-150 max-w-sm w-full bg-white text-[#1f1f1f] border border-gray-200 border-l-[3px] ${accentClass} shadow-lg rounded-2xl px-4 py-3 flex items-start gap-3 pointer-events-auto`}
                     >
                       <div className="shrink-0 mt-0.5">
                         {t.type === 'error' ? (

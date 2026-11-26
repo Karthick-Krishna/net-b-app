@@ -36,8 +36,8 @@ export const RewardsPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="px-4 sm:px-6 md:px-8 py-6 space-y-6">
-          <div className="p-5 bg-[#F8F9FA] text-[#1f1f1f] rounded-[2px] border border-gray-200 border-l-[4px] border-l-[#DB0011] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="px-4 sm:px-6 md:px-8 py-5 sm:py-6 space-y-5 sm:space-y-6">
+          <div className="p-4 sm:p-5 bg-[#F5F6F8] text-[#1f1f1f] rounded-2xl border border-gray-200/70 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5">
             <div>
               <div className="text-[11px] uppercase tracking-wider text-[#666666] font-bold flex items-center gap-1.5">
                 <Award className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
@@ -47,17 +47,17 @@ export const RewardsPage: React.FC = () => {
                 {points.toLocaleString('en-IN')} PTS
               </div>
             </div>
-            <div className="bg-white px-4 py-2.5 rounded-[2px] border border-gray-200 text-xs">
-              <span className="text-[#777777] block text-[10px] uppercase font-bold">Tier Status</span>
+            <div className="bg-white px-4 py-2 rounded-full border border-gray-200/80 text-xs shadow-2xs">
+              <span className="text-[#777777] mr-1.5 font-medium">Tier:</span>
               <span className="font-bold text-[#DB0011]">Premier World Elite</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
             {catalog.map(item => {
               const canAfford = points >= item.points;
               return (
-                <div key={item.id} className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 flex flex-col justify-between gap-4">
+                <div key={item.id} className="p-4 sm:p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 flex flex-col justify-between gap-4">
                   <div>
                     <div className="flex items-center justify-between text-xs font-bold text-[#DB0011]">
                       <span>{item.points.toLocaleString('en-IN')} Points</span>
@@ -70,7 +70,7 @@ export const RewardsPage: React.FC = () => {
                     type="button"
                     disabled={!canAfford}
                     onClick={() => handleRedeem(item.id, item.title, item.points)}
-                    className="w-full min-h-[42px] bg-[#1f1f1f] hover:bg-black disabled:bg-gray-300 disabled:text-gray-500 text-white text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
+                    className="w-full min-h-[42px] bg-[#1f1f1f] hover:bg-black active:scale-[0.98] disabled:bg-gray-300 disabled:text-gray-500 text-white text-xs font-semibold rounded-full transition-all cursor-pointer shadow-xs"
                   >
                     {canAfford ? 'Redeem Voucher' : 'Insufficient Points'}
                   </button>

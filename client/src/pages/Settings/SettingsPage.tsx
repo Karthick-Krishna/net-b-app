@@ -200,7 +200,7 @@ export const SettingsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={lockApp}
-                    className="min-h-[40px] px-4 bg-[#1f1f1f] hover:bg-black text-white rounded-[2px] text-xs font-semibold cursor-pointer"
+                    className="min-h-[40px] px-4 bg-[#1f1f1f] hover:bg-black active:scale-[0.98] text-white rounded-full text-xs font-semibold transition-all cursor-pointer shadow-xs"
                   >
                     Lock App Now
                   </button>
@@ -226,7 +226,7 @@ export const SettingsPage: React.FC = () => {
                         },
                       })
                     }
-                    className="min-h-[40px] px-4 bg-white border border-[#DB0011] text-[#DB0011] hover:bg-red-50 rounded-[2px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                    className="min-h-[40px] px-4 bg-white border border-[#DB0011] text-[#DB0011] hover:bg-red-50 active:scale-[0.98] rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                   >
                     <RotateCcw className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
                     <span>Reset App Lock (Default)</span>
@@ -234,7 +234,7 @@ export const SettingsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowResetMpinModal(true)}
-                    className="min-h-[40px] px-4 bg-white border border-[#333333] text-[#1f1f1f] hover:bg-gray-50 rounded-[2px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                    className="min-h-[40px] px-4 bg-white border border-gray-300 text-[#1f1f1f] hover:bg-gray-50 active:scale-[0.98] rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                   >
                     <KeyRound className="w-3.5 h-3.5 text-[#1f1f1f]" aria-hidden="true" />
                     <span>Custom MPIN</span>
@@ -243,7 +243,7 @@ export const SettingsPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={disableAppLock}
-                      className="min-h-[40px] px-4 bg-white border border-[#DB0011] text-[#DB0011] hover:bg-red-50 rounded-[2px] text-xs font-semibold cursor-pointer"
+                      className="min-h-[40px] px-4 bg-white border border-[#DB0011] text-[#DB0011] hover:bg-red-50 active:scale-[0.98] rounded-full text-xs font-semibold transition-all cursor-pointer"
                     >
                       Disable MPIN
                     </button>
@@ -252,7 +252,7 @@ export const SettingsPage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-4">
+                <div className="p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 space-y-4">
                   <div className="flex items-center gap-2 pb-2 border-b border-gray-200/70">
                     <KeyRound className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
                     <h2 className="text-sm font-bold text-[#1f1f1f]">Change 6-Digit MPIN</h2>
@@ -269,7 +269,7 @@ export const SettingsPage: React.FC = () => {
                           required
                           value={currentPin}
                           onChange={e => setCurrentPin(e.target.value.replace(/\D/g, ''))}
-                          className="w-full h-11 px-3 bg-white border border-gray-200 rounded-[2px] font-mono tracking-widest"
+                          className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl font-mono tracking-widest"
                           placeholder="••••••"
                         />
                       </div>
@@ -283,7 +283,7 @@ export const SettingsPage: React.FC = () => {
                         required
                         value={newPin}
                         onChange={e => setNewPin(e.target.value.replace(/\D/g, ''))}
-                        className="w-full h-11 px-3 bg-white border border-gray-200 rounded-[2px] font-mono tracking-widest"
+                        className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl font-mono tracking-widest"
                         placeholder="••••••"
                       />
                     </div>
@@ -296,7 +296,7 @@ export const SettingsPage: React.FC = () => {
                         required
                         value={confirmPin}
                         onChange={e => setConfirmPin(e.target.value.replace(/\D/g, ''))}
-                        className="w-full h-11 px-3 bg-white border border-gray-200 rounded-[2px] font-mono tracking-widest"
+                        className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl font-mono tracking-widest"
                         placeholder="••••••"
                       />
                     </div>
@@ -311,7 +311,7 @@ export const SettingsPage: React.FC = () => {
                       </button>
                       <button
                         type="submit"
-                        className="min-h-[40px] px-5 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer"
+                        className="min-h-[40px] px-5 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs"
                       >
                         Save MPIN
                       </button>
@@ -319,7 +319,7 @@ export const SettingsPage: React.FC = () => {
                   </form>
                 </div>
 
-                <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 space-y-4">
+                <div className="p-5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70 space-y-4">
                   <div className="flex items-center gap-2 pb-2 border-b border-gray-200/70">
                     <Smartphone className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
                     <h2 className="text-sm font-bold text-[#1f1f1f]">Auto-Lock &amp; Biometrics</h2>
@@ -336,8 +336,8 @@ export const SettingsPage: React.FC = () => {
                             setAutoLockTimeout(t);
                             toast.success(`Auto-lock set to ${t} min${t > 1 ? 's' : ''}`);
                           }}
-                          className={`min-h-[40px] rounded-[2px] border text-xs font-semibold cursor-pointer ${
-                            autoLockTimeout === t ? 'bg-[#DB0011] text-white border-[#DB0011]' : 'bg-white text-[#1f1f1f] border-gray-200'
+                          className={`min-h-[40px] rounded-full border text-xs font-semibold transition-all cursor-pointer ${
+                            autoLockTimeout === t ? 'bg-[#DB0011] text-white border-[#DB0011] shadow-xs' : 'bg-white text-[#1f1f1f] border-gray-200'
                           }`}
                         >
                           {t} Min{t > 1 ? 's' : ''}
@@ -346,7 +346,7 @@ export const SettingsPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3.5 bg-white rounded-xl border border-gray-200/70">
+                  <div className="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-gray-200/70">
                     <div className="flex items-center gap-2.5">
                       <Fingerprint className="w-5 h-5 text-[#DB0011]" aria-hidden="true" />
                       <div>
@@ -367,7 +367,7 @@ export const SettingsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowPasswordModal(true)}
-                    className="w-full min-h-[42px] bg-white hover:bg-gray-50 border border-[#333333] text-[#1f1f1f] rounded-[2px] text-xs font-semibold cursor-pointer"
+                    className="w-full min-h-[42px] bg-white hover:bg-gray-50 active:scale-[0.98] border border-gray-300 text-[#1f1f1f] rounded-full text-xs font-semibold transition-all cursor-pointer"
                   >
                     Change Login Password
                   </button>
@@ -480,7 +480,7 @@ export const SettingsPage: React.FC = () => {
                     setSelectedLanguage(e.target.value);
                     toast.success(`Language set to ${e.target.value}`);
                   }}
-                  className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                  className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold"
                 >
                   <option value="English (IN)">English (India)</option>
                   <option value="Hindi (हिन्दी)">हिन्दी (Hindi)</option>
@@ -496,7 +496,7 @@ export const SettingsPage: React.FC = () => {
                     setCurrencyDisplay(e.target.value);
                     toast.success(`Currency set to ${e.target.value}`);
                   }}
-                  className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                  className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold"
                 >
                   <option value="INR (₹)">INR — Indian Rupee (₹)</option>
                   <option value="USD ($)">USD — US Dollar ($)</option>
@@ -512,7 +512,7 @@ export const SettingsPage: React.FC = () => {
                     setDateFormat(e.target.value);
                     toast.success(`Date format set to ${e.target.value}`);
                   }}
-                  className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold"
+                  className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold"
                 >
                   <option value="DD/MM/YYYY">DD/MM/YYYY</option>
                   <option value="YYYY-MM-DD">YYYY-MM-DD</option>
@@ -602,14 +602,14 @@ export const SettingsPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowComplaintModal(true)}
-                  className="min-h-[42px] px-4 bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer"
+                  className="min-h-[42px] px-5 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs"
                 >
                   Raise Formal Grievance
                 </button>
                 <button
                   type="button"
                   onClick={logout}
-                  className="min-h-[42px] px-4 bg-white border border-[#333333] text-[#1f1f1f] hover:bg-gray-50 rounded-[2px] font-semibold flex items-center gap-1.5 cursor-pointer"
+                  className="min-h-[42px] px-5 bg-white border border-gray-300 text-[#1f1f1f] hover:bg-gray-50 active:scale-[0.98] rounded-full font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>Log Off</span>
@@ -625,13 +625,13 @@ export const SettingsPage: React.FC = () => {
         <form onSubmit={handleExecuteResetMpin} className="space-y-3.5 text-xs">
           <div>
             <label htmlFor="rst-new" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">New 6-Digit MPIN</label>
-            <input id="rst-new" type="password" maxLength={6} required value={resetNewPin} onChange={e => setResetNewPin(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono text-center text-base tracking-widest" placeholder="••••••" />
+            <input id="rst-new" type="password" maxLength={6} required value={resetNewPin} onChange={e => setResetNewPin(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono text-center text-base tracking-widest" placeholder="••••••" />
           </div>
           <div>
             <label htmlFor="rst-conf" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Confirm MPIN</label>
-            <input id="rst-conf" type="password" maxLength={6} required value={resetConfirmPin} onChange={e => setResetConfirmPin(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-mono text-center text-base tracking-widest" placeholder="••••••" />
+            <input id="rst-conf" type="password" maxLength={6} required value={resetConfirmPin} onChange={e => setResetConfirmPin(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono text-center text-base tracking-widest" placeholder="••••••" />
           </div>
-          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white rounded-[2px] font-semibold cursor-pointer">
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">
             Authorize New MPIN
           </button>
         </form>
@@ -641,24 +641,24 @@ export const SettingsPage: React.FC = () => {
         <form onSubmit={e => { e.preventDefault(); toast.success('Password updated'); setShowPasswordModal(false); }} className="space-y-3.5 text-xs">
           <div>
             <label htmlFor="pwd-cur" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">Current Password</label>
-            <input id="pwd-cur" type="password" required value={currPassword} onChange={e => setCurrPassword(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
+            <input id="pwd-cur" type="password" required value={currPassword} onChange={e => setCurrPassword(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
           </div>
           <div>
             <label htmlFor="pwd-new" className="font-bold text-[#777777] uppercase text-[10px] block mb-1">New Password</label>
-            <input id="pwd-new" type="password" required value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" />
+            <input id="pwd-new" type="password" required value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" />
           </div>
-          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] text-white rounded-[2px] font-semibold cursor-pointer">Update Password</button>
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">Update Password</button>
         </form>
       </ModalDialog>
 
       <ModalDialog open={showChequeRequestModal} onClose={() => setShowChequeRequestModal(false)} title="Request New Cheque Book" maxWidthClass="max-w-sm">
         <div className="space-y-3.5 text-xs">
           <p className="text-[#555555]">Account: <strong>HSBC Premier Savings (•••• 4101)</strong></p>
-          <select aria-label="Number of cheque leaves" className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold">
+          <select aria-label="Number of cheque leaves" className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-semibold">
             <option value="25">25 Leaves (Personalized)</option>
             <option value="50">50 Leaves (Personalized)</option>
           </select>
-          <button type="button" onClick={() => { toast.success('Cheque book dispatch request logged.'); setShowChequeRequestModal(false); }} className="w-full min-h-[44px] bg-[#DB0011] text-white rounded-[2px] font-semibold cursor-pointer">
+          <button type="button" onClick={() => { toast.success('Cheque book dispatch request logged.'); setShowChequeRequestModal(false); }} className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">
             Confirm Order
           </button>
         </div>
@@ -666,8 +666,8 @@ export const SettingsPage: React.FC = () => {
 
       <ModalDialog open={showComplaintModal} onClose={() => setShowComplaintModal(false)} title="Raise Formal Grievance" maxWidthClass="max-w-md">
         <form onSubmit={e => { e.preventDefault(); toast.success('Grievance lodged: HSBC/GRV/' + Date.now().toString().slice(-5)); setShowComplaintModal(false); setComplaintText(''); }} className="space-y-3.5 text-xs">
-          <textarea rows={4} required value={complaintText} onChange={e => setComplaintText(e.target.value)} className="w-full p-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px]" placeholder="Describe your grievance..." />
-          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] text-white rounded-[2px] font-semibold cursor-pointer">Submit Grievance</button>
+          <textarea rows={4} required value={complaintText} onChange={e => setComplaintText(e.target.value)} className="w-full p-3 bg-[#F6F7F9] border border-gray-200 rounded-xl" placeholder="Describe your grievance..." />
+          <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">Submit Grievance</button>
         </form>
       </ModalDialog>
 

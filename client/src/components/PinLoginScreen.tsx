@@ -96,7 +96,6 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
       // Pin fixed to 002831 or verified via AppLock
       const res = verifyPin(pinToVerify);
       if (res.success || pinToVerify === '002831') {
-        toast.success('Security PIN verified. HSBC India Premier session active.');
         if (onSuccess) onSuccess();
         else unlockApp();
       } else {
@@ -515,7 +514,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
           <button
             type="button"
             onClick={handleFaceIdTrigger}
-            className="w-full h-12 bg-[#DB0011] hover:bg-[#B0000D] active:bg-[#90000A] text-white text-[14px] font-semibold rounded-[2px] tracking-wide shadow-none transition-colors flex items-center justify-center cursor-pointer"
+            className="w-full h-12 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-[14px] font-semibold rounded-full tracking-wide shadow-xs transition-all flex items-center justify-center cursor-pointer"
           >
             Log on with Face ID
           </button>
@@ -541,7 +540,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               setSecurityTimer(30);
               setShowSecurityCodeModal(true);
             }}
-            className="w-full h-12 bg-white hover:bg-gray-50 active:bg-gray-100 border border-[#333333] text-[#222222] text-[14px] font-medium rounded-[2px] tracking-wide transition-colors flex items-center justify-center cursor-pointer"
+            className="w-full h-12 bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] border border-gray-200/80 text-[#1f1f1f] text-[14px] font-semibold rounded-full tracking-wide transition-all flex items-center justify-center cursor-pointer"
           >
             Generate a security code
           </button>
@@ -651,7 +650,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                     >
                       <span>Send Verification Code</span>
                       <ArrowRight className="w-4 h-4" />
@@ -714,7 +713,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                     >
                       <span>Verify Code</span>
                       <CheckCircle2 className="w-4 h-4" />
@@ -785,7 +784,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                     >
                       <span>Reset PIN & Log On</span>
                       <ShieldCheck className="w-4 h-4" />
@@ -858,7 +857,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                     navigator.clipboard.writeText(securityCode.replace(/\s+/g, ''));
                     toast.success('Security code copied to clipboard');
                   }}
-                  className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-[#222222] text-xs font-bold rounded-[2px] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2.5 bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] text-[#1f1f1f] text-xs font-bold rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Copy className="w-3.5 h-3.5" />
                   <span>Copy Code</span>
@@ -907,7 +906,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                     setShowBiometricsModal(false);
                     setTimeout(() => inputRef.current?.focus(), 60);
                   }}
-                  className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-bold rounded-[2px] transition-colors cursor-pointer"
+                  className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs"
                 >
                   Enter 6-Digit PIN
                 </button>
@@ -918,7 +917,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                       setShowBiometricsModal(false);
                       onSwitchToPasswordLogin();
                     }}
-                    className="w-full min-h-[42px] bg-white hover:bg-gray-50 border border-[#333333] text-[#1f1f1f] text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
+                    className="w-full min-h-[42px] bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] border border-gray-200/80 text-[#1f1f1f] text-xs font-semibold rounded-full transition-all cursor-pointer"
                   >
                     Enter Password Instead
                   </button>
@@ -971,7 +970,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowHelpModal(false)}
-                  className="w-full py-2.5 bg-[#1f1f1f] hover:bg-black text-white text-xs font-bold rounded-[2px] transition-colors"
+                  className="w-full py-2.5 bg-[#1f1f1f] hover:bg-black active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer"
                 >
                   Understood
                 </button>

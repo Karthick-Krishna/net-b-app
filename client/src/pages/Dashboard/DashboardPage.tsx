@@ -7,21 +7,17 @@ import {
   Eye,
   EyeOff,
   Snowflake,
-  ShieldCheck,
-  Lock,
   Copy,
   Bell,
   FileText,
-  CreditCard,
-  TrendingUp,
-  PiggyBank,
   Send,
   KeyRound,
-  CheckCircle2,
+  Award,
+  Shield,
+  MessageSquare,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useBanking } from '../../context/BankingContext';
-import { useAppLock } from '../../context/AppLockContext';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import toast from 'react-hot-toast';
 
@@ -32,8 +28,6 @@ export const DashboardPage: React.FC = () => {
     accounts,
     transactions,
     cards,
-    deposits,
-    wealth,
     notifications,
     unreadNotificationsCount,
     markNotificationAsRead,
@@ -42,181 +36,89 @@ export const DashboardPage: React.FC = () => {
     totalBalanceGbpOrInr,
     formatCurrency,
   } = useBanking();
-  const { lockApp } = useAppLock();
 
   const recentTransactions = transactions.slice(0, 6);
   const recentAlerts = notifications.slice(0, 3);
   const primaryAccount = accounts[0];
-
-  const totalDepositsValue = deposits.reduce((s, d) => s + (d.principalAmount || 0), 0);
-  const totalWealthValue = wealth?.totalPortfolioValue ?? 0;
-  const totalRelationshipAssets = totalBalanceGbpOrInr + totalWealthValue + totalDepositsValue;
-  const totalAvailableCredit = cards
-    .filter(c => c.cardType === 'CREDIT')
-    .reduce((s, c) => s + (c.availableCredit || 0), 0);
 
   const handleCopyAccountDetails = () => {
     if (!primaryAccount) return;
     navigator.clipboard?.writeText(
       `Account: ${primaryAccount.accountNumber} | IFSC: ${primaryAccount.ifscCode}`
     );
-    toast.success('Account number and IFSC copied to clipboard.');
+    toast.success('Account number and IFSC copied');
   };
 
   return (
-    <AnimatedPageTransition className="pb-10">
-      <div className="bg-white md:rounded-[2px] border border-gray-200 shadow-xs overflow-hidden">
-        {/* EXECUTIVE LIQUIDITY & BALANCE HERO PANEL (CLEAN LIGHT HSBC THEME) */}
-        <div className="bg-white text-[#1f1f1f] px-4 sm:px-6 md:px-8 py-6 sm:py-7 border-b border-gray-200 relative">
-
-          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
-            {/* Primary Balance Display */}
-            <div className="space-y-3 min-w-0">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#666666]">
-                  Primary Liquid Balance · Premier Savings
-                </span>
-                <button
-                  type="button"
-                  onClick={toggleBalanceVisibility}
-                  aria-label={hideBalances ? 'Show Balances' : 'Hide Balances'}
-                  className="min-w-[28px] min-h-[28px] px-2 flex items-center gap-1 rounded-[2px] border border-gray-300 bg-[#F8F9FA] hover:bg-gray-100 text-[10px] font-semibold text-[#1f1f1f] transition-colors cursor-pointer"
-                >
-                  {hideBalances ? (
-                    <>
-                      <Eye className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
-                      <span>Reveal</span>
-                    </>
-                  ) : (
-                    <>
-                      <EyeOff className="w-3.5 h-3.5 text-[#555555]" aria-hidden="true" />
-                      <span>Mask</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              <div className="flex flex-wrap items-baseline gap-3">
-                <div className="text-[32px] sm:text-[40px] font-bold tracking-tight text-[#1f1f1f] leading-none tabular-nums">
-                  {formatCurrency(totalBalanceGbpOrInr, 'INR')}
-                </div>
-                <span className="px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-[#166534] text-[10px] font-bold uppercase tracking-wider rounded-[2px]">
-                  Cleared &amp; Available
+    <AnimatedPageTransition className="pb-6 sm:pb-10">
+      <div className="bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-xs overflow-hidden">
+        {/* REAL HSBC MOBILE-FIRST PREMIER BALANCE HERO */}
+        <div className="bg-white text-[#1f1f1f] px-4 sm:px-6 md:px-8 pt-4 pb-5 sm:py-6 border-b border-gray-100">
+          <div className="rounded-2xl bg-[#F5F6F8] border border-gray-200/70 p-4 sm:p-6 transition-all">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="w-2 h-2 rounded-full bg-[#16864A] shrink-0" aria-hidden="true" />
+                <span className="text-[13px] sm:text-sm font-semibold text-[#1f1f1f] truncate">
+                  Premier Savings
                 </span>
               </div>
+              <button
+                type="button"
+                onClick={toggleBalanceVisibility}
+                aria-label={hideBalances ? 'Show Balances' : 'Hide Balances'}
+                className="min-h-[32px] px-3 py-1 flex items-center gap-1.5 rounded-full border border-gray-200/90 bg-white hover:bg-gray-50 active:scale-[0.97] text-[11px] font-semibold text-[#1f1f1f] transition-all cursor-pointer shrink-0 shadow-2xs"
+              >
+                {hideBalances ? (
+                  <>
+                    <Eye className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
+                    <span>Show</span>
+                  </>
+                ) : (
+                  <>
+                    <EyeOff className="w-3.5 h-3.5 text-[#555555]" aria-hidden="true" />
+                    <span>Hide</span>
+                  </>
+                )}
+              </button>
+            </div>
 
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#666666]">
-                <span className="font-mono">
-                  A/C {primaryAccount?.maskedAccountNumber || '•••• •••• •••• 4101'} · IFSC{' '}
-                  {primaryAccount?.ifscCode || 'HSBC0641002'}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopyAccountDetails}
-                  className="inline-flex items-center gap-1 text-[#DB0011] hover:underline font-semibold cursor-pointer"
-                >
-                  <Copy className="w-3 h-3" aria-hidden="true" />
-                  <span>Copy Details</span>
-                </button>
-                <span className="text-[#777777]">Ledger Cut-off: 30 Aug 2026</span>
+            <div className="mt-3 sm:mt-4">
+              <div className="text-[11px] font-medium text-[#777777]">
+                Available balance
+              </div>
+              <div className="text-[28px] min-[375px]:text-[32px] sm:text-[38px] font-bold tracking-tight text-[#1f1f1f] leading-tight tabular-nums mt-0.5">
+                {formatCurrency(totalBalanceGbpOrInr, 'INR')}
               </div>
             </div>
 
-            {/* Executive Action Strip */}
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 shrink-0">
+            <div className="mt-4 pt-3 border-t border-gray-200/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#555555]">
+              <span className="font-mono truncate">
+                A/C •••• {primaryAccount?.accountNumber?.slice(-4) || '4101'} · {primaryAccount?.ifscCode || 'HSBC0641002'}
+              </span>
               <button
                 type="button"
-                onClick={() => navigate('/payments')}
-                className="flex-1 sm:flex-initial min-h-[42px] px-5 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-semibold rounded-full sm:rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap shadow-xs"
+                onClick={handleCopyAccountDetails}
+                className="inline-flex items-center gap-1 text-[#DB0011] hover:underline font-semibold cursor-pointer min-h-[28px] shrink-0"
               >
-                <Send className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Initiate Transfer</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/statements')}
-                className="flex-1 sm:flex-initial min-h-[42px] px-4 bg-white hover:bg-[#F5F6F8] active:scale-[0.98] border border-gray-300 text-[#1f1f1f] text-xs font-semibold rounded-full sm:rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
-              >
-                <FileText className="w-3.5 h-3.5 text-[#1f1f1f]" aria-hidden="true" />
-                <span>Certified Statement</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/security')}
-                className="flex-1 sm:flex-initial min-h-[42px] px-4 bg-white hover:bg-[#F5F6F8] active:scale-[0.98] border border-gray-300 text-[#1f1f1f] text-xs font-semibold rounded-full sm:rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
-              >
-                <KeyRound className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
-                <span>Security</span>
+                <Copy className="w-3 h-3" aria-hidden="true" />
+                <span>Copy</span>
               </button>
             </div>
           </div>
 
-          {/* 4-COLUMN INSTITUTIONAL POSITION SUMMARY (LIGHT SLATE HAIRLINE CELLS) */}
-          <div className="mt-6 pt-5 border-t border-gray-200 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="p-3.5 bg-[#F8F9FA] border border-gray-200 rounded-[2px]">
-              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#666666]">
-                Total Relationship Position
-              </div>
-              <div className="text-base sm:text-lg font-bold text-[#1f1f1f] mt-1 tabular-nums">
-                {formatCurrency(totalRelationshipAssets, 'INR')}
-              </div>
-              <div className="text-[10px] text-[#777777] mt-0.5">
-                Savings ({formatCurrency(totalBalanceGbpOrInr, 'INR')}) + Deposits ({formatCurrency(totalDepositsValue, 'INR')})
-              </div>
-            </div>
-
-            <div className="p-3.5 bg-[#F8F9FA] border border-gray-200 rounded-[2px]">
-              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#666666]">
-                Invested Wealth Portfolio
-              </div>
-              <div className="text-base sm:text-lg font-bold text-[#1f1f1f] mt-1 tabular-nums">
-                {formatCurrency(totalWealthValue, 'INR')}
-              </div>
-              <div className="text-[10px] text-[#777777] font-medium mt-0.5">
-                No Active Holdings
-              </div>
-            </div>
-
-            <div className="p-3.5 bg-[#F8F9FA] border border-gray-200 rounded-[2px]">
-              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#666666]">
-                Term &amp; Fixed Deposits
-              </div>
-              <div className="text-base sm:text-lg font-bold text-[#1f1f1f] mt-1 tabular-nums">
-                {formatCurrency(totalDepositsValue, 'INR')}
-              </div>
-              <div className="text-[10px] text-[#777777] mt-0.5">
-                {deposits.length} Active Term Instruments
-              </div>
-            </div>
-
-            <div className="p-3.5 bg-[#F8F9FA] border border-gray-200 rounded-[2px]">
-              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#666666]">
-                Credit Line Headroom
-              </div>
-              <div className="text-base sm:text-lg font-bold text-[#1f1f1f] mt-1 tabular-nums">
-                {formatCurrency(totalAvailableCredit, 'INR')}
-              </div>
-              <div className="text-[10px] text-[#777777] mt-0.5">
-                Across {cards.filter(c => c.cardType === 'CREDIT').length} Premier Cards
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* CIRCULAR PRIMARY ACTIONS ROW (MATCHING REFERENCE UI) */}
-        <div className="px-4 sm:px-6 md:px-8 py-5 bg-white border-b border-gray-100">
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 max-w-3xl mx-auto">
+          {/* 4-COLUMN CIRCULAR QUICK ACTIONS (EXACT HSBC MOBILE REFERENCE RHYTHM) */}
+          <div className="pt-5 pb-1 grid grid-cols-4 gap-1.5 sm:gap-4 max-w-md sm:max-w-xl mx-auto">
             {[
               {
-                label: 'Funds\ntransfer',
+                label: 'Send\nmoney',
                 path: '/payments',
                 icon: (
                   <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
-                    <rect x="4" y="6" width="24" height="20" rx="3" fill="#F4F5F7" stroke="#333333" strokeWidth="1.4" />
+                    <rect x="4" y="6" width="24" height="20" rx="3" fill="white" stroke="#252525" strokeWidth="1.5" />
                     <path d="M9 13h14M17 9l4 4-4 4" stroke="#DB0011" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <circle cx="11" cy="20" r="1.5" fill="#1f1f1f" />
-                    <circle cx="16" cy="20" r="1.5" fill="#1f1f1f" />
-                    <circle cx="21" cy="20" r="1.5" fill="#1f1f1f" />
+                    <circle cx="11" cy="20" r="1.4" fill="#1f1f1f" />
+                    <circle cx="16" cy="20" r="1.4" fill="#1f1f1f" />
+                    <circle cx="21" cy="20" r="1.4" fill="#1f1f1f" />
                   </svg>
                 ),
               },
@@ -239,7 +141,7 @@ export const DashboardPage: React.FC = () => {
                   <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
                     <circle cx="16" cy="16" r="11" stroke="#252525" strokeWidth="1.5" fill="white" />
                     <rect x="14" y="9" width="4" height="14" rx="1" fill="#DB0011" />
-                    <circle cx="16" cy="16" r="4.5" fill="#F4F5F7" stroke="#252525" strokeWidth="1.2" />
+                    <circle cx="16" cy="16" r="4.5" fill="#F5F6F8" stroke="#252525" strokeWidth="1.2" />
                     <text x="16" y="19" textAnchor="middle" fill="#DB0011" fontSize="9" fontWeight="bold">₹</text>
                   </svg>
                 ),
@@ -251,31 +153,6 @@ export const DashboardPage: React.FC = () => {
                   <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
                     <rect x="7" y="5" width="18" height="22" rx="2.5" fill="white" stroke="#252525" strokeWidth="1.5" />
                     <path d="M11 11h10M11 15h10M11 19h6" stroke="#DB0011" strokeWidth="1.8" strokeLinecap="round" />
-                  </svg>
-                ),
-              },
-              {
-                label: 'App-Lock\nsecurity',
-                path: '/security',
-                icon: (
-                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
-                    <rect x="8" y="13" width="16" height="13" rx="2.5" fill="#DB0011" stroke="#252525" strokeWidth="1.2" />
-                    <path d="M11 13V9a5 5 0 0 1 10 0v4" stroke="#252525" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-                    <circle cx="16" cy="19.5" r="1.5" fill="white" />
-                    <path d="M16 21v2.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
-                  </svg>
-                ),
-              },
-              {
-                label: 'Premier\nconcierge',
-                path: '/support',
-                icon: (
-                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
-                    <rect x="5" y="7" width="18" height="14" rx="2.5" fill="white" stroke="#252525" strokeWidth="1.5" />
-                    <path d="M9 19l-3 4V19" fill="white" stroke="#252525" strokeWidth="1.5" />
-                    <circle cx="10" cy="13.5" r="1.2" fill="#DB0011" />
-                    <circle cx="14" cy="13.5" r="1.2" fill="#DB0011" />
-                    <circle cx="18" cy="13.5" r="1.2" fill="#DB0011" />
                   </svg>
                 ),
               },
@@ -300,18 +177,13 @@ export const DashboardPage: React.FC = () => {
         {/* RESPONSIVE 2-COLUMN WORKSPACE */}
         <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
           {/* LEFT COLUMN: ACCOUNT PORTFOLIO & CARDS */}
-          <div className="lg:col-span-7 px-4 sm:px-6 md:px-8 py-6 space-y-7">
+          <div className="lg:col-span-7 px-4 sm:px-6 md:px-8 py-5 sm:py-6 space-y-6">
             {/* Primary Account Section */}
             <section>
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#777777] block">
-                    Core Deposit Relationship
-                  </span>
-                  <h2 className="text-[16px] font-bold text-[#1f1f1f]">
-                    Personal Account ({accounts.length})
-                  </h2>
-                </div>
+              <div className="flex items-center justify-between mb-2.5">
+                <h2 className="text-[15px] sm:text-[16px] font-bold text-[#1f1f1f]">
+                  Personal Account ({accounts.length})
+                </h2>
                 <button
                   type="button"
                   onClick={() => navigate('/accounts')}
@@ -328,10 +200,10 @@ export const DashboardPage: React.FC = () => {
                     key={account.accountId}
                     type="button"
                     onClick={() => navigate('/accounts')}
-                    className="w-full min-h-[58px] p-4 flex items-center justify-between gap-3 hover:bg-[#F9FAFB] transition-colors text-left group cursor-pointer"
+                    className="w-full min-h-[58px] p-3.5 sm:p-4 flex items-center justify-between gap-2.5 sm:gap-3 hover:bg-[#F9FAFB] transition-colors text-left group cursor-pointer"
                   >
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="w-12 h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-11 h-11 min-[360px]:w-12 min-[360px]:h-12 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
                         <svg viewBox="0 0 28 28" className="w-6 h-6" fill="none" aria-hidden="true">
                           <rect x="5" y="7" width="18" height="14" rx="2.5" fill="#DB0011" />
                           <rect x="8" y="9.5" width="12" height="2" rx="1" fill="white" />
@@ -340,18 +212,18 @@ export const DashboardPage: React.FC = () => {
                         </svg>
                       </div>
                       <div className="min-w-0">
-                        <div className="text-[15px] font-semibold text-[#1f1f1f] truncate">
+                        <div className="text-[14px] sm:text-[15px] font-semibold text-[#1f1f1f] truncate">
                           Manage account
                         </div>
-                        <div className="text-[12px] text-[#777777] font-mono mt-0.5 truncate">
+                        <div className="text-[11px] sm:text-[12px] text-[#777777] font-mono mt-0.5 truncate">
                           A/C {account.maskedAccountNumber} · {account.branchName}
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                       <div className="text-right">
-                        <div className="text-[15px] font-bold text-[#1f1f1f] tabular-nums">
+                        <div className="text-[14px] sm:text-[15px] font-bold text-[#1f1f1f] tabular-nums">
                           {formatCurrency(account.managedBalance, account.currency)}
                         </div>
                         <div className="text-[10px] font-bold text-[#16864A] uppercase tracking-wider">
@@ -367,21 +239,16 @@ export const DashboardPage: React.FC = () => {
 
             {/* Featured Cards (Strict 2-Card Executive Preview) */}
             <section>
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#777777] block">
-                    Payment Instruments
-                  </span>
-                  <h2 className="text-[16px] font-bold text-[#1f1f1f]">
-                    Cards ({Math.min(2, cards.length)} of {cards.length})
-                  </h2>
-                </div>
+              <div className="flex items-center justify-between mb-2.5">
+                <h2 className="text-[15px] sm:text-[16px] font-bold text-[#1f1f1f]">
+                  Cards ({Math.min(2, cards.length)} of {cards.length})
+                </h2>
                 <button
                   type="button"
                   onClick={() => navigate('/cards')}
                   className="text-xs font-semibold text-[#DB0011] hover:underline flex items-center gap-1 cursor-pointer min-h-[32px]"
                 >
-                  <span>View all {cards.length} cards</span>
+                  <span>View all {cards.length}</span>
                   <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                 </button>
               </div>
@@ -407,7 +274,7 @@ export const DashboardPage: React.FC = () => {
                       key={card.cardId}
                       type="button"
                       onClick={() => navigate('/cards')}
-                      className={`p-5 rounded-xl text-left shadow-md relative overflow-hidden transition-shadow hover:shadow-lg cursor-pointer border ${cardTheme}`}
+                      className={`p-4 sm:p-5 rounded-2xl text-left shadow-md relative overflow-hidden transition-shadow hover:shadow-lg active:scale-[0.99] cursor-pointer border ${cardTheme}`}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 min-w-0">
@@ -417,7 +284,7 @@ export const DashboardPage: React.FC = () => {
                           </span>
                         </div>
                         {frozen ? (
-                          <span className="px-2 py-0.5 rounded-[2px] bg-[#DB0011] text-white text-[10px] font-bold flex items-center gap-1 shrink-0">
+                          <span className="px-2 py-0.5 rounded-full bg-[#DB0011] text-white text-[10px] font-bold flex items-center gap-1 shrink-0">
                             <Snowflake className="w-2.5 h-2.5" aria-hidden="true" />
                             FROZEN
                           </span>
@@ -452,18 +319,74 @@ export const DashboardPage: React.FC = () => {
             </section>
           </div>
 
-          {/* RIGHT COLUMN: LEDGER ACTIVITY & SECURITY NOTIFICATIONS */}
-          <div className="lg:col-span-5 px-4 sm:px-6 md:px-8 py-6 space-y-7">
+          {/* RIGHT COLUMN: LEDGER ACTIVITY, ALERTS & CONCIERGE LIST */}
+          <div className="lg:col-span-5 px-4 sm:px-6 md:px-8 py-5 sm:py-6 space-y-6">
+            {/* Recent Verified Transactions */}
+            <section>
+              <div className="flex items-center justify-between mb-2.5">
+                <h2 className="text-[15px] sm:text-[16px] font-bold text-[#1f1f1f]">
+                  Recent Activity
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => navigate('/transactions')}
+                  className="text-xs font-semibold text-[#DB0011] hover:underline flex items-center gap-1 cursor-pointer min-h-[32px]"
+                >
+                  <span>View all</span>
+                  <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                </button>
+              </div>
+
+              <div className="border border-gray-200/80 rounded-2xl divide-y divide-gray-100 bg-white overflow-hidden">
+                {recentTransactions.map(tx => {
+                  const isCredit = tx.transactionType === 'CREDIT';
+                  return (
+                    <button
+                      key={tx.transactionId}
+                      type="button"
+                      onClick={() => navigate('/transactions')}
+                      className="w-full p-3.5 flex items-center justify-between gap-2.5 text-left hover:bg-[#F9FAFB] transition-colors cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
+                          {isCredit ? (
+                            <ArrowDownLeft className="w-4 h-4 text-[#16864A] stroke-[2]" aria-hidden="true" />
+                          ) : (
+                            <ArrowUpRight className="w-4 h-4 text-[#DB0011] stroke-[2]" aria-hidden="true" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-[13px] font-semibold text-[#1f1f1f] truncate">
+                            {tx.description}
+                          </div>
+                          <div className="text-[10px] text-[#777777] font-mono truncate">
+                            {tx.transactionDate}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <div className={`text-[13px] font-bold tabular-nums ${isCredit ? 'text-[#16864A]' : 'text-[#1f1f1f]'}`}>
+                          {isCredit ? '+' : '-'} {formatCurrency(tx.amount, tx.currency)}
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#1f1f1f] transition-colors" aria-hidden="true" />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
             {/* Security & Account Notifications Feed */}
-            <section className="border border-gray-200 rounded-[2px] overflow-hidden">
-              <div className="px-4 py-3 bg-[#F8F9FA] border-b border-gray-200 flex items-center justify-between">
+            <section className="border border-gray-200/80 rounded-2xl overflow-hidden bg-white">
+              <div className="px-4 py-3 bg-[#F5F6F8] border-b border-gray-200/70 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Bell className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
-                  <h2 className="text-xs font-bold uppercase tracking-[0.1em] text-[#1f1f1f]">
-                    Security &amp; Account Alerts
+                  <h2 className="text-xs font-bold text-[#1f1f1f]">
+                    Security &amp; Alerts
                   </h2>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-[2px] bg-[#1f1f1f] text-white">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#1f1f1f] text-white">
                   {unreadNotificationsCount} Unread
                 </span>
               </div>
@@ -472,7 +395,7 @@ export const DashboardPage: React.FC = () => {
                 {recentAlerts.map(alert => (
                   <div
                     key={alert.notificationId}
-                    className={`p-3.5 text-xs ${alert.read ? 'bg-white' : 'bg-[#F8F9FA]'}`}
+                    className={`p-3.5 text-xs ${alert.read ? 'bg-white' : 'bg-[#F9FAFB]'}`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-bold text-[#1f1f1f]">{alert.title}</span>
@@ -492,94 +415,36 @@ export const DashboardPage: React.FC = () => {
               </div>
             </section>
 
-            {/* Recent Verified Transactions */}
-            <section>
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#777777] block">
-                    Statement Activity (Till 30 Aug 2026)
-                  </span>
-                  <h2 className="text-[16px] font-bold text-[#1f1f1f]">
-                    Recent Verified Ledger
-                  </h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => navigate('/transactions')}
-                  className="text-xs font-semibold text-[#DB0011] hover:underline flex items-center gap-1 cursor-pointer min-h-[32px]"
-                >
-                  <span>Full ledger</span>
-                  <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-                </button>
-              </div>
-
-              <div className="border border-gray-200 rounded-[2px] divide-y divide-gray-100">
-                {recentTransactions.map(tx => {
-                  const isCredit = tx.transactionType === 'CREDIT';
-                  return (
-                    <button
-                      key={tx.transactionId}
-                      type="button"
-                      onClick={() => navigate('/transactions')}
-                      className="w-full p-3.5 flex items-center justify-between gap-3 text-left hover:bg-[#F8F9FA] transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div
-                          className={`w-8 h-8 rounded-[2px] flex items-center justify-center shrink-0 ${
-                            isCredit ? 'bg-emerald-50 text-[#166534] border border-emerald-200' : 'bg-[#F2F4F7] text-[#1f1f1f] border border-gray-200'
-                          }`}
-                        >
-                          {isCredit ? (
-                            <ArrowDownLeft className="w-4 h-4" aria-hidden="true" />
-                          ) : (
-                            <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-[13px] font-semibold text-[#1f1f1f] truncate">
-                            {tx.description}
-                          </div>
-                          <div className="text-[10px] text-[#777777] font-mono truncate">
-                            {tx.transactionDate} · {tx.reference}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="text-right shrink-0">
-                        <div className={`text-[13px] font-bold tabular-nums ${isCredit ? 'text-[#166534]' : 'text-[#1f1f1f]'}`}>
-                          {isCredit ? '+' : '-'} {formatCurrency(tx.amount, tx.currency)}
-                        </div>
-                        <div className="text-[9px] font-bold uppercase tracking-wider text-[#777777] flex items-center justify-end gap-0.5">
-                          <CheckCircle2 className="w-2.5 h-2.5 text-[#166534]" aria-hidden="true" />
-                          <span>Posted</span>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-
-            {/* Premier Concierge & Compliance Services */}
-            <section className="border border-gray-200 rounded-[2px] divide-y divide-gray-100">
+            {/* Quick HSBC Mobile App Services List (Matching Cards List Row Design) */}
+            <section className="divide-y divide-gray-100 border-t border-b border-gray-100 bg-white">
               {[
-                { label: 'Premier Rewards & Privileges', sub: '48,250 Premier points available', path: '/rewards' },
-                { label: 'Insurance & Protection', sub: 'Canara HSBC Life & Tata AIG active', path: '/insurance' },
-                { label: '24/7 Operations & Support Desk', sub: 'Encrypted ticketing with Mumbai HQ', path: '/support' },
-              ].map(row => (
-                <button
-                  key={row.path}
-                  type="button"
-                  onClick={() => navigate(row.path)}
-                  className="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-[#F8F9FA] transition-colors group cursor-pointer"
-                >
-                  <div>
-                    <div className="text-[13px] font-bold text-[#1f1f1f]">{row.label}</div>
-                    <div className="text-[11px] text-[#777777]">{row.sub}</div>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#DB0011] transition-colors shrink-0" aria-hidden="true" />
-                </button>
-              ))}
+                { label: 'App-Lock & MPIN Security', sub: '6-digit PIN, biometrics & active devices', path: '/security', icon: KeyRound },
+                { label: 'Premier Rewards', sub: '48,250 Premier points available', path: '/rewards', icon: Award },
+                { label: 'Insurance & Protection', sub: 'Canara HSBC Life & Tata AIG active', path: '/insurance', icon: Shield },
+                { label: 'Statements & Tax Certificates', sub: 'Download certified PDF & Form 16A', path: '/statements', icon: FileText },
+                { label: '24/7 Premier Concierge', sub: 'Direct priority assistance & messaging', path: '/support', icon: MessageSquare },
+              ].map(row => {
+                const Icon = row.icon;
+                return (
+                  <button
+                    key={row.path}
+                    type="button"
+                    onClick={() => navigate(row.path)}
+                    className="w-full min-h-[58px] py-3 px-1 flex items-center justify-between gap-3 text-left hover:bg-gray-50/70 transition-colors group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className="w-11 h-11 rounded-2xl bg-[#F5F6F8] flex items-center justify-center shrink-0">
+                        <Icon className="w-5 h-5 text-[#DB0011] stroke-[1.8]" aria-hidden="true" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[14px] sm:text-[15px] font-semibold text-[#1f1f1f] truncate">{row.label}</div>
+                        <div className="text-[11px] text-[#777777] truncate">{row.sub}</div>
+                      </div>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#1f1f1f] transition-colors shrink-0" aria-hidden="true" />
+                  </button>
+                );
+              })}
             </section>
           </div>
         </div>

@@ -144,7 +144,7 @@ export const ActionFeedbackProvider: React.FC<{ children: React.ReactNode }> = (
                 type="button"
                 disabled={isProcessing}
                 onClick={() => setConfirmConfig(null)}
-                className="min-h-[42px] px-4 bg-white hover:bg-gray-50 border border-[#333333] text-[#1f1f1f] text-xs font-semibold rounded-[2px] cursor-pointer"
+                className="min-h-[42px] px-5 bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] text-[#1f1f1f] text-xs font-semibold rounded-full transition-all cursor-pointer"
               >
                 {confirmConfig.cancelLabel || 'Cancel'}
               </button>
@@ -152,7 +152,7 @@ export const ActionFeedbackProvider: React.FC<{ children: React.ReactNode }> = (
                 type="button"
                 disabled={isProcessing}
                 onClick={handleConfirm}
-                className="min-h-[42px] px-5 bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-semibold rounded-[2px] cursor-pointer disabled:opacity-50"
+                className="min-h-[42px] px-5 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-semibold rounded-full transition-all cursor-pointer disabled:opacity-50 shadow-xs"
               >
                 {isProcessing ? 'Processing...' : confirmConfig.confirmLabel || 'Yes, Confirm'}
               </button>
@@ -172,35 +172,35 @@ export const ActionFeedbackProvider: React.FC<{ children: React.ReactNode }> = (
             role="dialog"
             aria-modal="true"
             aria-labelledby="fullscreen-success-title"
-            className="fixed inset-0 z-[100] bg-slate-950/70 backdrop-blur-[2px] flex items-center justify-center p-4"
+            className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-[2px] flex items-center justify-center p-3 sm:p-4"
           >
             <motion.div
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 6 }}
               transition={{ duration: 0.16, ease: 'easeOut' }}
-              className="w-full max-w-md bg-white rounded-[2px] shadow-2xl border border-gray-200 overflow-hidden text-left"
+              className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-200/80 overflow-hidden text-left"
             >
               {/* Institutional Header Strip */}
-              <div className="px-6 py-3.5 bg-[#F8F9FA] border-b border-gray-200 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <img src="/logo.png" alt="HSBC India" className="w-4 h-4 object-contain" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#555555]">
-                    HSBC India · Security &amp; Account Services
+              <div className="px-5 py-3.5 bg-[#F5F6F8] border-b border-gray-200/80 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <img src="/logo.png" alt="HSBC India" className="w-4 h-4 object-contain shrink-0" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#555555] truncate">
+                    HSBC India Services
                   </span>
                 </div>
                 {successConfig.referenceId && (
-                  <span className="text-[10px] font-mono text-[#555555]">
+                  <span className="text-[10px] font-mono text-[#555555] shrink-0">
                     {successConfig.referenceId}
                   </span>
                 )}
               </div>
 
-              <div className="p-6 space-y-5">
-                <div className="flex items-start gap-4">
+              <div className="p-5 sm:p-6 space-y-5">
+                <div className="flex items-start gap-3.5">
                   <ExecutiveStatusBadge type={successConfig.icon || 'check'} />
                   <div className="min-w-0 flex-1">
-                    <h2 id="fullscreen-success-title" className="text-lg font-bold text-[#1f1f1f] tracking-tight">
+                    <h2 id="fullscreen-success-title" className="text-base sm:text-lg font-bold text-[#1f1f1f] tracking-tight">
                       {successConfig.title}
                     </h2>
                     <p className="text-xs text-[#444444] leading-relaxed mt-1">
@@ -221,12 +221,12 @@ export const ActionFeedbackProvider: React.FC<{ children: React.ReactNode }> = (
                             setSuccessConfig(null);
                             btn.onClick();
                           }}
-                          className={`flex-1 min-h-[42px] px-4 text-xs font-semibold rounded-[2px] transition-colors cursor-pointer ${
+                          className={`flex-1 min-h-[42px] px-4 text-xs font-semibold rounded-full transition-all active:scale-[0.98] cursor-pointer ${
                             btn.variant === 'danger'
                               ? 'bg-red-50 text-[#DB0011] border border-[#DB0011] hover:bg-red-100'
                               : btn.variant === 'primary'
                               ? 'bg-[#1f1f1f] text-white hover:bg-black'
-                              : 'bg-white text-[#1f1f1f] border border-[#333333] hover:bg-gray-50'
+                              : 'bg-[#F5F6F8] text-[#1f1f1f] hover:bg-[#EBECEF]'
                           }`}
                         >
                           {btn.label}
@@ -238,9 +238,9 @@ export const ActionFeedbackProvider: React.FC<{ children: React.ReactNode }> = (
                   <button
                     type="button"
                     onClick={() => setSuccessConfig(null)}
-                    className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
+                    className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-semibold rounded-full transition-all cursor-pointer shadow-xs"
                   >
-                    Close
+                    Done
                   </button>
                 </div>
               </div>
