@@ -36,7 +36,7 @@ export const AccountsPage: React.FC = () => {
 
   const handleReactivateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Account reactivation request submitted! Reference: HSBC/ACT/' + Date.now().toString().slice(-5));
+    toast.success('Account reactivation request submitted. Reference: HSBC/ACT/' + Date.now().toString().slice(-5));
     setShowReactivateModal(false);
   };
 

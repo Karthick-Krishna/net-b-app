@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { TrendingUp, ArrowRight } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
 import { ModalDialog } from '../../components/common/ModalDialog';
@@ -198,7 +198,7 @@ export const WealthPage: React.FC = () => {
           <div className="p-5 bg-[#F6F7F9] rounded-xl border border-gray-200/70 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <div className="text-[11px] font-bold uppercase tracking-wider text-[#777777] flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
+                <TrendingUp className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
                 <span>Invested Portfolio Valuation</span>
               </div>
               <div className="text-2xl sm:text-3xl font-bold text-[#1f1f1f] mt-1">
@@ -334,7 +334,7 @@ export const WealthPage: React.FC = () => {
 
             <button
               type="button"
-              onClick={() => toast.success('HSBC Simply Invest Brokerage linked & RM call booked!')}
+              onClick={() => toast.success('HSBC Simply Invest brokerage linked and Relationship Manager consultation scheduled.')}
               className="p-4 bg-[#F6F7F9] hover:bg-gray-100 rounded-xl border border-gray-200/70 flex items-center justify-between text-left transition-colors cursor-pointer group"
             >
               <div>

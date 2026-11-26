@@ -2,7 +2,7 @@ import React from 'react';
 import { CardRecord } from '@shared/types';
 import { CardArtwork } from './CardArtwork';
 import { formatINR } from '@shared/utils/formatters';
-import { Sliders, CreditCard as CardIcon, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { Sliders, CreditCard as CardIcon, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export interface CreditCardProps {
   card: CardRecord;

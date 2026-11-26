@@ -41,7 +41,7 @@ export const StatementsPage: React.FC = () => {
     setTimeout(() => {
       setIsDownloading(false);
       toast.success(
-        activeTab === 'STATEMENTS' ? 'e-Statement PDF downloaded!' : 'Interest Certificate PDF downloaded!',
+        activeTab === 'STATEMENTS' ? 'Certified e-Statement PDF downloaded.' : 'Interest Certificate PDF downloaded.',
         { id: 'pdf-toast' }
       );
     }, 900);

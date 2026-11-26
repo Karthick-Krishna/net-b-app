@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   ArrowRight,
   Fingerprint,
-  Sparkles,
   Globe2,
   CheckCircle2,
   KeyRound,
@@ -40,7 +39,7 @@ export const LoginPage: React.FC = () => {
       const res = await login(identifier, password);
       setIsSubmitting(false);
       if (res.success) {
-        toast.success('Welcome to HSBC India Personal Internet Banking');
+        toast.success('Identity verified. HSBC India Premier session active.');
         navigate('/');
       } else {
         await login('HSBC-882941');
@@ -57,7 +56,7 @@ export const LoginPage: React.FC = () => {
     const res = await login(customerId);
     setIsSubmitting(false);
     if (res.success) {
-      toast.success('Authenticated successfully');
+      toast.success('Identity verified. HSBC India Premier session active.');
       navigate('/');
     }
   };

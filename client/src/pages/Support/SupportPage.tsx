@@ -30,7 +30,7 @@ export const SupportPage: React.FC = () => {
       category: newCategory,
       priority: 'HIGH',
     });
-    toast.success('Support ticket submitted to HSBC Operations!');
+    toast.success('Support case logged with HSBC Operations Desk.');
     setShowCreateModal(false);
     setActiveTicketId(t.ticketId);
     setNewSubject('');

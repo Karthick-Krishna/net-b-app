@@ -422,6 +422,12 @@ export const RealtimeStore = {
     transactions.unshift(newTx);
     setItem('transactions', transactions);
 
+    this.addNotification(ownerUid, {
+      title: 'Funds Transfer Dispatched',
+      message: `INR ${newTx.amount.toLocaleString('en-IN')} debited to ${newTx.counterpartyName} (${newTx.reference}).`,
+      type: 'TRANSACTION',
+    });
+
     broadcast('TRANSACTION_CREATED', { transaction: newTx });
     broadcast('BALANCE_UPDATED', { accountId: sourceAccountId });
 
@@ -462,6 +468,20 @@ export const RealtimeStore = {
       updatedAt: new Date().toISOString(),
     };
     setItem('cards', cards);
+
+    const last4 = (cards[index].maskedCardNumber || '4281').slice(-4);
+    const statusLabel = updates.cardStatus
+      ? `Status changed to ${updates.cardStatus}`
+      : updates.gamblingRestricted !== undefined
+      ? `Gambling block ${updates.gamblingRestricted ? 'enabled' : 'disabled'}`
+      : 'Card control preferences updated';
+
+    this.addNotification(cards[index].ownerUid, {
+      title: `Card •••• ${last4} Security Update`,
+      message: `${cards[index].cardName || 'HSBC Premier Card'}: ${statusLabel}.`,
+      type: 'SECURITY',
+    });
+
     broadcast('CARD_UPDATED', { card: cards[index] });
     return cards[index];
   },
@@ -493,6 +513,11 @@ export const RealtimeStore = {
       updatedAt: new Date().toISOString(),
     };
     setItem('applock', record);
+    this.addNotification(ownerUid, {
+      title: 'App-Lock Security Updated',
+      message: '6-digit MPIN security configuration has been updated and enforced.',
+      type: 'SECURITY',
+    });
     broadcast('APPLOCK_UPDATED', { ownerUid });
   },
 
@@ -598,6 +623,11 @@ export const RealtimeStore = {
     };
     deposits.unshift(newDep);
     setItem('deposits', deposits);
+    this.addNotification(ownerUid, {
+      title: 'Term Deposit Opened',
+      message: `${newDep.depositNumber} opened for INR ${principalAmount.toLocaleString('en-IN')} at ${interestRate}% p.a.`,
+      type: 'TRANSACTION',
+    });
     broadcast('BALANCE_UPDATED', { accountId });
     return newDep;
   },
@@ -611,7 +641,28 @@ export const RealtimeStore = {
   },
 
   getNotifications(ownerUid: string): NotificationRecord[] {
-    return getItem<NotificationRecord[]>('notifications', INITIAL_NOTIFICATIONS).filter(n => n.ownerUid === ownerUid);
+    return getItem<NotificationRecord[]>('notifications', INITIAL_NOTIFICATIONS)
+      .filter(n => n.ownerUid === ownerUid)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  },
+
+  addNotification(
+    ownerUid: string,
+    payload: { title: string; message: string; type: NotificationRecord['type'] }
+  ): NotificationRecord {
+    const list = getItem<NotificationRecord[]>('notifications', INITIAL_NOTIFICATIONS);
+    const created: NotificationRecord = {
+      notificationId: 'notif-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+      ownerUid,
+      title: payload.title,
+      message: payload.message,
+      type: payload.type,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
+    list.unshift(created);
+    setItem('notifications', list.slice(0, 60));
+    return created;
   },
 
   markNotificationRead(notificationId: string): void {
@@ -619,6 +670,20 @@ export const RealtimeStore = {
     const item = list.find(n => n.notificationId === notificationId);
     if (item) {
       item.read = true;
+      setItem('notifications', list);
+    }
+  },
+
+  markAllNotificationsRead(ownerUid: string): void {
+    const list = getItem<NotificationRecord[]>('notifications', INITIAL_NOTIFICATIONS);
+    let changed = false;
+    for (const item of list) {
+      if (item.ownerUid === ownerUid && !item.read) {
+        item.read = true;
+        changed = true;
+      }
+    }
+    if (changed) {
       setItem('notifications', list);
     }
   },

@@ -4,7 +4,7 @@ import {
   Mic,
   ArrowRight,
   Send,
-  Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { useAuth } from '../../context/AuthContext';
@@ -77,7 +77,7 @@ export const HsbcChatBar: React.FC = () => {
 
   const handleMicClick = () => {
     setIsListening(true);
-    toast('Listening to speech input...', { icon: '🎙' });
+    toast.success('Voice command capture active.');
     setTimeout(() => {
       setIsListening(false);
       setInputMsg('What is my total balance?');
@@ -147,9 +147,8 @@ export const HsbcChatBar: React.FC = () => {
       >
         <div className="flex flex-col h-[58dvh] max-h-[500px] -m-5">
           {/* Chat Status Bar */}
-          <div className="px-5 py-2.5 bg-[#F6F7F9] border-b border-gray-100 flex items-center gap-2 text-[11px] font-semibold text-emerald-700">
-            <Sparkles className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+          <div className="px-5 py-2.5 bg-[#0F141B] border-b border-slate-800 flex items-center gap-2 text-[11px] font-semibold text-emerald-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
             <span>Encrypted Premier Banking Concierge Online</span>
           </div>
 

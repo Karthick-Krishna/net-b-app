@@ -20,7 +20,7 @@ import toast from 'react-hot-toast';
 
 export const SettingsPage: React.FC = () => {
   const { currentUser, logout } = useAuth();
-  const { hideBalances, toggleBalanceVisibility } = useBanking();
+  const { hideBalances, toggleBalanceVisibility, addSecurityNotification } = useBanking();
   const {
     appLockEnabled,
     enableAppLock,
@@ -98,7 +98,12 @@ export const SettingsPage: React.FC = () => {
     } else {
       enableAppLock(newPin);
     }
-    toast.success('6-Digit MPIN successfully updated!');
+    toast.success('6-digit MPIN updated successfully.');
+    addSecurityNotification(
+      '6-Digit MPIN Updated',
+      'Your application security MPIN was changed from Settings.',
+      'SECURITY'
+    );
     setCurrentPin('');
     setNewPin('');
     setConfirmPin('');
@@ -119,7 +124,12 @@ export const SettingsPage: React.FC = () => {
       return;
     }
     resetMpin(resetNewPin);
-    toast.success('Application MPIN reset successfully!');
+    toast.success('Application MPIN reset completed.');
+    addSecurityNotification(
+      'Application MPIN Reset',
+      'Your 6-digit application MPIN was reset and enforced.',
+      'SECURITY'
+    );
     setShowResetMpinModal(false);
     setResetNewPin('');
     setResetConfirmPin('');
@@ -648,7 +658,7 @@ export const SettingsPage: React.FC = () => {
             <option value="25">25 Leaves (Personalized)</option>
             <option value="50">50 Leaves (Personalized)</option>
           </select>
-          <button type="button" onClick={() => { toast.success('Cheque book request dispatched!'); setShowChequeRequestModal(false); }} className="w-full min-h-[44px] bg-[#DB0011] text-white rounded-[2px] font-semibold cursor-pointer">
+          <button type="button" onClick={() => { toast.success('Cheque book dispatch request logged.'); setShowChequeRequestModal(false); }} className="w-full min-h-[44px] bg-[#DB0011] text-white rounded-[2px] font-semibold cursor-pointer">
             Confirm Order
           </button>
         </div>

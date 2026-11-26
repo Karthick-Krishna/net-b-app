@@ -20,8 +20,12 @@ import {
   Shield,
   Activity,
   RotateCcw,
+  Bell,
+  CheckCheck,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useBanking } from '../../context/BankingContext';
 import { useAppLock } from '../../context/AppLockContext';
 import { useActionFeedback } from '../../context/ActionFeedbackContext';
 
@@ -29,20 +33,25 @@ export const HsbcTopNav: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, logout } = useAuth();
+  const { notifications, unreadNotificationsCount, markNotificationAsRead, markAllNotificationsAsRead } = useBanking();
   const { lockApp, resetAppLockToDefault } = useAppLock();
   const { requestAction } = useActionFeedback();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   // Close drawer on Escape key
   useEffect(() => {
-    if (!isMenuOpen) return;
+    if (!isMenuOpen && !isNotifOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsMenuOpen(false);
+      if (e.key === 'Escape') {
+        setIsMenuOpen(false);
+        setIsNotifOpen(false);
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [isMenuOpen]);
+  }, [isMenuOpen, isNotifOpen]);
 
   // Active tab detection
   const isHome = location.pathname === '/';
@@ -147,14 +156,33 @@ export const HsbcTopNav: React.FC = () => {
             ))}
           </nav>
 
-          {/* Right Controls: Desktop Profile/Lock + Hamburger Menu [三] */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Right Controls: Security Indicator, Notifications Bell, Lock, Profile, Menu */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-[#F8F9FA] border border-gray-200 rounded-[2px] text-[10px] font-bold uppercase tracking-wider text-[#166534]">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#166534]" aria-hidden="true" />
+              <span>256-Bit TLS</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsNotifOpen(true)}
+              aria-label={`Open notifications (${unreadNotificationsCount} unread)`}
+              className="relative min-w-[40px] min-h-[40px] flex items-center justify-center rounded-[2px] border border-transparent hover:border-gray-200 hover:bg-[#F8F9FA] text-[#1f1f1f] transition-colors cursor-pointer"
+            >
+              <Bell className="w-[19px] h-[19px] stroke-[1.8]" aria-hidden="true" />
+              {unreadNotificationsCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-[2px] bg-[#DB0011] text-white text-[9px] font-bold flex items-center justify-center leading-none">
+                  {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
+                </span>
+              )}
+            </button>
+
             <button
               type="button"
               onClick={lockApp}
               title="Lock Session (MPIN Shield)"
               aria-label="Lock Session"
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-full bg-[#F2F4F7] hover:bg-gray-200 text-xs font-semibold text-[#1f1f1f] transition-colors cursor-pointer"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-[2px] bg-[#F2F4F7] hover:bg-gray-200 border border-gray-200 text-xs font-semibold text-[#1f1f1f] transition-colors cursor-pointer"
             >
               <Lock className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
               <span>Lock</span>
@@ -163,9 +191,9 @@ export const HsbcTopNav: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate('/settings')}
-              className="hidden lg:flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full border border-gray-200 hover:border-gray-300 text-xs font-semibold text-[#1f1f1f] transition-colors cursor-pointer"
+              className="hidden lg:flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-[2px] border border-gray-200 hover:border-gray-300 text-xs font-semibold text-[#1f1f1f] transition-colors cursor-pointer"
             >
-              <span className="w-6 h-6 rounded-full bg-[#DB0011] text-white flex items-center justify-center text-[11px] font-bold">
+              <span className="w-6 h-6 rounded-[2px] bg-[#1f1f1f] text-white flex items-center justify-center text-[11px] font-bold">
                 {currentUser?.displayName?.[0] || 'K'}
               </span>
               <span className="max-w-[110px] truncate">{currentUser?.displayName?.split(' ')[0] || 'Karthick'}</span>
@@ -174,7 +202,7 @@ export const HsbcTopNav: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsMenuOpen(true)}
-              className="min-w-[44px] min-h-[44px] -mr-1.5 flex items-center justify-center rounded-lg text-[#1f1f1f] hover:text-[#DB0011] transition-colors cursor-pointer"
+              className="min-w-[44px] min-h-[44px] -mr-1.5 flex items-center justify-center rounded-[2px] text-[#1f1f1f] hover:text-[#DB0011] transition-colors cursor-pointer"
               aria-label="Open HSBC Menu"
             >
               <Menu className="w-6 h-6 stroke-[1.8]" aria-hidden="true" />
@@ -336,6 +364,130 @@ export const HsbcTopNav: React.FC = () => {
                 >
                   <LogOut className="w-4 h-4" aria-hidden="true" />
                   <span>Log Off HSBC India</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* SLIDE-OVER INSTITUTIONAL NOTIFICATIONS & SECURITY ALERTS DRAWER */}
+      <AnimatePresence>
+        {isNotifOpen && (
+          <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true" aria-label="Security and Account Notifications">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsNotifOpen(false)}
+              className="fixed inset-0 bg-slate-950/60 backdrop-blur-[2px]"
+            />
+
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+              className="relative ml-auto w-full max-w-md bg-white h-dvh shadow-2xl border-l border-gray-200 flex flex-col justify-between overflow-y-auto z-10"
+            >
+              <div className="px-5 py-4 bg-[#0F141B] text-white border-b border-slate-800 flex items-center justify-between">
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-red-400">
+                    HSBC India · Security &amp; Alert Log
+                  </div>
+                  <h2 className="text-sm font-bold text-white mt-0.5">
+                    Account &amp; Security Notifications ({unreadNotificationsCount} unread)
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsNotifOpen(false)}
+                  aria-label="Close Notifications"
+                  className="min-w-[40px] min-h-[40px] -mr-2 flex items-center justify-center text-gray-300 hover:text-white rounded-[2px] cursor-pointer"
+                >
+                  <X className="w-5 h-5" aria-hidden="true" />
+                </button>
+              </div>
+
+              {unreadNotificationsCount > 0 && (
+                <div className="px-5 py-2.5 bg-[#F8F9FA] border-b border-gray-200 flex items-center justify-between text-xs">
+                  <span className="text-[#555555] font-medium">
+                    {unreadNotificationsCount} active unread alert{unreadNotificationsCount > 1 ? 's' : ''}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={markAllNotificationsAsRead}
+                    className="flex items-center gap-1.5 font-semibold text-[#DB0011] hover:underline cursor-pointer"
+                  >
+                    <CheckCheck className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span>Mark all read</span>
+                  </button>
+                </div>
+              )}
+
+              <div className="flex-1 divide-y divide-gray-100 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-gray-500">
+                    No active alerts recorded in this relationship session.
+                  </div>
+                ) : (
+                  notifications.map(n => {
+                    const isSec = n.type === 'SECURITY';
+                    return (
+                      <div
+                        key={n.notificationId}
+                        className={`p-4 sm:px-5 transition-colors ${
+                          n.read ? 'bg-white' : 'bg-[#FAFAFB] border-l-[3px] border-l-[#DB0011]'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            {isSec ? (
+                              <ShieldCheck className="w-4 h-4 text-[#DB0011] shrink-0" aria-hidden="true" />
+                            ) : n.type === 'TRANSACTION' ? (
+                              <Activity className="w-4 h-4 text-[#166534] shrink-0" aria-hidden="true" />
+                            ) : (
+                              <AlertCircle className="w-4 h-4 text-[#374151] shrink-0" aria-hidden="true" />
+                            )}
+                            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#777777]">
+                              {n.type}
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-mono text-gray-400">
+                            {new Date(n.createdAt).toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                            })}
+                          </span>
+                        </div>
+                        <h3 className="text-xs font-bold text-[#1f1f1f] mt-1.5">{n.title}</h3>
+                        <p className="text-xs text-[#444444] mt-1 leading-relaxed">{n.message}</p>
+                        {!n.read && (
+                          <button
+                            type="button"
+                            onClick={() => markNotificationAsRead(n.notificationId)}
+                            className="mt-2.5 text-[11px] font-semibold text-[#DB0011] hover:underline cursor-pointer"
+                          >
+                            Acknowledge &amp; mark read
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              <div className="p-4 border-t border-gray-200 bg-[#F8F9FA]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsNotifOpen(false);
+                    navigate('/security');
+                  }}
+                  className="w-full min-h-[42px] bg-[#1f1f1f] hover:bg-black text-white text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
+                >
+                  Open Security &amp; Audit Controls
                 </button>
               </div>
             </motion.div>

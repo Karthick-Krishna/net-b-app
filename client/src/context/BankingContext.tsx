@@ -22,6 +22,7 @@ interface BankingContextType {
   wealth: WealthPortfolio | null;
   insurance: InsuranceRecord[];
   notifications: NotificationRecord[];
+  unreadNotificationsCount: number;
   tickets: SupportTicketRecord[];
   hideBalances: boolean;
   totalBalanceGbpOrInr: number;
@@ -57,6 +58,8 @@ interface BankingContextType {
   }) => Promise<SupportTicketRecord>;
   sendTicketReply: (ticketId: string, message: string) => void;
   markNotificationAsRead: (notificationId: string) => void;
+  markAllNotificationsAsRead: () => void;
+  addSecurityNotification: (title: string, message: string, type?: NotificationRecord['type']) => void;
   refreshData: () => void;
 }
 
@@ -205,6 +208,25 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     loadData();
   };
 
+  const markAllNotificationsAsRead = () => {
+    if (!currentUser) return;
+    RealtimeStore.markAllNotificationsRead(currentUser.uid);
+    loadData();
+    toast.success('All security and account notifications marked as read.');
+  };
+
+  const addSecurityNotification = (
+    title: string,
+    message: string,
+    type: NotificationRecord['type'] = 'SECURITY'
+  ) => {
+    if (!currentUser) return;
+    RealtimeStore.addNotification(currentUser.uid, { title, message, type });
+    loadData();
+  };
+
+  const unreadNotificationsCount = notifications.filter(n => !n.read).length;
+
   return (
     <BankingContext.Provider
       value={{
@@ -215,6 +237,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         wealth,
         insurance,
         notifications,
+        unreadNotificationsCount,
         tickets,
         hideBalances,
         totalBalanceGbpOrInr,
@@ -227,6 +250,8 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         submitTicket,
         sendTicketReply,
         markNotificationAsRead,
+        markAllNotificationsAsRead,
+        addSecurityNotification,
         refreshData: loadData,
       }}
     >

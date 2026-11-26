@@ -21,7 +21,7 @@ export const RewardsPage: React.FC = () => {
     }
     setPoints(prev => prev - requiredPoints);
     setRedeemedList(prev => [title, ...prev]);
-    toast.success(`Redeemed: ${title}! Voucher sent to registered email.`);
+    toast.success(`Reward redeemed: ${title}. Fulfillment confirmation dispatched to registered email.`);
   };
 
   return (
@@ -37,7 +37,7 @@ export const RewardsPage: React.FC = () => {
         </div>
 
         <div className="px-4 sm:px-6 md:px-8 py-6 space-y-6">
-          <div className="p-5 bg-gradient-to-r from-[#DB0011] to-[#B0000D] text-white rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="p-5 bg-[#0F141B] text-white rounded-[2px] border border-slate-800 border-l-[4px] border-l-[#DB0011] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <div className="text-[11px] uppercase tracking-wider text-white/85 font-bold flex items-center gap-1.5">
                 <Award className="w-4 h-4 text-amber-300" aria-hidden="true" />
