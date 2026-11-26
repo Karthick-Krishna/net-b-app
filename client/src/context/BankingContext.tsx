@@ -97,19 +97,13 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const unsubscribe = RealtimeStore.onSync((msg: SyncMessage) => {
       loadData();
       if (msg.type === 'BALANCE_UPDATED') {
-        toast.success('Account balance synchronized in real-time.', {
-          icon: '⚡',
-          style: { borderRadius: '8px', background: '#252525', color: '#fff', fontSize: '12px' },
-        });
+        toast.success('Account balance synchronized.');
       } else if (msg.type === 'TRANSACTION_CREATED') {
-        toast('New transaction record posted to your account', {
-          icon: '💳',
-          style: { borderRadius: '8px', background: '#252525', color: '#fff', fontSize: '12px' },
-        });
+        toast.success('New transaction posted to ledger.');
       } else if (msg.type === 'CARD_UPDATED') {
         // Silent live-sync; triggering component provides specific user feedback
       } else if (msg.type === 'DATA_RESET') {
-        toast('Data refreshed successfully.', { icon: '🔄' });
+        toast.success('Account ledger refreshed.');
       }
     });
 

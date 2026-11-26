@@ -94,18 +94,10 @@ export const CardsPage: React.FC = () => {
   const maskedFourDigits = activeCard.maskedCardNumber ? activeCard.maskedCardNumber.slice(-4) : '4281';
   const cardTitle =
     activeCard.cardName ||
-    (activeCard.cardTier === 'GLOBAL_TRAVEL'
-      ? 'Business Debit Card'
-      : activeCard.cardType === 'CREDIT'
-      ? 'Credit Card'
-      : 'Debit Card');
+    (activeCard.cardType === 'CREDIT' ? 'Credit Card' : 'Premier Debit Card');
 
   const shortCardLabel =
-    activeCard.cardTier === 'GLOBAL_TRAVEL'
-      ? 'Business Debit Card'
-      : activeCard.cardType === 'CREDIT'
-      ? 'Credit Card'
-      : 'Debit Card';
+    activeCard.cardType === 'CREDIT' ? 'Credit Card' : 'Premier Debit Card';
 
   const isFrozen = activeCard.cardStatus === 'FROZEN' || activeCard.cardStatus === 'BLOCKED';
   const gamblingBlocked = activeCard.gamblingRestricted ?? true;
@@ -121,9 +113,7 @@ export const CardsPage: React.FC = () => {
 
   const revealedCardPin = activeCard.cardPin || (activeCard.cardType === 'CREDIT' ? '4192' : '8829');
   const fullVirtualNumber =
-    activeCard.cardTier === 'GLOBAL_TRAVEL'
-      ? `4532 8829 4102 ${maskedFourDigits}`
-      : activeCard.cardType === 'CREDIT'
+    activeCard.cardType === 'CREDIT'
       ? `5412 7500 8829 ${maskedFourDigits}`
       : `4532 8829 4101 ${maskedFourDigits}`;
 
@@ -502,7 +492,7 @@ export const CardsPage: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#555555]">
                   <span>
-                    Linked: <strong className="text-[#1f1f1f]">{linkedAccount?.accountType === 'CURRENT' ? 'Business Current' : 'Premier Savings'} ({linkedAccount?.maskedAccountNumber?.slice(-4) || '4101'})</strong>
+                    Linked: <strong className="text-[#1f1f1f]">Premier Savings ({linkedAccount?.maskedAccountNumber?.slice(-4) || '4101'})</strong>
                   </span>
                   <span className={`font-semibold flex items-center gap-1 ${isFrozen ? 'text-[#DB0011]' : 'text-[#16864A]'}`}>
                     {isFrozen ? <Snowflake className="w-3 h-3" aria-hidden="true" /> : <CheckCircle2 className="w-3 h-3" aria-hidden="true" />}

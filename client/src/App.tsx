@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, resolveValue } from 'react-hot-toast';
+import { ShieldCheck, AlertCircle, Loader2, Info } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { BankingProvider } from './context/BankingContext';
 import { AppLockProvider } from './context/AppLockContext';
@@ -92,19 +93,51 @@ export const App: React.FC = () => {
         <BankingProvider>
           <AppLockProvider>
             <ActionFeedbackProvider>
-              <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 3500,
-                style: {
-                  background: '#252525',
-                  color: '#FFFFFF',
-                  fontSize: '12px',
-                  borderRadius: '10px',
-                  border: '1px solid #333333',
-                },
-              }}
-            />
+              <Toaster position="top-right" gutter={8} toastOptions={{ duration: 3500 }}>
+                {(t) => {
+                  const accentClass =
+                    t.type === 'error'
+                      ? 'border-l-[#DB0011]'
+                      : t.type === 'loading'
+                      ? 'border-l-[#6B7280]'
+                      : 'border-l-[#16864A]';
+                  const headerLabel =
+                    t.type === 'error'
+                      ? 'Security & Validation Notice'
+                      : t.type === 'loading'
+                      ? 'Processing Request'
+                      : 'HSBC India Notification';
+                  return (
+                    <div
+                      role="status"
+                      aria-live="polite"
+                      className={`${
+                        t.visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1'
+                      } transition-all duration-150 max-w-sm w-full bg-white text-[#1f1f1f] border border-gray-200 border-l-[3px] ${accentClass} shadow-lg rounded-[2px] px-4 py-3 flex items-start gap-3 pointer-events-auto`}
+                    >
+                      <div className="shrink-0 mt-0.5">
+                        {t.type === 'error' ? (
+                          <AlertCircle className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
+                        ) : t.type === 'loading' ? (
+                          <Loader2 className="w-4 h-4 text-[#555555] animate-spin" aria-hidden="true" />
+                        ) : t.type === 'success' ? (
+                          <ShieldCheck className="w-4 h-4 text-[#16864A]" aria-hidden="true" />
+                        ) : (
+                          <Info className="w-4 h-4 text-[#1f1f1f]" aria-hidden="true" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#777777]">
+                          {headerLabel}
+                        </div>
+                        <div className="text-xs font-medium text-[#1f1f1f] mt-0.5 leading-snug">
+                          {resolveValue(t.message, t)}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }}
+              </Toaster>
             <AppContent />
             </ActionFeedbackProvider>
           </AppLockProvider>

@@ -59,19 +59,13 @@ export const AdminStoreProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const unsub = RealtimeStore.onSync((msg: SyncMessage) => {
       loadData();
       if (msg.type === 'BALANCE_UPDATED') {
-        toast.success('Account balance updated and audit log recorded.', {
-          icon: '📝',
-          style: { background: '#1E293B', color: '#F8FAFC' },
-        });
+        toast.success('Account balance updated and audit log recorded.');
       } else if (msg.type === 'TRANSACTION_CREATED') {
-        toast('New transaction record posted to ledger.', {
-          icon: '💳',
-          style: { background: '#1E293B', color: '#F8FAFC' },
-        });
+        toast.success('Transaction record posted to ledger.');
       } else if (msg.type === 'CUSTOMER_CREATED') {
-        toast.success('Customer profile created successfully.');
+        toast.success('Customer profile created.');
       } else if (msg.type === 'APPLOCK_UPDATED') {
-        toast('Security lock credential updated.', { icon: '🔒' });
+        toast.success('Security lock credential updated.');
       }
     });
 

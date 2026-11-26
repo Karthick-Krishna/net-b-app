@@ -14,7 +14,7 @@ export const AccountsManagementPage: React.FC = () => {
             Bank Account Portfolios
           </h2>
           <p className="text-xs text-[#777777] mt-0.5">
-            Supervise all customer savings, business current, and corporate salary accounts
+            Supervise HSBC Premier personal savings and relationship portfolios
           </p>
         </div>
 

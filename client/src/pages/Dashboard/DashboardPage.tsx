@@ -205,9 +205,7 @@ export const DashboardPage: React.FC = () => {
                       </div>
                       <div className="min-w-0">
                         <div className="text-[14px] font-semibold text-[#1f1f1f] truncate">
-                          {account.accountType === 'SAVINGS'
-                            ? 'Premier Savings Account'
-                            : 'Business Current Account'}
+                          HSBC Premier Savings Account
                         </div>
                         <div className="text-[11px] text-[#777777] font-mono mt-0.5 truncate">
                           {account.maskedAccountNumber} • {account.ifscCode}
@@ -253,9 +251,7 @@ export const DashboardPage: React.FC = () => {
                   const tier = card.cardTier;
                   const isLightCard = tier === 'VISA_PLATINUM';
                   const cardTheme =
-                    tier === 'GLOBAL_TRAVEL'
-                      ? 'bg-gradient-to-b from-[#040B1A] via-[#0B2250] to-[#1D54B5] text-white border-blue-900/50'
-                      : tier === 'PREMIER_WORLD_ELITE'
+                    tier === 'PREMIER_WORLD_ELITE'
                       ? 'bg-gradient-to-br from-[#1A0D10] via-[#2B1218] to-[#0E0709] text-white border-red-900/50'
                       : tier === 'TRAVEL_ONE'
                       ? 'bg-gradient-to-br from-[#0F2A44] via-[#17517E] to-[#0B1E30] text-white border-sky-800/50'
@@ -289,7 +285,7 @@ export const DashboardPage: React.FC = () => {
                           </span>
                         ) : (
                           <span className={`text-[10px] font-bold uppercase tracking-wider shrink-0 ${isLightCard ? 'text-gray-600' : 'text-white/80'}`}>
-                            {tier === 'GLOBAL_TRAVEL' ? 'BUSINESS DEBIT' : card.cardType}
+                            {card.cardType}
                           </span>
                         )}
                       </div>

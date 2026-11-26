@@ -41,48 +41,35 @@ interface ActionFeedbackContextType {
 
 const ActionFeedbackContext = createContext<ActionFeedbackContextType | undefined>(undefined);
 
-const FullscreenResultIcon: React.FC<{ type: FeedbackIconType }> = ({ type }) => {
+const ExecutiveStatusBadge: React.FC<{ type: FeedbackIconType }> = ({ type }) => {
   const isFreeze = type === 'freeze';
-  const strokeColor = isFreeze ? '#1D4ED8' : type === 'key' ? '#DB0011' : '#16864A';
-  const ringBg = isFreeze ? 'bg-blue-50 border-blue-200' : type === 'key' ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200';
+  const isKey = type === 'key';
+  const strokeColor = isFreeze ? '#1E3A8A' : isKey ? '#DB0011' : '#166534';
+  const boxStyle = isFreeze
+    ? 'bg-slate-50 border-slate-200'
+    : isKey
+    ? 'bg-red-50/70 border-red-200'
+    : 'bg-emerald-50/70 border-emerald-200';
 
   return (
-    <div className={`w-20 h-20 rounded-full border-2 ${ringBg} mx-auto flex items-center justify-center relative`}>
-      <svg viewBox="0 0 48 48" className="w-11 h-11" fill="none" aria-hidden="true">
-        <motion.circle
-          cx="24"
-          cy="24"
-          r="20"
-          stroke={strokeColor}
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 0.38, ease: 'easeOut' }}
-        />
+    <div className={`w-12 h-12 rounded-[2px] border ${boxStyle} flex items-center justify-center shrink-0`}>
+      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" aria-hidden="true">
         {type === 'freeze' ? (
-          <motion.g
-            stroke={strokeColor}
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.25, delay: 0.15 }}
-          >
-            <line x1="24" y1="13" x2="24" y2="35" />
-            <line x1="14.5" y1="18.5" x2="33.5" y2="29.5" />
-            <line x1="14.5" y1="29.5" x2="33.5" y2="18.5" />
-          </motion.g>
+          <g stroke={strokeColor} strokeWidth="2" strokeLinecap="round">
+            <line x1="12" y1="3" x2="12" y2="21" />
+            <line x1="4.5" y1="7.5" x2="19.5" y2="16.5" />
+            <line x1="4.5" y1="16.5" x2="19.5" y2="7.5" />
+          </g>
         ) : (
           <motion.path
-            d="M15 24.5L21 30.5L33.5 18"
+            d="M5 12.5L9.5 17L19 7.5"
             stroke={strokeColor}
-            strokeWidth="3"
+            strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 0.28, delay: 0.18, ease: 'easeOut' }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
           />
         )}
       </svg>
@@ -174,83 +161,88 @@ export const ActionFeedbackProvider: React.FC<{ children: React.ReactNode }> = (
         )}
       </ModalDialog>
 
-      {/* STEP 2: FULLSCREEN ANIMATION + POPUP UI WITH SUCCESS & RELATED BUTTONS */}
+      {/* STEP 2: EXECUTIVE HSBC COMPLETION SHEET */}
       <AnimatePresence>
         {successConfig && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="fullscreen-success-title"
-            className="fixed inset-0 z-[100] bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-4"
+            className="fixed inset-0 z-[100] bg-slate-950/70 backdrop-blur-[2px] flex items-center justify-center p-4"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-200 p-6 sm:p-8 text-center space-y-5"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.16, ease: 'easeOut' }}
+              className="w-full max-w-md bg-white rounded-[2px] shadow-2xl border border-gray-200 border-t-[3px] border-t-[#DB0011] overflow-hidden text-left"
             >
-              {/* Crisp Animated Vector Seal */}
-              <FullscreenResultIcon type={successConfig.icon || 'check'} />
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-center gap-1.5">
-                  <img src="/logo.png" alt="HSBC India" className="w-5 h-5 object-contain" />
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-[#777777]">
-                    HSBC India Confirmation
+              {/* Institutional Header Strip */}
+              <div className="px-6 py-3.5 bg-[#F8F9FA] border-b border-gray-200 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <img src="/logo.png" alt="HSBC India" className="w-4 h-4 object-contain" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#555555]">
+                    HSBC India · Security &amp; Account Services
                   </span>
                 </div>
-                <h2 id="fullscreen-success-title" className="text-xl font-bold text-[#1f1f1f]">
-                  {successConfig.title}
-                </h2>
-                <p className="text-sm text-[#333333] leading-relaxed">
-                  {successConfig.message}
-                </p>
+                {successConfig.referenceId && (
+                  <span className="text-[10px] font-mono text-[#555555]">
+                    {successConfig.referenceId}
+                  </span>
+                )}
               </div>
 
-              {successConfig.referenceId && (
-                <div className="px-3.5 py-2 bg-[#F6F7F9] rounded-lg border border-gray-200/70 inline-block text-[11px] font-mono text-[#555555]">
-                  Ref: {successConfig.referenceId}
-                </div>
-              )}
-
-              {/* Related Action Buttons + Done */}
-              <div className="pt-2 space-y-2.5">
-                {successConfig.relatedButtons && successConfig.relatedButtons.length > 0 && (
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    {successConfig.relatedButtons.map((btn, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => {
-                          setSuccessConfig(null);
-                          btn.onClick();
-                        }}
-                        className={`flex-1 min-h-[44px] px-4 text-xs font-semibold rounded-[2px] transition-colors cursor-pointer ${
-                          btn.variant === 'danger'
-                            ? 'bg-red-50 text-[#DB0011] border border-[#DB0011] hover:bg-red-100'
-                            : btn.variant === 'primary'
-                            ? 'bg-[#1f1f1f] text-white hover:bg-black'
-                            : 'bg-white text-[#1f1f1f] border border-[#333333] hover:bg-gray-50'
-                        }`}
-                      >
-                        {btn.label}
-                      </button>
-                    ))}
+              <div className="p-6 space-y-5">
+                <div className="flex items-start gap-4">
+                  <ExecutiveStatusBadge type={successConfig.icon || 'check'} />
+                  <div className="min-w-0 flex-1">
+                    <h2 id="fullscreen-success-title" className="text-lg font-bold text-[#1f1f1f] tracking-tight">
+                      {successConfig.title}
+                    </h2>
+                    <p className="text-xs text-[#444444] leading-relaxed mt-1">
+                      {successConfig.message}
+                    </p>
                   </div>
-                )}
+                </div>
 
-                <button
-                  type="button"
-                  onClick={() => setSuccessConfig(null)}
-                  className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
-                >
-                  Done
-                </button>
+                {/* Related Action Buttons + Done */}
+                <div className="pt-2 border-t border-gray-100 space-y-2.5">
+                  {successConfig.relatedButtons && successConfig.relatedButtons.length > 0 && (
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      {successConfig.relatedButtons.map((btn, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => {
+                            setSuccessConfig(null);
+                            btn.onClick();
+                          }}
+                          className={`flex-1 min-h-[42px] px-4 text-xs font-semibold rounded-[2px] transition-colors cursor-pointer ${
+                            btn.variant === 'danger'
+                              ? 'bg-red-50 text-[#DB0011] border border-[#DB0011] hover:bg-red-100'
+                              : btn.variant === 'primary'
+                              ? 'bg-[#1f1f1f] text-white hover:bg-black'
+                              : 'bg-white text-[#1f1f1f] border border-[#333333] hover:bg-gray-50'
+                          }`}
+                        >
+                          {btn.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setSuccessConfig(null)}
+                    className="w-full min-h-[42px] bg-[#DB0011] hover:bg-[#B0000D] text-white text-xs font-semibold rounded-[2px] transition-colors cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

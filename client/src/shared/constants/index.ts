@@ -46,8 +46,6 @@ export const TRANSACTION_CATEGORIES = [
 
 export const ACCOUNT_TYPES = [
   { id: 'SAVINGS', label: 'HSBC Premier Savings Account' },
-  { id: 'CURRENT', label: 'HSBC Business Current Account' },
-  { id: 'SALARY', label: 'HSBC Corporate Salary Account' },
   { id: 'FIXED_DEPOSIT', label: 'HSBC High Yield Fixed Deposit' },
   { id: 'RECURRING_DEPOSIT', label: 'HSBC Smart Recurring Deposit' },
   { id: 'FOREIGN_CURRENCY', label: 'Global Currency Pocket' },

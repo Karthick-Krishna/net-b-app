@@ -61,11 +61,6 @@ const CardFace: React.FC<{ card: CardRecord; isCenter: boolean; cardholderFallba
     bgStyle = 'bg-gradient-to-br from-[#14161A] via-[#1E2229] to-[#0B0C0F] border-neutral-800 text-white';
     lionAccent = 'rgba(219,0,17,0.12)';
     lionStroke = 'rgba(255,255,255,0.14)';
-  } else if (tier === 'GLOBAL_TRAVEL') {
-    // HSBC Commercial / Business Debit Card: Deep cosmic navy with blue horizon glow
-    bgStyle = 'bg-gradient-to-b from-[#040B1A] via-[#0B2250] to-[#1D54B5] border-blue-900/50 text-white';
-    lionAccent = 'rgba(96,165,250,0.14)';
-    lionStroke = 'rgba(147,197,253,0.22)';
   } else if (tier === 'PREMIER_WORLD_ELITE') {
     // HSBC Premier Credit Card: Matte black/charcoal crimson luxury with Stephen & Stitt Lion artwork
     bgStyle = 'bg-gradient-to-br from-[#1A0D10] via-[#2B1218] to-[#0E0709] border-red-900/50 text-white';
@@ -96,8 +91,6 @@ const CardFace: React.FC<{ card: CardRecord; isCenter: boolean; cardholderFallba
   const shortProductTitle =
     tier === 'PREMIER_PLATINUM'
       ? 'Premier Debit'
-      : tier === 'GLOBAL_TRAVEL'
-      ? 'Business Debit'
       : tier === 'PREMIER_WORLD_ELITE'
       ? 'Premier'
       : tier === 'TRAVEL_ONE'
@@ -127,14 +120,6 @@ const CardFace: React.FC<{ card: CardRecord; isCenter: boolean; cardholderFallba
 
       {/* Specular Finish */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-black/15 pointer-events-none" />
-
-      {/* Cosmic Earth Horizon Accent for Business Debit */}
-      {tier === 'GLOBAL_TRAVEL' && (
-        <div
-          className="absolute -bottom-16 -left-8 -right-8 h-32 rounded-[100%] bg-gradient-to-t from-[#60A5FA]/50 via-[#3B82F6]/30 to-transparent blur-md pointer-events-none"
-          aria-hidden="true"
-        />
-      )}
 
       {/* Frozen Overlay */}
       {isFrozen && isCenter && (

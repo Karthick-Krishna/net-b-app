@@ -96,7 +96,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
       // Pin fixed to 002831 or verified via AppLock
       const res = verifyPin(pinToVerify);
       if (res.success || pinToVerify === '002831') {
-        toast.success('PIN verified. Welcome to HSBC India!');
+        toast.success('Security PIN verified. HSBC India Premier session active.');
         if (onSuccess) onSuccess();
         else unlockApp();
       } else {
@@ -208,7 +208,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
       RealtimeStore.setAppLockPin(currentUser.uid, newPin);
     }
     resetMpin(newPin);
-    toast.success('6-Digit PIN successfully updated! Welcome to HSBC India.');
+    toast.success('6-digit PIN updated. HSBC India Premier session active.');
     setShowForgotPinModal(false);
     if (onSuccess) onSuccess();
     else unlockApp();

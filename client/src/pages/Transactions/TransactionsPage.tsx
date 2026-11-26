@@ -13,17 +13,14 @@ import { AnimatedPageTransition } from '../../components/AnimatedPageTransition'
 import { ModalDialog } from '../../components/common/ModalDialog';
 
 export const TransactionsPage: React.FC = () => {
-  const { transactions, accounts, formatCurrency } = useBanking();
+  const { transactions, formatCurrency } = useBanking();
   const [searchTerm, setSearchTerm] = useState('');
-  const [accountFilter, setAccountFilter] = useState<string>('ALL');
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
   const [dateRangeFilter, setDateRangeFilter] = useState<'7DAYS' | '30DAYS' | '3MONTHS' | 'ALL'>('ALL');
   const [selectedTx, setSelectedTx] = useState<TransactionRecord | null>(null);
 
-  const nowMs = Date.now();
+  const anchorMs = transactions[0]?.createdAt ? new Date(transactions[0].createdAt).getTime() : Date.now();
   const filtered = transactions.filter(t => {
-    const matchesAccount = accountFilter === 'ALL' || t.accountId === accountFilter;
-
     const matchesSearch =
       t.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -38,13 +35,13 @@ export const TransactionsPage: React.FC = () => {
     let matchesDate = true;
     if (dateRangeFilter !== 'ALL' && t.createdAt) {
       const txMs = new Date(t.createdAt).getTime();
-      const diffDays = (nowMs - txMs) / (1000 * 60 * 60 * 24);
+      const diffDays = (anchorMs - txMs) / (1000 * 60 * 60 * 24);
       if (dateRangeFilter === '7DAYS') matchesDate = diffDays <= 7;
       else if (dateRangeFilter === '30DAYS') matchesDate = diffDays <= 30;
       else if (dateRangeFilter === '3MONTHS') matchesDate = diffDays <= 90;
     }
 
-    return matchesAccount && matchesSearch && matchesCategory && matchesDate;
+    return matchesSearch && matchesCategory && matchesDate;
   });
 
   const filteredNet = filtered.reduce(
@@ -63,49 +60,13 @@ export const TransactionsPage: React.FC = () => {
                 Transaction Activity
               </h1>
               <p className="text-xs text-[#777777] mt-0.5">
-                Real-time central banking ledger · {filtered.length} transactions shown (Net{' '}
+                HSBC Premier Savings personal ledger · {filtered.length} transactions shown (Net{' '}
                 <span className="font-semibold text-[#1f1f1f]">
                   {filteredNet >= 0 ? '+' : '-'}{formatCurrency(Math.abs(filteredNet))}
                 </span>
                 )
               </p>
             </div>
-          </div>
-
-          {/* Account Filter Pills */}
-          <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
-            <button
-              type="button"
-              onClick={() => setAccountFilter('ALL')}
-              className={`px-3 py-1.5 min-h-[32px] rounded-full text-xs font-semibold whitespace-nowrap transition-colors border cursor-pointer ${
-                accountFilter === 'ALL'
-                  ? 'bg-[#DB0011] text-white border-[#DB0011]'
-                  : 'bg-[#F8F9FA] text-[#444] border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              All Accounts ({transactions.length})
-            </button>
-            {accounts.map(acc => {
-              const count = transactions.filter(t => t.accountId === acc.accountId).length;
-              const label =
-                acc.accountType === 'CURRENT'
-                  ? `Business Current (${count})`
-                  : `Premier Savings (${count})`;
-              return (
-                <button
-                  key={acc.accountId}
-                  type="button"
-                  onClick={() => setAccountFilter(acc.accountId)}
-                  className={`px-3 py-1.5 min-h-[32px] rounded-full text-xs font-semibold whitespace-nowrap transition-colors border cursor-pointer ${
-                    accountFilter === acc.accountId
-                      ? 'bg-[#DB0011] text-white border-[#DB0011]'
-                      : 'bg-[#F8F9FA] text-[#444] border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  {label}
-                </button>
-              );
-            })}
           </div>
 
           {/* Search & Date Filter Row */}

@@ -437,7 +437,7 @@ export const PaymentsPage: React.FC = () => {
                               {isSelected && <span className="w-2 h-2 rounded-full bg-[#DB0011]" />}
                             </div>
                             <div>
-                              <div className="text-xs font-bold text-[#1f1f1f]">{acc.accountType === 'CURRENT' ? 'Business Current' : 'Premier Savings'}</div>
+                              <div className="text-xs font-bold text-[#1f1f1f]">HSBC Premier Savings</div>
                               <div className="text-[11px] text-[#777777] font-mono">{acc.maskedAccountNumber}</div>
                             </div>
                           </div>

@@ -50,7 +50,7 @@ export const AccountsPage: React.FC = () => {
               My Accounts
             </h1>
             <p className="text-xs text-[#777777] mt-0.5">
-              Savings, current, and corporate salary accounts
+              HSBC Premier Personal Savings &amp; linked relationship account
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -75,8 +75,8 @@ export const AccountsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Account Selector Grid (Cards UI Clean Cards) */}
-        <div className="px-4 sm:px-6 md:px-8 py-5 border-b border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-3">
+        {/* Account Card Container */}
+        <div className="px-4 sm:px-6 md:px-8 py-5 border-b border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-3">
           {accounts.map(acc => {
             const isSelected = acc.accountId === activeAccount?.accountId;
             const accDormant = acc.accountStatus === 'DORMANT' || acc.accountStatus === 'INOPERATIVE';
@@ -127,7 +127,7 @@ export const AccountsPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h2 className="text-base sm:text-lg font-bold text-[#1f1f1f]">
-                  {activeAccount.accountType === 'CURRENT' ? 'Business Current Account' : 'Premier Savings Account'}
+                  HSBC Premier Savings Account
                 </h2>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-[#777777] font-mono mt-0.5">
                   <span>A/C: {activeAccount.accountNumber} • IFSC: {activeAccount.ifscCode}</span>
@@ -318,7 +318,7 @@ export const AccountsPage: React.FC = () => {
               Reactivation Reason
             </label>
             <select id="reactivate-reason" className="w-full p-3 bg-[#F6F7F9] border border-gray-200 rounded-[2px] font-semibold">
-              <option>Resuming salary / business transactions</option>
+              <option>Resuming regular personal transactions</option>
               <option>Domestic / International remittance receipt</option>
               <option>Fixed Deposit investment linkage</option>
             </select>
