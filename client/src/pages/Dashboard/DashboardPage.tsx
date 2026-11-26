@@ -70,9 +70,7 @@ export const DashboardPage: React.FC = () => {
         <div className="px-4 sm:px-6 md:px-8 py-2.5 bg-[#F8F9FA] text-[#555555] border-b border-gray-200 flex flex-wrap items-center justify-between gap-2 text-[10px] font-bold tracking-[0.12em] uppercase">
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#166534]" aria-hidden="true" />
-            <span className="text-[#1f1f1f]">HSBC India · Premier Personal Banking</span>
-            <span className="hidden sm:inline text-gray-300">|</span>
-            <span className="hidden sm:inline text-[#666666] font-mono">
+            <span className="text-[#666666] font-mono">
               CIF: {currentUser?.customerId || 'HSBC-882941'}
             </span>
           </div>
