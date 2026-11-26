@@ -53,7 +53,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
 
   // Forgot PIN Flow States
   const [forgotStep, setForgotStep] = useState<'IDENTITY' | 'OTP' | 'NEW_PIN'>('IDENTITY');
-  const [regPhone, setRegPhone] = useState<string>('+91 98765 43210');
+  const [regPhone, setRegPhone] = useState<string>('+91 6379791151');
   const [panNumber, setPanNumber] = useState<string>('ABCDE1234F');
   const [otpInput, setOtpInput] = useState<string>('');
   const [otpTimer, setOtpTimer] = useState<number>(30);
@@ -210,7 +210,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
     }
     setOtpTimer(30);
     setForgotStep('OTP');
-    toast.success('Security OTP sent to registered mobile ending in ••890');
+    toast.success('Security OTP sent to registered mobile ending in ••151');
   };
 
   const handleVerifyOtp = (e: React.FormEvent) => {
@@ -662,7 +662,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                       required
                       value={regPhone}
                       onChange={e => setRegPhone(e.target.value)}
-                      placeholder="+91 98765 43210"
+                      placeholder="+91 6379791151"
                       className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-xs font-semibold text-[#222222] focus:outline-none focus:ring-2 focus:ring-[#DB0011]"
                     />
                   </div>
@@ -701,7 +701,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
                       Enter One-Time Password
                     </h3>
                     <p className="text-xs text-gray-500 mt-1">
-                      A 6-digit security code was dispatched to registered mobile ending in <strong className="text-gray-800">••890</strong>.
+                      A 6-digit security code was dispatched to registered mobile ending in <strong className="text-gray-800">••151</strong>.
                     </p>
                   </div>
 

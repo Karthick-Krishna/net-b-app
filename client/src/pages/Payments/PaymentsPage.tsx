@@ -366,7 +366,7 @@ export const PaymentsPage: React.FC = () => {
         <div className="px-4 sm:px-6 md:px-8 py-6">
           {/* TAB 1: DOMESTIC TRANSFERS */}
           {activeTab === 'TRANSFER' && (
-            <div className="max-w-2xl mx-auto space-y-6">
+            <div className="max-w-3xl mx-auto space-y-6">
               <div className="flex items-center justify-between border-b border-gray-100 pb-4 gap-1">
                 {[1, 2, 3, 4, 5].map(step => (
                   <div key={step} className="flex items-center gap-1.5">
@@ -583,7 +583,7 @@ export const PaymentsPage: React.FC = () => {
 
           {/* TAB 2: GLOBAL MONEY */}
           {activeTab === 'GLOBAL' && (
-            <div className="max-w-2xl mx-auto space-y-5">
+            <div className="max-w-3xl mx-auto space-y-5">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#DB0011] text-white uppercase">HSBC Global Money</span>
@@ -636,7 +636,7 @@ export const PaymentsPage: React.FC = () => {
 
           {/* TAB 3: BILL PAYMENTS */}
           {activeTab === 'BILL_PAY' && (
-            <div className="max-w-2xl mx-auto space-y-6">
+            <div className="max-w-3xl mx-auto space-y-6">
               <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                 {BILL_CATEGORIES.map(b => (
                   <button key={b.id} type="button" onClick={() => { setSelectedBillCategory(b.id); setBillerProvider(b.billerExample.split(' / ')[0]); }} className={`p-3 rounded-2xl border text-center flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${selectedBillCategory === b.id ? 'bg-red-50/40 border-[#DB0011] text-[#DB0011]' : 'bg-[#F6F7F9] border-transparent text-[#1f1f1f] hover:bg-gray-100'}`}>

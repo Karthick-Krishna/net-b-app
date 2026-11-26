@@ -87,8 +87,8 @@ export const HsbcChatBar: React.FC = () => {
   return (
     <>
       {/* STICKY BOTTOM CHAT BAR (Matches Reference Screenshot + Responsive Safe Area) */}
-      <footer className="sticky bottom-0 z-30 bg-white/95 backdrop-blur-md border-t border-gray-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.04)] pt-2.5 px-3 sm:px-4 pb-[max(0.625rem,env(safe-area-inset-bottom,0px))] print:hidden">
-        <div className="max-w-md md:max-w-2xl mx-auto flex items-center gap-2.5 sm:gap-3">
+      <footer className="sticky bottom-0 z-30 bg-white/95 backdrop-blur-md border-t border-gray-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.04)] pt-2.5 px-3 sm:px-6 pb-[max(0.625rem,env(safe-area-inset-bottom,0px))] print:hidden">
+        <div className="max-w-md md:max-w-4xl mx-auto flex items-center gap-2.5 sm:gap-3">
           {/* Double Chat Bubble Icon */}
           <button
             type="button"

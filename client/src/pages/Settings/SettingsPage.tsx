@@ -55,12 +55,14 @@ export const SettingsPage: React.FC = () => {
   const [faceIdPinInput, setFaceIdPinInput] = useState('');
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [registeredAddress, setRegisteredAddress] = useState<string>(() => {
-    return localStorage.getItem('hsbc_registered_address') || '142 Race Course Road, Coimbatore, Tamil Nadu 641018';
+    const saved = localStorage.getItem('hsbc_registered_address');
+    if (saved && !saved.includes('Race Course Road')) return saved;
+    return '2/26 Mullai Nagar, Pollachi, Tamil Nadu 642002, India';
   });
-  const [addrLine, setAddrLine] = useState('142 Race Course Road');
-  const [addrCity, setAddrCity] = useState('Coimbatore');
+  const [addrLine, setAddrLine] = useState('2/26 Mullai Nagar');
+  const [addrCity, setAddrCity] = useState('Pollachi');
   const [addrState, setAddrState] = useState('Tamil Nadu');
-  const [addrPin, setAddrPin] = useState('641018');
+  const [addrPin, setAddrPin] = useState('642002');
   const [digilockerConsent, setDigilockerConsent] = useState(true);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [currPassword, setCurrPassword] = useState('');
@@ -408,7 +410,7 @@ export const SettingsPage: React.FC = () => {
 
           {/* NOTIFICATIONS */}
           {activeSection === 'notifications' && (
-            <div className="divide-y divide-gray-100 text-xs">
+            <div className="max-w-3xl divide-y divide-gray-100 text-xs">
               {[
                 { key: 'transactions' as const, label: 'Transaction SMS & Push Alerts', desc: 'Instant alerts on all debit & credit movements' },
                 { key: 'accountAlerts' as const, label: 'Account Balance Notices', desc: 'Monthly e-Statement & minimum balance alerts' },
@@ -438,7 +440,7 @@ export const SettingsPage: React.FC = () => {
 
           {/* PRIVACY */}
           {activeSection === 'privacy' && (
-            <div className="space-y-4">
+            <div className="max-w-3xl space-y-4">
               <div className="divide-y divide-gray-100 text-xs">
                 <div className="py-4 flex items-center justify-between gap-4">
                   <div>
@@ -561,7 +563,7 @@ export const SettingsPage: React.FC = () => {
 
           {/* PROFILE & KYC */}
           {activeSection === 'account' && (
-            <div className="space-y-5">
+            <div className="max-w-3xl space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <h2 className="text-sm font-bold text-[#1f1f1f]">Personal Profile &amp; KYC</h2>
@@ -584,11 +586,11 @@ export const SettingsPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[#777777] block">Primary Email</span>
-                  <span className="font-bold text-[#1f1f1f]">{currentUser?.email}</span>
+                  <span className="font-bold text-[#1f1f1f]">{currentUser?.email || 'coralgenz@gmail.com'}</span>
                 </div>
                 <div>
                   <span className="text-[#777777] block">Registered Mobile</span>
-                  <span className="font-bold text-[#1f1f1f]">{currentUser?.phone}</span>
+                  <span className="font-bold text-[#1f1f1f]">{currentUser?.phone || '+91 6379791151'}</span>
                 </div>
                 <div className="sm:col-span-2 pt-2 border-t border-gray-200/70">
                   <span className="text-[#777777] block">Registered Address</span>
@@ -751,7 +753,7 @@ export const SettingsPage: React.FC = () => {
         </form>
       </ModalDialog>
 
-      <ModalDialog open={showAddressModal} onClose={() => setShowAddressModal(false)} title="Update Registered Address" subtitle="Coimbatore Branch KYC Record" maxWidthClass="max-w-md">
+      <ModalDialog open={showAddressModal} onClose={() => setShowAddressModal(false)} title="Update Registered Address" subtitle="CKYC Residential Address Record" maxWidthClass="max-w-md">
         <form
           onSubmit={e => {
             e.preventDefault();

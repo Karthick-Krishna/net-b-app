@@ -621,7 +621,7 @@ export const CardsPage: React.FC = () => {
           </div>
 
           {/* DESKTOP RIGHT COLUMN */}
-          <div className="hidden lg:block lg:col-span-6 space-y-5 px-4 md:px-0 pt-3 lg:pt-0 max-w-md mx-auto lg:max-w-none w-full">
+          <div className="hidden lg:block lg:col-span-6 lg:border-l lg:border-gray-100 lg:pl-10 space-y-5 px-4 md:px-0 pt-3 lg:pt-0 max-w-md mx-auto lg:max-w-none w-full">
             <div className="divide-y divide-gray-100 border-b border-gray-100">
               <button type="button" onClick={() => setShowManageModal(true)} className="w-full min-h-[60px] py-3.5 px-2 flex items-center justify-between hover:bg-gray-50/80 transition-colors text-left group cursor-pointer">
                 <div className="flex items-center gap-3.5">

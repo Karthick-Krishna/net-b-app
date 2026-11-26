@@ -52,125 +52,133 @@ export const DashboardPage: React.FC = () => {
   return (
     <AnimatedPageTransition className="pb-6 sm:pb-10">
       <div className="bg-white md:rounded-2xl md:border md:border-gray-200/80 md:shadow-xs overflow-hidden">
-        {/* REAL HSBC MOBILE-FIRST PREMIER BALANCE HERO */}
-        <div className="bg-white text-[#1f1f1f] px-4 sm:px-6 md:px-8 pt-4 pb-5 sm:py-6 border-b border-gray-100">
-          <div className="rounded-2xl bg-[#F5F6F8] border border-gray-200/70 p-4 sm:p-6 transition-all">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="w-2 h-2 rounded-full bg-[#16864A] shrink-0" aria-hidden="true" />
-                <span className="text-[13px] sm:text-sm font-semibold text-[#1f1f1f] truncate">
-                  Premier Savings
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={toggleBalanceVisibility}
-                aria-label={hideBalances ? 'Show Balances' : 'Hide Balances'}
-                className="min-h-[32px] px-3 py-1 flex items-center gap-1.5 rounded-full border border-gray-200/90 bg-white hover:bg-gray-50 active:scale-[0.97] text-[11px] font-semibold text-[#1f1f1f] transition-all cursor-pointer shrink-0 shadow-2xs"
-              >
-                {hideBalances ? (
-                  <>
-                    <Eye className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
-                    <span>Show</span>
-                  </>
-                ) : (
-                  <>
-                    <EyeOff className="w-3.5 h-3.5 text-[#555555]" aria-hidden="true" />
-                    <span>Hide</span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            <div className="mt-3 sm:mt-4">
-              <div className="text-[11px] font-medium text-[#777777]">
-                Available balance
-              </div>
-              <div className="text-[28px] min-[375px]:text-[32px] sm:text-[38px] font-bold tracking-tight text-[#1f1f1f] leading-tight tabular-nums mt-0.5">
-                {formatCurrency(totalBalanceGbpOrInr, 'INR')}
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-gray-200/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#555555]">
-              <span className="font-mono truncate">
-                A/C •••• {primaryAccount?.accountNumber?.slice(-4) || '4101'} · {primaryAccount?.ifscCode || 'HSBC0641002'}
-              </span>
-              <button
-                type="button"
-                onClick={handleCopyAccountDetails}
-                className="inline-flex items-center gap-1 text-[#DB0011] hover:underline font-semibold cursor-pointer min-h-[28px] shrink-0"
-              >
-                <Copy className="w-3 h-3" aria-hidden="true" />
-                <span>Copy</span>
-              </button>
-            </div>
-          </div>
-
-          {/* 4-COLUMN CIRCULAR QUICK ACTIONS (EXACT HSBC MOBILE REFERENCE RHYTHM) */}
-          <div className="pt-5 pb-1 grid grid-cols-4 gap-1.5 sm:gap-4 max-w-md sm:max-w-xl mx-auto">
-            {[
-              {
-                label: 'Send\nmoney',
-                path: '/payments',
-                icon: (
-                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
-                    <rect x="4" y="6" width="24" height="20" rx="3" fill="white" stroke="#252525" strokeWidth="1.5" />
-                    <path d="M9 13h14M17 9l4 4-4 4" stroke="#DB0011" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <circle cx="11" cy="20" r="1.4" fill="#1f1f1f" />
-                    <circle cx="16" cy="20" r="1.4" fill="#1f1f1f" />
-                    <circle cx="21" cy="20" r="1.4" fill="#1f1f1f" />
-                  </svg>
-                ),
-              },
-              {
-                label: 'Card\ncontrols',
-                path: '/cards',
-                icon: (
-                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
-                    <rect x="4" y="8" width="24" height="16" rx="2.5" fill="white" stroke="#252525" strokeWidth="1.5" />
-                    <path d="M4 13h24" stroke="#DB0011" strokeWidth="2" />
-                    <rect x="7" y="18" width="6" height="3" rx="0.5" fill="#DB0011" />
-                    <circle cx="23" cy="19.5" r="1.5" fill="#252525" />
-                  </svg>
-                ),
-              },
-              {
-                label: 'Term\ndeposits',
-                path: '/deposits',
-                icon: (
-                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
-                    <circle cx="16" cy="16" r="11" stroke="#252525" strokeWidth="1.5" fill="white" />
-                    <rect x="14" y="9" width="4" height="14" rx="1" fill="#DB0011" />
-                    <circle cx="16" cy="16" r="4.5" fill="#F5F6F8" stroke="#252525" strokeWidth="1.2" />
-                    <text x="16" y="19" textAnchor="middle" fill="#DB0011" fontSize="9" fontWeight="bold">₹</text>
-                  </svg>
-                ),
-              },
-              {
-                label: 'e-Statements\n& tax',
-                path: '/statements',
-                icon: (
-                  <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
-                    <rect x="7" y="5" width="18" height="22" rx="2.5" fill="white" stroke="#252525" strokeWidth="1.5" />
-                    <path d="M11 11h10M11 15h10M11 19h6" stroke="#DB0011" strokeWidth="1.8" strokeLinecap="round" />
-                  </svg>
-                ),
-              },
-            ].map((btn, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => navigate(btn.path)}
-                className="flex flex-col items-center group cursor-pointer"
-              >
-                <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
-                  {btn.icon}
+        {/* REAL HSBC MOBILE-FIRST & DESKTOP PREMIER HERO */}
+        <div className="bg-white text-[#1f1f1f] px-4 sm:px-6 md:px-8 pt-4 pb-5 sm:py-6 md:py-7 border-b border-gray-100">
+          <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-center gap-5 lg:gap-8">
+            {/* Balance Card (7 cols on Desktop, Full on Mobile) */}
+            <div className="lg:col-span-7 rounded-2xl bg-[#F5F6F8] border border-gray-200/70 p-4 sm:p-6 transition-all">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2 h-2 rounded-full bg-[#16864A] shrink-0" aria-hidden="true" />
+                  <span className="text-[13px] sm:text-sm font-semibold text-[#1f1f1f] truncate">
+                    Premier Savings
+                  </span>
                 </div>
-                <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center whitespace-pre-line">
-                  {btn.label}
+                <button
+                  type="button"
+                  onClick={toggleBalanceVisibility}
+                  aria-label={hideBalances ? 'Show Balances' : 'Hide Balances'}
+                  className="min-h-[32px] px-3 py-1 flex items-center gap-1.5 rounded-full border border-gray-200/90 bg-white hover:bg-gray-50 active:scale-[0.97] text-[11px] font-semibold text-[#1f1f1f] transition-all cursor-pointer shrink-0 shadow-2xs"
+                >
+                  {hideBalances ? (
+                    <>
+                      <Eye className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
+                      <span>Show</span>
+                    </>
+                  ) : (
+                    <>
+                      <EyeOff className="w-3.5 h-3.5 text-[#555555]" aria-hidden="true" />
+                      <span>Hide</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="mt-3 sm:mt-4">
+                <div className="text-[11px] font-medium text-[#777777]">
+                  Available balance
+                </div>
+                <div className="text-[28px] min-[375px]:text-[32px] sm:text-[38px] font-bold tracking-tight text-[#1f1f1f] leading-tight tabular-nums mt-0.5">
+                  {formatCurrency(totalBalanceGbpOrInr, 'INR')}
+                </div>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-gray-200/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#555555]">
+                <span className="font-mono truncate">
+                  A/C •••• {primaryAccount?.accountNumber?.slice(-4) || '4101'} · {primaryAccount?.ifscCode || 'HSBC0641002'}
                 </span>
-              </button>
-            ))}
+                <button
+                  type="button"
+                  onClick={handleCopyAccountDetails}
+                  className="inline-flex items-center gap-1 text-[#DB0011] hover:underline font-semibold cursor-pointer min-h-[28px] shrink-0"
+                >
+                  <Copy className="w-3 h-3" aria-hidden="true" />
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 4-COLUMN CIRCULAR QUICK ACTIONS (RIGHT OF BALANCE ON DESKTOP, BELOW ON MOBILE) */}
+            <div className="lg:col-span-5">
+              <div className="hidden lg:block text-[11px] font-bold uppercase tracking-wider text-[#777777] mb-3.5">
+                Quick Actions
+              </div>
+              <div className="pt-1 pb-1 grid grid-cols-4 gap-1.5 sm:gap-3 max-w-md sm:max-w-xl lg:max-w-none mx-auto">
+                {[
+                  {
+                    label: 'Send\nmoney',
+                    path: '/payments',
+                    icon: (
+                      <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
+                        <rect x="4" y="6" width="24" height="20" rx="3" fill="white" stroke="#252525" strokeWidth="1.5" />
+                        <path d="M9 13h14M17 9l4 4-4 4" stroke="#DB0011" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="11" cy="20" r="1.4" fill="#1f1f1f" />
+                        <circle cx="16" cy="20" r="1.4" fill="#1f1f1f" />
+                        <circle cx="21" cy="20" r="1.4" fill="#1f1f1f" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    label: 'Card\ncontrols',
+                    path: '/cards',
+                    icon: (
+                      <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
+                        <rect x="4" y="8" width="24" height="16" rx="2.5" fill="white" stroke="#252525" strokeWidth="1.5" />
+                        <path d="M4 13h24" stroke="#DB0011" strokeWidth="2" />
+                        <rect x="7" y="18" width="6" height="3" rx="0.5" fill="#DB0011" />
+                        <circle cx="23" cy="19.5" r="1.5" fill="#252525" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    label: 'Term\ndeposits',
+                    path: '/deposits',
+                    icon: (
+                      <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
+                        <circle cx="16" cy="16" r="11" stroke="#252525" strokeWidth="1.5" fill="white" />
+                        <rect x="14" y="9" width="4" height="14" rx="1" fill="#DB0011" />
+                        <circle cx="16" cy="16" r="4.5" fill="#F5F6F8" stroke="#252525" strokeWidth="1.2" />
+                        <text x="16" y="19" textAnchor="middle" fill="#DB0011" fontSize="9" fontWeight="bold">₹</text>
+                      </svg>
+                    ),
+                  },
+                  {
+                    label: 'e-Statements\n& tax',
+                    path: '/statements',
+                    icon: (
+                      <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
+                        <rect x="7" y="5" width="18" height="22" rx="2.5" fill="white" stroke="#252525" strokeWidth="1.5" />
+                        <path d="M11 11h10M11 15h10M11 19h6" stroke="#DB0011" strokeWidth="1.8" strokeLinecap="round" />
+                      </svg>
+                    ),
+                  },
+                ].map((btn, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => navigate(btn.path)}
+                    className="flex flex-col items-center group cursor-pointer"
+                  >
+                    <div className="w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full bg-[#F5F6F8] group-hover:bg-[#EBECEF] active:scale-[0.96] transition-all flex items-center justify-center shadow-xs">
+                      {btn.icon}
+                    </div>
+                    <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center whitespace-pre-line">
+                      {btn.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
