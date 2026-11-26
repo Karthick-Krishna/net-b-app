@@ -115,11 +115,10 @@ export const TransactionsPage: React.FC = () => {
               { id: 'ALL', label: 'All' },
               { id: 'CREDIT', label: 'Credits' },
               { id: 'DEBIT', label: 'Debits' },
-              { id: 'SALARY', label: 'Salary' },
-              { id: 'TRANSFER', label: 'Transfers' },
-              { id: 'INVESTMENT', label: 'Investments' },
-              { id: 'DINING', label: 'Dining' },
-              { id: 'UTILITIES', label: 'Bills' },
+              { id: 'SALARY', label: 'Salaries' },
+              { id: 'TRANSFER', label: 'Intl Credits & Transfers' },
+              { id: 'SHOPPING', label: 'Hardware & Laptops' },
+              { id: 'UTILITIES', label: 'Gemini Pro & Bills' },
             ].map(cat => (
               <button
                 key={cat.id}
