@@ -179,7 +179,7 @@ export const ActionFeedbackProvider: React.FC<{ children: React.ReactNode }> = (
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 6 }}
               transition={{ duration: 0.16, ease: 'easeOut' }}
-              className="w-full max-w-md bg-white rounded-[2px] shadow-2xl border border-gray-200 border-t-[3px] border-t-[#DB0011] overflow-hidden text-left"
+              className="w-full max-w-md bg-white rounded-[2px] shadow-2xl border border-gray-200 overflow-hidden text-left"
             >
               {/* Institutional Header Strip */}
               <div className="px-6 py-3.5 bg-[#F8F9FA] border-b border-gray-200 flex items-center justify-between">

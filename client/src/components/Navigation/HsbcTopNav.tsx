@@ -386,7 +386,7 @@ export const HsbcTopNav: React.FC = () => {
               transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
               className="relative ml-auto w-full max-w-md bg-white h-dvh shadow-2xl border-l border-gray-200 flex flex-col justify-between overflow-y-auto z-10"
             >
-              <div className="px-5 py-4 bg-white text-[#1f1f1f] border-b border-gray-200 border-t-[3px] border-t-[#DB0011] flex items-center justify-between">
+              <div className="px-5 py-4 bg-white text-[#1f1f1f] border-b border-gray-200 flex items-center justify-between">
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#777777]">
                     HSBC India · Security &amp; Alert Log
@@ -433,7 +433,7 @@ export const HsbcTopNav: React.FC = () => {
                       <div
                         key={n.notificationId}
                         className={`p-4 sm:px-5 transition-colors ${
-                          n.read ? 'bg-white' : 'bg-[#FAFAFB] border-l-[3px] border-l-[#DB0011]'
+                          n.read ? 'bg-white' : 'bg-[#FAFAFB]'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">

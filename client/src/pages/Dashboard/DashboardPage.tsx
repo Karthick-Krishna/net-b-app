@@ -77,14 +77,10 @@ export const DashboardPage: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1 text-[#166534]">
-              <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
-              <span>Verified Session</span>
-            </span>
             <button
               type="button"
               onClick={lockApp}
-              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 bg-white border border-gray-300 hover:border-[#DB0011] text-[#1f1f1f] rounded-[2px] transition-colors cursor-pointer"
+              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 bg-white border border-gray-300 hover:border-gray-400 text-[#1f1f1f] rounded-[2px] transition-colors cursor-pointer"
             >
               <Lock className="w-3 h-3 text-[#DB0011]" aria-hidden="true" />
               <span>Lock Session</span>
@@ -94,7 +90,6 @@ export const DashboardPage: React.FC = () => {
 
         {/* EXECUTIVE LIQUIDITY & BALANCE HERO PANEL (CLEAN LIGHT HSBC THEME) */}
         <div className="bg-white text-[#1f1f1f] px-4 sm:px-6 md:px-8 py-6 sm:py-7 border-b border-gray-200 relative">
-          <div className="absolute inset-y-0 left-0 w-1 bg-[#DB0011]" aria-hidden="true" />
 
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
             {/* Primary Balance Display */}
@@ -366,9 +361,6 @@ export const DashboardPage: React.FC = () => {
                       onClick={() => navigate('/cards')}
                       className={`p-5 rounded-xl text-left shadow-md relative overflow-hidden transition-shadow hover:shadow-lg cursor-pointer border ${cardTheme}`}
                     >
-                      {card.cardType === 'DEBIT' && (
-                        <div className="absolute inset-y-0 left-0 w-[3px] bg-[#DB0011]" aria-hidden="true" />
-                      )}
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 min-w-0">
                           <img src="/logo.png" alt="HSBC" className="w-5 h-5 object-contain shrink-0" />
@@ -432,7 +424,7 @@ export const DashboardPage: React.FC = () => {
                 {recentAlerts.map(alert => (
                   <div
                     key={alert.notificationId}
-                    className={`p-3.5 text-xs ${alert.read ? 'bg-white' : 'bg-[#FAFAFB] border-l-[3px] border-l-[#DB0011]'}`}
+                    className={`p-3.5 text-xs ${alert.read ? 'bg-white' : 'bg-[#F8F9FA]'}`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-bold text-[#1f1f1f]">{alert.title}</span>
