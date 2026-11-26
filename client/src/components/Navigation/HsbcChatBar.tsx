@@ -147,9 +147,9 @@ export const HsbcChatBar: React.FC = () => {
       >
         <div className="flex flex-col h-[58dvh] max-h-[500px] -m-5">
           {/* Chat Status Bar */}
-          <div className="px-5 py-2.5 bg-[#0F141B] border-b border-slate-800 flex items-center gap-2 text-[11px] font-semibold text-emerald-400">
+          <div className="px-5 py-2.5 bg-[#F8F9FA] border-b border-gray-200 flex items-center gap-2 text-[11px] font-semibold text-[#166534]">
             <ShieldCheck className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
-            <span>Encrypted Premier Banking Concierge Online</span>
+            <span>HSBC Premier Personal Concierge Online</span>
           </div>
 
           {/* Chat Message Thread */}

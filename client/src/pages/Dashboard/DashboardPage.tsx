@@ -66,25 +66,25 @@ export const DashboardPage: React.FC = () => {
   return (
     <AnimatedPageTransition className="pb-10">
       <div className="bg-white md:rounded-[2px] border border-gray-200 shadow-xs overflow-hidden">
-        {/* TOP SECURITY CLASSIFICATION & TELEMETRY BAR */}
-        <div className="px-4 sm:px-6 md:px-8 py-2.5 bg-[#0B0F14] text-gray-300 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[10px] font-semibold tracking-[0.12em] uppercase">
+        {/* TOP INSTITUTIONAL BAR (LIGHT CORPORATE BANKING THEME) */}
+        <div className="px-4 sm:px-6 md:px-8 py-2.5 bg-[#F8F9FA] text-[#555555] border-b border-gray-200 flex flex-wrap items-center justify-between gap-2 text-[10px] font-bold tracking-[0.12em] uppercase">
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
-            <span className="text-white">HSBC India · Premier Personal Banking</span>
-            <span className="hidden sm:inline text-slate-600">|</span>
-            <span className="hidden sm:inline text-slate-400 font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#166534]" aria-hidden="true" />
+            <span className="text-[#1f1f1f]">HSBC India · Premier Personal Banking</span>
+            <span className="hidden sm:inline text-gray-300">|</span>
+            <span className="hidden sm:inline text-[#666666] font-mono">
               CIF: {currentUser?.customerId || 'HSBC-882941'}
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1 text-emerald-400">
+            <span className="flex items-center gap-1 text-[#166534]">
               <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
-              <span>TLS 1.3 · 256-Bit E2E</span>
+              <span>Verified Session</span>
             </span>
             <button
               type="button"
               onClick={lockApp}
-              className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 border border-slate-700 hover:border-[#DB0011] text-gray-200 hover:text-white rounded-[2px] transition-colors cursor-pointer"
+              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 bg-white border border-gray-300 hover:border-[#DB0011] text-[#1f1f1f] rounded-[2px] transition-colors cursor-pointer"
             >
               <Lock className="w-3 h-3 text-[#DB0011]" aria-hidden="true" />
               <span>Lock Session</span>
@@ -92,22 +92,22 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* EXECUTIVE LIQUIDITY & BALANCE HERO PANEL */}
-        <div className="bg-gradient-to-br from-[#11161E] via-[#161D27] to-[#0D1117] text-white px-4 sm:px-6 md:px-8 py-6 sm:py-7 border-b border-slate-800 relative">
+        {/* EXECUTIVE LIQUIDITY & BALANCE HERO PANEL (CLEAN LIGHT HSBC THEME) */}
+        <div className="bg-white text-[#1f1f1f] px-4 sm:px-6 md:px-8 py-6 sm:py-7 border-b border-gray-200 relative">
           <div className="absolute inset-y-0 left-0 w-1 bg-[#DB0011]" aria-hidden="true" />
 
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
             {/* Primary Balance Display */}
             <div className="space-y-3 min-w-0">
               <div className="flex flex-wrap items-center gap-2.5">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-gray-400">
+                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#666666]">
                   Primary Liquid Balance · Premier Savings
                 </span>
                 <button
                   type="button"
                   onClick={toggleBalanceVisibility}
                   aria-label={hideBalances ? 'Show Balances' : 'Hide Balances'}
-                  className="min-w-[28px] min-h-[28px] px-2 flex items-center gap-1 rounded-[2px] border border-slate-700 bg-slate-800/70 hover:bg-slate-700 text-[10px] font-semibold text-gray-200 transition-colors cursor-pointer"
+                  className="min-w-[28px] min-h-[28px] px-2 flex items-center gap-1 rounded-[2px] border border-gray-300 bg-[#F8F9FA] hover:bg-gray-100 text-[10px] font-semibold text-[#1f1f1f] transition-colors cursor-pointer"
                 >
                   {hideBalances ? (
                     <>
@@ -116,7 +116,7 @@ export const DashboardPage: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <EyeOff className="w-3.5 h-3.5 text-gray-300" aria-hidden="true" />
+                      <EyeOff className="w-3.5 h-3.5 text-[#555555]" aria-hidden="true" />
                       <span>Mask</span>
                     </>
                   )}
@@ -124,15 +124,15 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               <div className="flex flex-wrap items-baseline gap-3">
-                <div className="text-[32px] sm:text-[40px] font-bold tracking-tight text-white leading-none tabular-nums">
+                <div className="text-[32px] sm:text-[40px] font-bold tracking-tight text-[#1f1f1f] leading-none tabular-nums">
                   {formatCurrency(totalBalanceGbpOrInr, 'INR')}
                 </div>
-                <span className="px-2 py-0.5 bg-emerald-950/80 border border-emerald-700/60 text-emerald-300 text-[10px] font-bold uppercase tracking-wider rounded-[2px]">
+                <span className="px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-[#166534] text-[10px] font-bold uppercase tracking-wider rounded-[2px]">
                   Cleared &amp; Available
                 </span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-gray-400">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#666666]">
                 <span className="font-mono">
                   A/C {primaryAccount?.maskedAccountNumber || '•••• •••• •••• 4101'} · IFSC{' '}
                   {primaryAccount?.ifscCode || 'HSBC0400002'}
@@ -140,12 +140,12 @@ export const DashboardPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleCopyAccountDetails}
-                  className="inline-flex items-center gap-1 text-red-400 hover:text-red-300 font-semibold cursor-pointer"
+                  className="inline-flex items-center gap-1 text-[#DB0011] hover:underline font-semibold cursor-pointer"
                 >
                   <Copy className="w-3 h-3" aria-hidden="true" />
                   <span>Copy Details</span>
                 </button>
-                <span className="text-slate-500">Ledger Cut-off: 30 Aug 2026</span>
+                <span className="text-[#777777]">Ledger Cut-off: 30 Aug 2026</span>
               </div>
             </div>
 
@@ -162,68 +162,68 @@ export const DashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate('/statements')}
-                className="flex-1 sm:flex-initial min-h-[42px] px-4 bg-slate-800/90 hover:bg-slate-700 border border-slate-600 text-white text-xs font-semibold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                className="flex-1 sm:flex-initial min-h-[42px] px-4 bg-white hover:bg-[#F8F9FA] border border-[#333333] text-[#1f1f1f] text-xs font-semibold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
               >
-                <FileText className="w-3.5 h-3.5 text-gray-300" aria-hidden="true" />
+                <FileText className="w-3.5 h-3.5 text-[#1f1f1f]" aria-hidden="true" />
                 <span>Certified Statement</span>
               </button>
               <button
                 type="button"
                 onClick={() => navigate('/security')}
-                className="flex-1 sm:flex-initial min-h-[42px] px-4 bg-transparent hover:bg-slate-800 border border-slate-700 text-gray-200 text-xs font-semibold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                className="flex-1 sm:flex-initial min-h-[42px] px-4 bg-white hover:bg-[#F8F9FA] border border-gray-300 text-[#1f1f1f] text-xs font-semibold rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
               >
-                <KeyRound className="w-3.5 h-3.5 text-red-400" aria-hidden="true" />
+                <KeyRound className="w-3.5 h-3.5 text-[#DB0011]" aria-hidden="true" />
                 <span>Security</span>
               </button>
             </div>
           </div>
 
-          {/* 4-COLUMN INSTITUTIONAL POSITION SUMMARY */}
-          <div className="mt-6 pt-5 border-t border-slate-800 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="p-3.5 bg-white/[0.04] border border-slate-800 rounded-[2px]">
-              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400">
+          {/* 4-COLUMN INSTITUTIONAL POSITION SUMMARY (LIGHT SLATE HAIRLINE CELLS) */}
+          <div className="mt-6 pt-5 border-t border-gray-200 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="p-3.5 bg-[#F8F9FA] border border-gray-200 rounded-[2px]">
+              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#666666]">
                 Total Relationship Position
               </div>
-              <div className="text-base sm:text-lg font-bold text-white mt-1 tabular-nums">
+              <div className="text-base sm:text-lg font-bold text-[#1f1f1f] mt-1 tabular-nums">
                 {formatCurrency(totalRelationshipAssets, 'INR')}
               </div>
-              <div className="text-[10px] text-gray-400 mt-0.5">
+              <div className="text-[10px] text-[#777777] mt-0.5">
                 Cash + Wealth + Deposits
               </div>
             </div>
 
-            <div className="p-3.5 bg-white/[0.04] border border-slate-800 rounded-[2px]">
-              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400">
+            <div className="p-3.5 bg-[#F8F9FA] border border-gray-200 rounded-[2px]">
+              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#666666]">
                 Invested Wealth Portfolio
               </div>
-              <div className="text-base sm:text-lg font-bold text-white mt-1 tabular-nums">
+              <div className="text-base sm:text-lg font-bold text-[#1f1f1f] mt-1 tabular-nums">
                 {formatCurrency(totalWealthValue, 'INR')}
               </div>
-              <div className="text-[10px] text-emerald-400 font-semibold mt-0.5">
+              <div className="text-[10px] text-[#166534] font-semibold mt-0.5">
                 +18.42% Portfolio Yield
               </div>
             </div>
 
-            <div className="p-3.5 bg-white/[0.04] border border-slate-800 rounded-[2px]">
-              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400">
+            <div className="p-3.5 bg-[#F8F9FA] border border-gray-200 rounded-[2px]">
+              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#666666]">
                 Term &amp; Fixed Deposits
               </div>
-              <div className="text-base sm:text-lg font-bold text-white mt-1 tabular-nums">
+              <div className="text-base sm:text-lg font-bold text-[#1f1f1f] mt-1 tabular-nums">
                 {formatCurrency(totalDepositsValue, 'INR')}
               </div>
-              <div className="text-[10px] text-gray-400 mt-0.5">
+              <div className="text-[10px] text-[#777777] mt-0.5">
                 {deposits.length} Active Term Instruments
               </div>
             </div>
 
-            <div className="p-3.5 bg-white/[0.04] border border-slate-800 rounded-[2px]">
-              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400">
+            <div className="p-3.5 bg-[#F8F9FA] border border-gray-200 rounded-[2px]">
+              <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#666666]">
                 Credit Line Headroom
               </div>
-              <div className="text-base sm:text-lg font-bold text-white mt-1 tabular-nums">
+              <div className="text-base sm:text-lg font-bold text-[#1f1f1f] mt-1 tabular-nums">
                 {formatCurrency(totalAvailableCredit, 'INR')}
               </div>
-              <div className="text-[10px] text-gray-400 mt-0.5">
+              <div className="text-[10px] text-[#777777] mt-0.5">
                 Across {cards.filter(c => c.cardType === 'CREDIT').length} Premier Cards
               </div>
             </div>
@@ -293,7 +293,7 @@ export const DashboardPage: React.FC = () => {
                     className="w-full p-4 flex items-center justify-between gap-3 hover:bg-[#F8F9FA] transition-colors text-left group cursor-pointer"
                   >
                     <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="w-10 h-10 rounded-[2px] bg-[#0F141B] text-white flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-[2px] bg-[#F2F4F7] border border-gray-200 text-[#1f1f1f] flex items-center justify-center shrink-0">
                         <span className="text-[10px] font-bold tracking-wider">INR</span>
                       </div>
                       <div className="min-w-0">

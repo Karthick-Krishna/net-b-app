@@ -37,19 +37,19 @@ export const RewardsPage: React.FC = () => {
         </div>
 
         <div className="px-4 sm:px-6 md:px-8 py-6 space-y-6">
-          <div className="p-5 bg-[#0F141B] text-white rounded-[2px] border border-slate-800 border-l-[4px] border-l-[#DB0011] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="p-5 bg-[#F8F9FA] text-[#1f1f1f] rounded-[2px] border border-gray-200 border-l-[4px] border-l-[#DB0011] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-white/85 font-bold flex items-center gap-1.5">
-                <Award className="w-4 h-4 text-amber-300" aria-hidden="true" />
+              <div className="text-[11px] uppercase tracking-wider text-[#666666] font-bold flex items-center gap-1.5">
+                <Award className="w-4 h-4 text-[#DB0011]" aria-hidden="true" />
                 <span>Available Premier Points</span>
               </div>
-              <div className="text-2xl sm:text-3xl font-bold mt-1">
+              <div className="text-2xl sm:text-3xl font-bold mt-1 text-[#1f1f1f] tabular-nums">
                 {points.toLocaleString('en-IN')} PTS
               </div>
             </div>
-            <div className="bg-white/15 px-4 py-2.5 rounded-lg text-xs">
-              <span className="text-white/80 block text-[10px] uppercase">Tier Status</span>
-              <span className="font-bold text-amber-300">Premier World Elite</span>
+            <div className="bg-white px-4 py-2.5 rounded-[2px] border border-gray-200 text-xs">
+              <span className="text-[#777777] block text-[10px] uppercase font-bold">Tier Status</span>
+              <span className="font-bold text-[#DB0011]">Premier World Elite</span>
             </div>
           </div>
 

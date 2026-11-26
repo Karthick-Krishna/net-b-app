@@ -156,12 +156,8 @@ export const HsbcTopNav: React.FC = () => {
             ))}
           </nav>
 
-          {/* Right Controls: Security Indicator, Notifications Bell, Lock, Profile, Menu */}
+          {/* Right Controls: Notifications Bell, Lock, Profile, Menu */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-[#F8F9FA] border border-gray-200 rounded-[2px] text-[10px] font-bold uppercase tracking-wider text-[#166534]">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#166534]" aria-hidden="true" />
-              <span>256-Bit TLS</span>
-            </div>
 
             <button
               type="button"
@@ -390,12 +386,12 @@ export const HsbcTopNav: React.FC = () => {
               transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
               className="relative ml-auto w-full max-w-md bg-white h-dvh shadow-2xl border-l border-gray-200 flex flex-col justify-between overflow-y-auto z-10"
             >
-              <div className="px-5 py-4 bg-[#0F141B] text-white border-b border-slate-800 flex items-center justify-between">
+              <div className="px-5 py-4 bg-white text-[#1f1f1f] border-b border-gray-200 border-t-[3px] border-t-[#DB0011] flex items-center justify-between">
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-red-400">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#777777]">
                     HSBC India · Security &amp; Alert Log
                   </div>
-                  <h2 className="text-sm font-bold text-white mt-0.5">
+                  <h2 className="text-sm font-bold text-[#1f1f1f] mt-0.5">
                     Account &amp; Security Notifications ({unreadNotificationsCount} unread)
                   </h2>
                 </div>
@@ -403,7 +399,7 @@ export const HsbcTopNav: React.FC = () => {
                   type="button"
                   onClick={() => setIsNotifOpen(false)}
                   aria-label="Close Notifications"
-                  className="min-w-[40px] min-h-[40px] -mr-2 flex items-center justify-center text-gray-300 hover:text-white rounded-[2px] cursor-pointer"
+                  className="min-w-[40px] min-h-[40px] -mr-2 flex items-center justify-center text-gray-500 hover:text-[#1f1f1f] rounded-[2px] cursor-pointer"
                 >
                   <X className="w-5 h-5" aria-hidden="true" />
                 </button>
