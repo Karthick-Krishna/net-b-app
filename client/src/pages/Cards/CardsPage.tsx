@@ -768,7 +768,7 @@ export const CardsPage: React.FC = () => {
       <ModalDialog open={showPinModal} onClose={() => setShowPinModal(false)} title="View card PIN" subtitle={`${shortCardLabel} •••• ${maskedFourDigits}`} maxWidthClass="max-w-sm">
         {!pinRevealed ? (
           <form onSubmit={handleVerifyPinForReveal} className="space-y-4">
-            <p className="text-xs text-gray-500 leading-relaxed">Enter your 6-digit App-Lock PIN (<strong className="text-[#1f1f1f]">002831</strong>) to reveal your 4-digit card ATM PIN.</p>
+            <p className="text-xs text-gray-500 leading-relaxed">Enter your 6-digit App-Lock PIN to reveal your 4-digit card ATM PIN.</p>
             <input type="password" inputMode="numeric" maxLength={6} autoFocus required value={pinVerificationInput} onChange={e => setPinVerificationInput(e.target.value.replace(/\D/g, ''))} placeholder="••••••" className="w-full px-4 py-3 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F6F7F9] border border-gray-200 rounded-xl" />
             <button type="submit" className="w-full min-h-[44px] py-3 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs">Verify &amp; Reveal PIN</button>
           </form>
@@ -871,7 +871,7 @@ export const CardsPage: React.FC = () => {
       <ModalDialog open={showCardDetailsModal} onClose={() => setShowCardDetailsModal(false)} title="Card number & CVV" subtitle={`${shortCardLabel} •••• ${maskedFourDigits}`} maxWidthClass="max-w-sm">
         {!detailsRevealed ? (
           <form onSubmit={handleVerifyForCardDetails} className="space-y-4">
-            <p className="text-xs text-gray-500">Enter your 6-digit App-Lock PIN (<strong>002831</strong>) to reveal your 16-digit card number and CVV.</p>
+            <p className="text-xs text-gray-500">Enter your 6-digit App-Lock PIN to reveal your 16-digit card number and CVV.</p>
             <input type="password" inputMode="numeric" maxLength={6} autoFocus required value={pinVerificationInput} onChange={e => setPinVerificationInput(e.target.value.replace(/\D/g, ''))} placeholder="••••••" className="w-full px-4 py-3 text-center tracking-[0.4em] font-mono text-base font-bold bg-[#F6F7F9] border border-gray-200 rounded-xl" />
             <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-xs font-bold rounded-full transition-all cursor-pointer shadow-xs">Unlock Card Details</button>
           </form>

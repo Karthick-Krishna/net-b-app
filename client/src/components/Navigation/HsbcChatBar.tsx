@@ -87,16 +87,16 @@ export const HsbcChatBar: React.FC = () => {
   return (
     <>
       {/* STICKY BOTTOM CHAT BAR (Matches Reference Screenshot + Responsive Safe Area) */}
-      <footer className="sticky bottom-0 z-30 bg-white/95 backdrop-blur-md border-t border-gray-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.04)] pt-2.5 px-3 sm:px-6 pb-[max(0.625rem,env(safe-area-inset-bottom,0px))] print:hidden">
+      <footer className="sticky bottom-0 z-30 bg-white border-t border-[#E6E6E6] pt-2.5 px-3 sm:px-6 pb-[max(0.625rem,env(safe-area-inset-bottom,0px))] print:hidden">
         <div className="max-w-md md:max-w-4xl mx-auto flex items-center gap-2.5 sm:gap-3">
           {/* Double Chat Bubble Icon */}
           <button
             type="button"
             onClick={() => setIsChatOpen(true)}
-            className="min-w-[44px] min-h-[44px] -ml-1 flex items-center justify-center text-[#1f1f1f] hover:text-[#DB0011] transition-colors cursor-pointer shrink-0"
+            className="min-w-[40px] min-h-[40px] -ml-1 flex items-center justify-center text-[#1f1f1f] hover:text-[#DB0011] transition-colors cursor-pointer shrink-0"
             aria-label="Open HSBC Virtual Assistant"
           >
-            <MessagesSquare className="w-6 h-6 stroke-[1.8]" aria-hidden="true" />
+            <MessagesSquare className="w-[22px] h-[22px] stroke-[1.6]" aria-hidden="true" />
           </button>
 
           {/* Input Box: "Start chat" with Microphone inside */}
@@ -110,18 +110,18 @@ export const HsbcChatBar: React.FC = () => {
               }}
               placeholder="Start chat"
               aria-label="Start chat with HSBC Virtual Assistant"
-              className="w-full h-11 pl-4 pr-11 bg-white border border-gray-300 rounded-lg text-[14px] text-[#1f1f1f] placeholder:text-gray-400 focus:outline-none focus:border-[#DB0011] transition-all shadow-xs"
+              className="w-full h-11 pl-3.5 pr-10 bg-white border border-[#333333] rounded-[2px] text-[15px] text-[#1f1f1f] placeholder:text-[#767676] focus:outline-none focus:border-[#DB0011] transition-colors"
             />
             <button
               type="button"
               onClick={handleMicClick}
               aria-label="Voice Input"
-              className={`absolute right-1 min-w-[38px] min-h-[38px] flex items-center justify-center transition-colors cursor-pointer ${
-                isListening ? 'text-[#DB0011] animate-pulse' : 'text-gray-400 hover:text-[#DB0011]'
+              className={`absolute right-1 min-w-[36px] min-h-[36px] flex items-center justify-center transition-colors cursor-pointer ${
+                isListening ? 'text-[#DB0011] animate-pulse' : 'text-[#1f1f1f] hover:text-[#DB0011]'
               }`}
               title="Voice Input"
             >
-              <Mic className="w-5 h-5 stroke-[1.8]" aria-hidden="true" />
+              <Mic className="w-[19px] h-[19px] stroke-[1.6]" aria-hidden="true" />
             </button>
           </div>
 
@@ -129,10 +129,10 @@ export const HsbcChatBar: React.FC = () => {
           <button
             type="button"
             onClick={() => handleSend()}
-            className="min-w-[44px] min-h-[44px] -mr-1 flex items-center justify-center text-[#1f1f1f] hover:text-[#DB0011] transition-colors cursor-pointer shrink-0"
+            className="min-w-[40px] min-h-[40px] -mr-1 flex items-center justify-center text-[#767676] hover:text-[#DB0011] transition-colors cursor-pointer shrink-0"
             aria-label="Send Message"
           >
-            <ArrowRight className="w-6 h-6 stroke-[1.8]" aria-hidden="true" />
+            <ArrowRight className="w-[22px] h-[22px] stroke-[1.6]" aria-hidden="true" />
           </button>
         </div>
       </footer>

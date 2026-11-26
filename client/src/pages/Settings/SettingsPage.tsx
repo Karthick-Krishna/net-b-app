@@ -744,7 +744,7 @@ export const SettingsPage: React.FC = () => {
         >
           <div className="flex items-center gap-3 p-3.5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70">
             <ScanFace className="w-7 h-7 text-[#DB0011] shrink-0" aria-hidden="true" />
-            <p className="text-[#444444]">Confirm your 6-digit MPIN (<strong className="text-[#1f1f1f]">002831</strong>) to bind Face ID to your profile.</p>
+            <p className="text-[#444444]">Confirm your 6-digit MPIN to bind Face ID to your profile.</p>
           </div>
           <input type="password" inputMode="numeric" maxLength={6} autoFocus required value={faceIdPinInput} onChange={e => setFaceIdPinInput(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono text-center text-base tracking-[0.4em] font-bold" placeholder="••••••" />
           <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">

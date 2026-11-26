@@ -482,7 +482,7 @@ export const SecurityPage: React.FC = () => {
               <ScanFace className="w-6 h-6" aria-hidden="true" />
             </div>
             <p className="text-[#444444] leading-relaxed">
-              Enter your 6-digit App-Lock PIN (<strong className="text-[#1f1f1f]">002831</strong>) to enroll Face ID on this device.
+              Enter your 6-digit App-Lock PIN to enroll Face ID on this device.
             </p>
           </div>
           <input

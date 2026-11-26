@@ -505,13 +505,13 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
         {/* OPTIONAL CLEAN BANKING NUMERIC KEYPAD */}
         {showKeypad && (
           <div className="pb-4 pt-1">
-            <div className="grid grid-cols-3 gap-2 sm:gap-2.5 max-w-[280px] mx-auto">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 max-w-[270px] mx-auto">
               {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(num => (
                 <button
                   key={num}
                   type="button"
                   onClick={() => handleDigitInput(num)}
-                  className="h-11 rounded-lg bg-gray-50/90 hover:bg-gray-100 active:bg-gray-200 text-[#1f1f1f] text-base font-bold transition-all flex items-center justify-center border border-gray-200/60"
+                  className="h-11 rounded-[2px] bg-white hover:bg-[#F5F6F8] active:bg-[#EAECEF] text-[#1f1f1f] text-[18px] font-medium transition-colors flex items-center justify-center border border-[#EAEAEA]"
                 >
                   {num}
                 </button>
@@ -519,21 +519,21 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               <button
                 type="button"
                 onClick={() => setPin('')}
-                className="h-11 rounded-lg bg-gray-50/90 hover:bg-gray-100 active:bg-gray-200 text-[11px] font-semibold text-gray-500 transition-all flex items-center justify-center border border-gray-200/60"
+                className="h-11 rounded-[2px] bg-white hover:bg-[#F5F6F8] active:bg-[#EAECEF] text-[12px] font-medium text-[#666666] transition-colors flex items-center justify-center"
               >
                 Clear
               </button>
               <button
                 type="button"
                 onClick={() => handleDigitInput('0')}
-                className="h-11 rounded-lg bg-gray-50/90 hover:bg-gray-100 active:bg-gray-200 text-[#1f1f1f] text-base font-bold transition-all flex items-center justify-center border border-gray-200/60"
+                className="h-11 rounded-[2px] bg-white hover:bg-[#F5F6F8] active:bg-[#EAECEF] text-[#1f1f1f] text-[18px] font-medium transition-colors flex items-center justify-center border border-[#EAEAEA]"
               >
                 0
               </button>
               <button
                 type="button"
                 onClick={handleDeleteDigit}
-                className="h-11 rounded-lg bg-gray-50/90 hover:bg-gray-100 active:bg-gray-200 text-gray-600 text-sm font-semibold transition-all flex items-center justify-center border border-gray-200/60"
+                className="h-11 rounded-[2px] bg-white hover:bg-[#F5F6F8] active:bg-[#EAECEF] text-[#1f1f1f] text-sm font-medium transition-colors flex items-center justify-center"
                 aria-label="Backspace"
               >
                 ⌫
@@ -548,7 +548,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
           <button
             type="button"
             onClick={handleFaceIdTrigger}
-            className="w-full h-12 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white text-[14px] font-semibold rounded-full tracking-wide shadow-xs transition-all flex items-center justify-center cursor-pointer"
+            className="w-full h-12 bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.99] text-white text-[15px] font-medium rounded-[2px] tracking-normal transition-colors flex items-center justify-center cursor-pointer"
           >
             Log on with Face ID
           </button>
@@ -574,7 +574,7 @@ export const PinLoginScreen: React.FC<PinLoginScreenProps> = ({
               setSecurityTimer(30);
               setShowSecurityCodeModal(true);
             }}
-            className="w-full h-12 bg-[#F5F6F8] hover:bg-[#EBECEF] active:scale-[0.98] border border-gray-200/80 text-[#1f1f1f] text-[14px] font-semibold rounded-full tracking-wide transition-all flex items-center justify-center cursor-pointer"
+            className="w-full h-12 bg-white hover:bg-[#F5F6F8] active:scale-[0.99] border border-[#333333] text-[#1f1f1f] text-[15px] font-normal rounded-[2px] tracking-normal transition-colors flex items-center justify-center cursor-pointer"
           >
             Generate a security code
           </button>
