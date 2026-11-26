@@ -272,12 +272,12 @@ export const DashboardPage: React.FC = () => {
                     tier === 'PREMIER_WORLD_ELITE'
                       ? 'bg-gradient-to-br from-[#1A0D10] via-[#2B1218] to-[#0E0709] text-white border-red-900/50'
                       : tier === 'TRAVEL_ONE'
-                      ? 'bg-gradient-to-br from-[#0F2A44] via-[#17517E] to-[#0B1E30] text-white border-sky-800/50'
-                      : tier === 'LIVE_PLUS'
-                      ? 'bg-gradient-to-br from-[#DB0011] via-[#B8000E] to-[#8C000A] text-white border-red-900/40'
-                      : tier === 'VISA_PLATINUM'
-                      ? 'bg-gradient-to-br from-[#F3F5F8] via-[#E3E7EE] to-[#CDD3DE] text-[#1f1f1f] border-gray-300'
-                      : 'bg-gradient-to-br from-[#14161A] via-[#1E2229] to-[#0B0C0F] text-white border-neutral-800';
+                        ? 'bg-gradient-to-br from-[#0F2A44] via-[#17517E] to-[#0B1E30] text-white border-sky-800/50'
+                        : tier === 'LIVE_PLUS'
+                          ? 'bg-gradient-to-br from-[#DB0011] via-[#B8000E] to-[#8C000A] text-white border-red-900/40'
+                          : tier === 'VISA_PLATINUM'
+                            ? 'bg-gradient-to-br from-[#F3F5F8] via-[#E3E7EE] to-[#CDD3DE] text-[#1f1f1f] border-gray-300'
+                            : 'bg-gradient-to-br from-[#14161A] via-[#1E2229] to-[#0B0C0F] text-white border-neutral-800';
 
                   return (
                     <button

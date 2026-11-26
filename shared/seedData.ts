@@ -259,7 +259,7 @@ function generatePersonalTransactions(): TransactionRecord[] {
   const augHardwareItems = [
     { description: 'Apple India Flagship Store — MacBook Pro 16" M4 Max Workstations (2x)', amount: 698452.40, counterpartyName: 'Apple India Pvt Ltd', counterpartyBank: 'Citibank N.A.', channel: 'POS' },
     { description: 'Imagine Store Coimbatore — Apple Studio Displays & Thunderbolt Docks', amount: 345218.75, counterpartyName: 'Ample Technologies Pvt Ltd', counterpartyBank: 'HDFC Bank Ltd', channel: 'POS' },
-    { description: 'Dell Exclusive Store Race Course — Precision Mobile Workstations (3x)', amount: 495140.60, counterpartyName: 'Dell India Pvt Ltd', counterpartyBank: 'ICICI Bank Ltd', channel: 'NEFT' },
+    { description: 'Dell Exclusive Store Race Course — Precision Mobile Workstations (3x)', amount: 495140.60, counterpartyName: 'Dell India Pvt Ltd', counterpartyBank: 'ICICI Bank Ltd', channel: 'RTGS' },
     { description: 'Croma Infiniti Tech — Keychron Mechanical Keyboards & MX Master 3S Kits', amount: 114785.20, counterpartyName: 'Infiniti Retail Ltd (Croma)', counterpartyBank: 'Axis Bank Ltd', channel: 'POS' },
     { description: 'APC Schneider Store — Enterprise Rack UPS & Power Backup Hardware', amount: 145129.90, counterpartyName: 'Vijay Sales Hardware Hub', counterpartyBank: 'HDFC Bank Ltd', channel: 'POS' },
   ];
@@ -280,7 +280,7 @@ function generatePersonalTransactions(): TransactionRecord[] {
 
   let julShopCursorMs = new Date('2026-07-25T07:10:00.000Z').getTime();
   const julHardwareItems = [
-    { description: 'Lenovo Commercial Store — ThinkPad P16 Developer Laptops (2x)', amount: 360245.50, counterpartyName: 'Lenovo India Commercial Systems', counterpartyBank: 'Standard Chartered Bank', channel: 'NEFT' },
+    { description: 'Lenovo Commercial Store — ThinkPad P16 Developer Laptops (2x)', amount: 360245.50, counterpartyName: 'Lenovo India Commercial Systems', counterpartyBank: 'Standard Chartered Bank', channel: 'RTGS' },
     { description: 'Reliance Digital Pollachi — LG UltraFine 4K Work Displays (6x)', amount: 138112.84, counterpartyName: 'Reliance Retail Ltd', counterpartyBank: 'HDFC Bank Ltd', channel: 'POS' },
     { description: 'PrimeABGB Tech Hardware — Ubiquiti UniFi Wi-Fi 7 Mesh & 10GbE Switches', amount: 72190.45, counterpartyName: 'PrimeABGB Computer Hardware', counterpartyBank: 'ICICI Bank Ltd', channel: 'IMPS' },
     { description: 'Samsung Experience Store — 990 Pro 4TB NVMe SSDs & Portable T9 Drives', amount: 45211.08, counterpartyName: 'Samsung India Electronics Pvt Ltd', counterpartyBank: 'Axis Bank Ltd', channel: 'POS' },
@@ -379,7 +379,7 @@ function generatePersonalTransactions(): TransactionRecord[] {
       counterpartyName: empName,
       counterpartyAccount: `•••• •••• ${acctLast4}`,
       counterpartyBank: bank,
-      channel: 'NEFT',
+      channel: 'RTGS',
     });
   });
 
@@ -458,7 +458,7 @@ export const INITIAL_CARDS: CardRecord[] = [
     availableCredit: 785000,
     minDue: 10750,
     dueDate: '10 Dec 2026',
-    rewardPoints: 48250,
+    rewardPoints: 82636,
     onlineEnabled: true,
     internationalEnabled: true,
     contactlessEnabled: true,

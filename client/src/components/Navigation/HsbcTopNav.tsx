@@ -88,9 +88,8 @@ export const HsbcTopNav: React.FC = () => {
               onClick={() => navigate('/')}
               aria-current={isHome ? 'page' : undefined}
               aria-label="Home"
-              className={`min-w-[42px] min-h-[42px] flex items-center justify-center transition-colors cursor-pointer ${
-                isHome ? 'text-[#DB0011]' : 'text-[#1f1f1f] hover:text-[#DB0011]'
-              }`}
+              className={`min-w-[42px] min-h-[42px] flex items-center justify-center transition-colors cursor-pointer ${isHome ? 'text-[#DB0011]' : 'text-[#1f1f1f] hover:text-[#DB0011]'
+                }`}
             >
               <Home className="w-6 h-6 stroke-[1.5]" aria-hidden="true" />
             </button>
@@ -118,9 +117,8 @@ export const HsbcTopNav: React.FC = () => {
                 type="button"
                 onClick={() => navigate(tab.path)}
                 aria-current={tab.active ? 'page' : undefined}
-                className={`relative min-h-[44px] px-0.5 text-[16px] min-[375px]:text-[17px] font-medium transition-colors flex items-center justify-center cursor-pointer whitespace-nowrap ${
-                  tab.active ? 'text-[#1f1f1f]' : 'text-[#444444] hover:text-[#DB0011]'
-                }`}
+                className={`relative min-h-[44px] px-0.5 text-[16px] min-[375px]:text-[17px] font-medium transition-colors flex items-center justify-center cursor-pointer whitespace-nowrap ${tab.active ? 'text-[#1f1f1f]' : 'text-[#444444] hover:text-[#DB0011]'
+                  }`}
               >
                 <span>{tab.label}</span>
                 {tab.active && (
@@ -141,9 +139,8 @@ export const HsbcTopNav: React.FC = () => {
                 type="button"
                 onClick={() => navigate(tab.path)}
                 aria-current={tab.active ? 'page' : undefined}
-                className={`relative h-16 px-1 text-[14px] font-semibold transition-colors flex items-center cursor-pointer whitespace-nowrap ${
-                  tab.active ? 'text-[#1f1f1f]' : 'text-[#555555] hover:text-[#DB0011]'
-                }`}
+                className={`relative h-16 px-1 text-[14px] font-semibold transition-colors flex items-center cursor-pointer whitespace-nowrap ${tab.active ? 'text-[#1f1f1f]' : 'text-[#555555] hover:text-[#DB0011]'
+                  }`}
               >
                 <span>{tab.label}</span>
                 {tab.active && (
@@ -294,11 +291,10 @@ export const HsbcTopNav: React.FC = () => {
                         setIsMenuOpen(false);
                         navigate(item.path);
                       }}
-                      className={`w-full min-h-[44px] px-4 py-2.5 rounded-xl text-left text-[14px] font-medium flex items-center justify-between transition-colors cursor-pointer ${
-                        active
-                          ? 'bg-red-50/70 text-[#DB0011] font-semibold'
-                          : 'text-[#222222] hover:bg-[#F2F4F7] active:bg-gray-200'
-                      }`}
+                      className={`w-full min-h-[44px] px-4 py-2.5 rounded-xl text-left text-[14px] font-medium flex items-center justify-between transition-colors cursor-pointer ${active
+                        ? 'bg-red-50/70 text-[#DB0011] font-semibold'
+                        : 'text-[#222222] hover:bg-[#F2F4F7] active:bg-gray-200'
+                        }`}
                     >
                       <span>{item.label}</span>
                       <item.icon className={`w-4 h-4 ${active ? 'text-[#DB0011]' : 'text-gray-400'}`} aria-hidden="true" />
@@ -432,9 +428,8 @@ export const HsbcTopNav: React.FC = () => {
                     return (
                       <div
                         key={n.notificationId}
-                        className={`p-4 sm:px-5 transition-colors ${
-                          n.read ? 'bg-white' : 'bg-[#FAFAFB]'
-                        }`}
+                        className={`p-4 sm:px-5 transition-colors ${n.read ? 'bg-white' : 'bg-[#FAFAFB]'
+                          }`}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-center gap-2">

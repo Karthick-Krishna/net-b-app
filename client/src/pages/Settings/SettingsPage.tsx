@@ -187,9 +187,8 @@ export const SettingsPage: React.FC = () => {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveSection(tab.id)}
-                  className={`relative pb-3 min-h-[40px] text-[13px] sm:text-[14px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-                    active ? 'text-[#1f1f1f]' : 'text-[#777777] hover:text-[#1f1f1f]'
-                  }`}
+                  className={`relative pb-3 min-h-[40px] text-[13px] sm:text-[14px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${active ? 'text-[#1f1f1f]' : 'text-[#777777] hover:text-[#1f1f1f]'
+                    }`}
                 >
                   {tab.label}
                   {active && (
@@ -361,9 +360,8 @@ export const SettingsPage: React.FC = () => {
                             setAutoLockTimeout(t);
                             toast.success(`Auto-lock set to ${t} min${t > 1 ? 's' : ''}`);
                           }}
-                          className={`min-h-[40px] rounded-full border text-xs font-semibold transition-all cursor-pointer ${
-                            autoLockTimeout === t ? 'bg-[#DB0011] text-white border-[#DB0011] shadow-xs' : 'bg-white text-[#1f1f1f] border-gray-200'
-                          }`}
+                          className={`min-h-[40px] rounded-full border text-xs font-semibold transition-all cursor-pointer ${autoLockTimeout === t ? 'bg-[#DB0011] text-white border-[#DB0011] shadow-xs' : 'bg-white text-[#1f1f1f] border-gray-200'
+                            }`}
                         >
                           {t} Min{t > 1 ? 's' : ''}
                         </button>
@@ -744,7 +742,7 @@ export const SettingsPage: React.FC = () => {
         >
           <div className="flex items-center gap-3 p-3.5 bg-[#F6F7F9] rounded-2xl border border-gray-200/70">
             <ScanFace className="w-7 h-7 text-[#DB0011] shrink-0" aria-hidden="true" />
-            <p className="text-[#444444]">Confirm your 6-digit MPIN to bind Face ID to your profile.</p>
+            <p className="text-[#444444]">Confirm your 6-digit MPIN (<strong className="text-[#1f1f1f]">002831</strong>) to bind Face ID to your profile.</p>
           </div>
           <input type="password" inputMode="numeric" maxLength={6} autoFocus required value={faceIdPinInput} onChange={e => setFaceIdPinInput(e.target.value.replace(/\D/g, ''))} className="w-full h-11 px-3 bg-[#F6F7F9] border border-gray-200 rounded-xl font-mono text-center text-base tracking-[0.4em] font-bold" placeholder="••••••" />
           <button type="submit" className="w-full min-h-[44px] bg-[#DB0011] hover:bg-[#B0000D] active:scale-[0.98] text-white rounded-full font-semibold transition-all cursor-pointer shadow-xs">

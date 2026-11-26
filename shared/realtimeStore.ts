@@ -26,7 +26,7 @@ import {
   INITIAL_AUDIT_LOGS,
 } from './seedData';
 
-const STORE_KEY_PREFIX = 'hsbc_india_banking_store_v13_';
+const STORE_KEY_PREFIX = 'hsbc_india_banking_store_v14_';
 const CHANNEL_NAME = 'hsbc_india_sync_bus';
 
 export type SyncEventType =
@@ -413,17 +413,26 @@ export const RealtimeStore = {
       hour12: true,
     }).format(now);
 
+    const normalizedRef =
+      txAmount >= 200000 && transferDetails.reference.startsWith('TXN/NEFT/')
+        ? transferDetails.reference.replace('TXN/NEFT/', 'TXN/RTGS/')
+        : txAmount < 200000 && transferDetails.reference.startsWith('TXN/RTGS/')
+        ? transferDetails.reference.replace('TXN/RTGS/', 'TXN/NEFT/')
+        : transferDetails.reference;
+
+    const railLabel = normalizedRef.startsWith('TXN/RTGS/') ? 'RTGS · ' : '';
+
     const newTx: TransactionRecord = {
       transactionId: `tx-trf-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`,
       ownerUid,
       accountId: sourceAccountId,
       category: transferDetails.category || 'TRANSFER',
-      description: `Transfer to ${transferDetails.recipientName} (${transferDetails.recipientBank})`,
+      description: `${railLabel}Transfer to ${transferDetails.recipientName} (${transferDetails.recipientBank})`,
       amount: txAmount,
       currency: accounts[accIndex].currency,
       transactionType: 'DEBIT',
       status: 'COMPLETED',
-      reference: transferDetails.reference,
+      reference: normalizedRef,
       counterpartyName: transferDetails.recipientName,
       counterpartyAccount: transferDetails.recipientAccount,
       counterpartyBank: transferDetails.recipientBank,

@@ -436,9 +436,8 @@ export const CardsPage: React.FC = () => {
 
               <button type="button" onClick={handleToggleFreeze} aria-pressed={isFrozen} className="flex flex-col items-center group cursor-pointer">
                 <div
-                  className={`w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full active:scale-[0.96] transition-all flex items-center justify-center shadow-xs ${
-                    isFrozen ? 'bg-red-100 ring-2 ring-[#DB0011]' : 'bg-[#F5F6F8] group-hover:bg-[#EBECEF]'
-                  }`}
+                  className={`w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full active:scale-[0.96] transition-all flex items-center justify-center shadow-xs ${isFrozen ? 'bg-red-100 ring-2 ring-[#DB0011]' : 'bg-[#F5F6F8] group-hover:bg-[#EBECEF]'
+                    }`}
                 >
                   <svg viewBox="0 0 32 32" className="w-6 h-6 min-[360px]:w-7 min-[360px]:h-7" fill="none" aria-hidden="true">
                     <rect x="4" y="8" width="24" height="16" rx="2.5" fill={isFrozen ? '#1D4ED8' : '#DB0011'} />

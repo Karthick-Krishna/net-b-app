@@ -86,8 +86,8 @@ export const HsbcChatBar: React.FC = () => {
 
   return (
     <>
-      {/* STICKY BOTTOM CHAT BAR (Matches Reference Screenshot + Responsive Safe Area) */}
-      <footer className="sticky bottom-0 z-30 bg-white/95 backdrop-blur-md border-t border-gray-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.04)] pt-2.5 px-3 sm:px-6 pb-[max(0.625rem,env(safe-area-inset-bottom,0px))] print:hidden">
+      {/* STICKY BOTTOM CHAT BAR (Matches Authentic HSBC Screenshot + Responsive Safe Area) */}
+      <footer className="sticky bottom-0 z-30 bg-white border-t border-gray-200 pt-2.5 px-3 sm:px-6 pb-[max(0.625rem,env(safe-area-inset-bottom,0px))] print:hidden">
         <div className="max-w-md md:max-w-4xl mx-auto flex items-center gap-2.5 sm:gap-3">
           {/* Double Chat Bubble Icon */}
           <button
@@ -96,10 +96,10 @@ export const HsbcChatBar: React.FC = () => {
             className="min-w-[44px] min-h-[44px] -ml-1 flex items-center justify-center text-[#1f1f1f] hover:text-[#DB0011] transition-colors cursor-pointer shrink-0"
             aria-label="Open HSBC Virtual Assistant"
           >
-            <MessagesSquare className="w-6 h-6 stroke-[1.8]" aria-hidden="true" />
+            <MessagesSquare className="w-6 h-6 stroke-[1.6]" aria-hidden="true" />
           </button>
 
-          {/* Input Box: "Start chat" with Microphone inside */}
+          {/* Input Box: Sharp Rectangular HSBC Box "Start chat" with Microphone inside */}
           <div className="flex-1 relative flex items-center min-w-0">
             <input
               type="text"
@@ -110,7 +110,7 @@ export const HsbcChatBar: React.FC = () => {
               }}
               placeholder="Start chat"
               aria-label="Start chat with HSBC Virtual Assistant"
-              className="w-full h-11 pl-4 pr-11 bg-white border border-gray-300 rounded-lg text-[14px] text-[#1f1f1f] placeholder:text-gray-400 focus:outline-none focus:border-[#DB0011] transition-all shadow-xs"
+              className="w-full h-11 pl-3.5 pr-11 bg-white border border-[#333333] rounded-[2px] text-[14px] text-[#1f1f1f] placeholder:text-[#666666] focus:outline-none focus:border-[#DB0011] transition-colors"
             />
             <button
               type="button"

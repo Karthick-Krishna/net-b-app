@@ -146,9 +146,8 @@ export const SecurityPage: React.FC = () => {
               }}
               className="flex flex-col items-center group cursor-pointer"
             >
-              <div className={`w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full transition-all flex items-center justify-center shadow-xs active:scale-[0.96] ${
-                biometricsEnabled ? 'bg-red-50 ring-2 ring-[#DB0011]' : 'bg-[#F5F6F8] group-hover:bg-[#EBECEF]'
-              }`}>
+              <div className={`w-14 h-14 min-[360px]:w-16 min-[360px]:h-16 rounded-full transition-all flex items-center justify-center shadow-xs active:scale-[0.96] ${biometricsEnabled ? 'bg-red-50 ring-2 ring-[#DB0011]' : 'bg-[#F5F6F8] group-hover:bg-[#EBECEF]'
+                }`}>
                 <Fingerprint className={`w-6 h-6 stroke-[1.8] ${biometricsEnabled ? 'text-[#DB0011]' : 'text-[#1f1f1f]'}`} aria-hidden="true" />
               </div>
               <span className="text-[11px] min-[360px]:text-[12px] text-[#1f1f1f] font-medium leading-tight mt-2 text-center">
@@ -185,9 +184,8 @@ export const SecurityPage: React.FC = () => {
                 </div>
               </div>
               <span
-                className={`px-3 py-1 self-start sm:self-auto rounded-full text-[11px] font-bold ${
-                  appLockEnabled ? 'bg-emerald-50 text-[#16864A] border border-emerald-200' : 'bg-gray-200 text-gray-600'
-                }`}
+                className={`px-3 py-1 self-start sm:self-auto rounded-full text-[11px] font-bold ${appLockEnabled ? 'bg-emerald-50 text-[#16864A] border border-emerald-200' : 'bg-gray-200 text-gray-600'
+                  }`}
               >
                 {appLockEnabled ? 'Active & Enforced' : 'Disabled'}
               </span>
@@ -482,7 +480,7 @@ export const SecurityPage: React.FC = () => {
               <ScanFace className="w-6 h-6" aria-hidden="true" />
             </div>
             <p className="text-[#444444] leading-relaxed">
-              Enter your 6-digit App-Lock PIN to enroll Face ID on this device.
+              Enter your 6-digit App-Lock PIN (<strong className="text-[#1f1f1f]">002831</strong>) to enroll Face ID on this device.
             </p>
           </div>
           <input

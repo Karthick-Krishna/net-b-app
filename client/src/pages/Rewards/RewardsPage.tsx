@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { Gift, Award, CheckCircle2 } from 'lucide-react';
 import { AnimatedPageTransition } from '../../components/AnimatedPageTransition';
+import { useBanking } from '../../context/BankingContext';
+import { useActionFeedback } from '../../context/ActionFeedbackContext';
 import toast from 'react-hot-toast';
 
 export const RewardsPage: React.FC = () => {
-  const [points, setPoints] = useState(48250);
+  const { cards, updateCardSettings } = useBanking();
+  const { requestAction } = useActionFeedback();
+  const premierCard = cards.find(c => c.cardTier === 'PREMIER_WORLD_ELITE') || cards[0];
+  const [fallbackPoints, setFallbackPoints] = useState(82636);
+  const points = premierCard?.rewardPoints ?? fallbackPoints;
   const [redeemedList, setRedeemedList] = useState<string[]>([]);
 
   const catalog = [
@@ -14,14 +20,34 @@ export const RewardsPage: React.FC = () => {
     { id: 'apple', title: 'Apple Store Digital Gift Card', points: 45000, value: '₹15,000 Voucher' },
   ];
 
-  const handleRedeem = (id: string, title: string, requiredPoints: number) => {
+  const handleRedeem = (_id: string, title: string, requiredPoints: number, value: string) => {
     if (points < requiredPoints) {
       toast.error('Insufficient reward points balance');
       return;
     }
-    setPoints(prev => prev - requiredPoints);
-    setRedeemedList(prev => [title, ...prev]);
-    toast.success(`Reward redeemed: ${title}. Fulfillment confirmation dispatched to registered email.`);
+
+    const ref = 'RWD/' + Date.now().toString().slice(-6);
+    requestAction({
+      title: `Redeem ${requiredPoints.toLocaleString('en-IN')} Premier Points?`,
+      message: `Authorize redemption of ${requiredPoints.toLocaleString('en-IN')} PTS for ${title} (${value}).`,
+      confirmLabel: 'Authorize with MPIN',
+      requireMpin: true,
+      onConfirm: () => {
+        const nextPoints = Math.max(0, points - requiredPoints);
+        if (premierCard) {
+          updateCardSettings(premierCard.cardId, { rewardPoints: nextPoints });
+        } else {
+          setFallbackPoints(nextPoints);
+        }
+        setRedeemedList(prev => [`${title} (${ref})`, ...prev]);
+        return {
+          title: 'Voucher Redeemed',
+          message: `${title} (${value}) redeemed using ${requiredPoints.toLocaleString('en-IN')} PTS. Remaining balance: ${nextPoints.toLocaleString('en-IN')} PTS.`,
+          icon: 'check',
+          referenceId: ref,
+        };
+      },
+    });
   };
 
   return (
@@ -69,7 +95,7 @@ export const RewardsPage: React.FC = () => {
                   <button
                     type="button"
                     disabled={!canAfford}
-                    onClick={() => handleRedeem(item.id, item.title, item.points)}
+                    onClick={() => handleRedeem(item.id, item.title, item.points, item.value)}
                     className="w-full min-h-[42px] bg-[#1f1f1f] hover:bg-black active:scale-[0.98] disabled:bg-gray-300 disabled:text-gray-500 text-white text-xs font-semibold rounded-full transition-all cursor-pointer shadow-xs"
                   >
                     {canAfford ? 'Redeem Voucher' : 'Insufficient Points'}

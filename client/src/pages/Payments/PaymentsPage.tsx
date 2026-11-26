@@ -179,9 +179,17 @@ export const PaymentsPage: React.FC = () => {
       return;
     }
 
+    const rail = numAmount >= 200000 ? 'RTGS' : 'NEFT';
+    const effectiveRef =
+      numAmount >= 200000 && reference.startsWith('TXN/NEFT/')
+        ? reference.replace('TXN/NEFT/', 'TXN/RTGS/')
+        : numAmount < 200000 && reference.startsWith('TXN/RTGS/')
+        ? reference.replace('TXN/RTGS/', 'TXN/NEFT/')
+        : reference;
+
     requestAction({
-      title: `Authorize Transfer of ${formatCurrency(numAmount, 'INR')}?`,
-      message: `Transfer ${formatCurrency(numAmount, 'INR')} from ${selectedAccount?.accountType} (${selectedAccount?.maskedAccountNumber}) to ${recipientName} (${recipientBank})?`,
+      title: `Authorize ${rail} Transfer of ${formatCurrency(numAmount, 'INR')}?`,
+      message: `Transfer ${formatCurrency(numAmount, 'INR')} via ${rail} from ${selectedAccount?.accountType} (${selectedAccount?.maskedAccountNumber}) to ${recipientName} (${recipientBank})?`,
       confirmLabel: 'Authorize with MPIN',
       requireMpin: true,
       onConfirm: async () => {
@@ -191,7 +199,7 @@ export const PaymentsPage: React.FC = () => {
           recipientBank,
           ifscCode,
           amount: numAmount,
-          reference,
+          reference: effectiveRef,
           category,
           note: description,
         });
@@ -200,13 +208,12 @@ export const PaymentsPage: React.FC = () => {
           throw new Error(res.error || 'Payment execution failed');
         }
         setTransferStep(1);
-        const doneRef = reference;
         setReference('TXN/NEFT/' + Date.now().toString().slice(-6));
         return {
-          title: 'Transfer Executed',
-          message: `${formatCurrency(numAmount, 'INR')} transferred successfully to ${recipientName}.`,
+          title: `${rail} Transfer Executed`,
+          message: `${formatCurrency(numAmount, 'INR')} transferred via ${rail} to ${recipientName}.`,
           icon: 'check',
-          referenceId: doneRef,
+          referenceId: effectiveRef,
           relatedButtons: [
             { label: 'View Activity Ledger', variant: 'secondary', onClick: () => navigate('/transactions') },
             { label: 'Download Receipt', variant: 'primary', onClick: () => navigate('/statements') },
@@ -550,8 +557,34 @@ export const PaymentsPage: React.FC = () => {
                   <h2 className="text-base font-bold text-[#1f1f1f]">Step 4: Amount &amp; Reference</h2>
                   <div>
                     <label htmlFor="pay-amount" className="font-bold text-[#555555] block mb-1.5 text-xs">Amount (INR ₹)</label>
-                    <input id="pay-amount" type="number" step="0.01" required min="0.01" value={amount} onChange={e => setAmount(e.target.value)} className="w-full p-3.5 bg-[#F6F7F9] border border-gray-200 rounded-xl text-2xl font-bold text-[#1f1f1f]" placeholder="0.00" />
-                    <span className="text-[11px] text-[#777777] mt-1 block">Available: {formatCurrency(selectedAccount?.managedBalance || 0, 'INR')}</span>
+                    <input
+                      id="pay-amount"
+                      type="number"
+                      step="0.01"
+                      required
+                      min="0.01"
+                      value={amount}
+                      onChange={e => {
+                        const nextVal = e.target.value;
+                        setAmount(nextVal);
+                        const parsed = parseFloat(nextVal);
+                        if (!isNaN(parsed)) {
+                          if (parsed >= 200000 && reference.startsWith('TXN/NEFT/')) {
+                            setReference(reference.replace('TXN/NEFT/', 'TXN/RTGS/'));
+                          } else if (parsed < 200000 && reference.startsWith('TXN/RTGS/')) {
+                            setReference(reference.replace('TXN/RTGS/', 'TXN/NEFT/'));
+                          }
+                        }
+                      }}
+                      className="w-full p-3.5 bg-[#F6F7F9] border border-gray-200 rounded-xl text-2xl font-bold text-[#1f1f1f]"
+                      placeholder="0.00"
+                    />
+                    <div className="flex flex-wrap items-center justify-between gap-2 mt-1.5 text-[11px]">
+                      <span className="text-[#777777]">Available: {formatCurrency(selectedAccount?.managedBalance || 0, 'INR')}</span>
+                      <span className="font-semibold text-[#1f1f1f]">
+                        Rail: {(parseFloat(amount) || 0) >= 200000 ? 'RTGS (Payments ≥ ₹2,00,000)' : 'NEFT / IMPS'}
+                      </span>
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                     <div>
@@ -577,6 +610,7 @@ export const PaymentsPage: React.FC = () => {
                     <div className="flex justify-between gap-2"><span className="text-[#777777]">From</span><span className="font-bold">{selectedAccount?.accountType} ({selectedAccount?.maskedAccountNumber})</span></div>
                     <div className="flex justify-between gap-2"><span className="text-[#777777]">To</span><span className="font-bold">{recipientName}</span></div>
                     <div className="flex justify-between gap-2"><span className="text-[#777777]">Bank</span><span className="font-mono">{recipientBank} ({ifscCode})</span></div>
+                    <div className="flex justify-between gap-2"><span className="text-[#777777]">Payment Rail</span><span className="font-semibold">{(parseFloat(amount) || 0) >= 200000 ? 'RTGS' : 'NEFT'}</span></div>
                     <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-200"><span>Total Amount</span><span className="text-[#DB0011]">{formatCurrency(parseFloat(amount) || 0, 'INR')}</span></div>
                   </div>
                   <div className="flex justify-between pt-2">
